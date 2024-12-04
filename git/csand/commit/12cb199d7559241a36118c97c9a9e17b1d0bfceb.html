@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Make glfw window not resizable - csand - Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</title>
+<link rel="icon" type="image/png" href="../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed" href="../atom.xml" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed (tags)" href="../tags.xml" />
+<link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../"><img src="../logo.png" alt="" width="32" height="32" /></a></td><td><h1>csand</h1><span class="desc">Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</span></td></tr><tr><td></td><td>
+<a href="../log.html">Log</a> | <a href="../files.html">Files</a> | <a href="../refs.html">Refs</a> | <a href="../file/LICENSE.html">LICENSE</a></td></tr></table>
+<hr/>
+<div id="content">
+<pre><b>commit</b> <a href="../commit/12cb199d7559241a36118c97c9a9e17b1d0bfceb.html">12cb199d7559241a36118c97c9a9e17b1d0bfceb</a>
+<b>parent</b> <a href="../commit/27f45ae4ab5fdfa424f7640f9868e78e04b60201.html">27f45ae4ab5fdfa424f7640f9868e78e04b60201</a>
+<b>Author:</b> mirefly &lt;<a href="mailto:"></a>&gt;
+<b>Date:</b>   Wed, 12 Feb 2025 15:29:06 +0700
+
+Make glfw window not resizable
+
+<b>Diffstat:</b>
+<table><tr><td class="M">M</td><td><a href="#h0">platform_glfw.c</a></td><td> | </td><td class="num">1</td><td><span class="i">+</span><span class="d"></span></td></tr>
+</table></pre><pre>1 file changed, 1 insertion(+), 0 deletions(-)
+<hr/><b>diff --git a/<a id="h0" href="../file/platform_glfw.c.html">platform_glfw.c</a> b/<a href="../file/platform_glfw.c.html">platform_glfw.c</a></b>
+<a href="#h0-0" id="h0-0" class="h">@@ -25,6 +25,7 @@ void csandPlatformInit(void) {
+</a>     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+<a href="#h0-0-3" id="h0-0-3" class="i">+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+</a> 
+     window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, &quot;csand&quot;, NULL, NULL);
+ 
+</pre>
+</div>
+</body>
+</html>

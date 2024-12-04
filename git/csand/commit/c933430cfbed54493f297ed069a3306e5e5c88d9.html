@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Port to web - csand - Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</title>
+<link rel="icon" type="image/png" href="../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed" href="../atom.xml" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed (tags)" href="../tags.xml" />
+<link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../"><img src="../logo.png" alt="" width="32" height="32" /></a></td><td><h1>csand</h1><span class="desc">Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</span></td></tr><tr><td></td><td>
+<a href="../log.html">Log</a> | <a href="../files.html">Files</a> | <a href="../refs.html">Refs</a> | <a href="../file/LICENSE.html">LICENSE</a></td></tr></table>
+<hr/>
+<div id="content">
+<pre><b>commit</b> <a href="../commit/c933430cfbed54493f297ed069a3306e5e5c88d9.html">c933430cfbed54493f297ed069a3306e5e5c88d9</a>
+<b>parent</b> <a href="../commit/83f5240a40c4d047957d71b2ad42051eafbe9cd5.html">83f5240a40c4d047957d71b2ad42051eafbe9cd5</a>
+<b>Author:</b> mirefly &lt;<a href="mailto:"></a>&gt;
+<b>Date:</b>   Tue,  3 Dec 2024 23:57:09 +0700
+
+Port to web
+
+<b>Diffstat:</b>
+<table><tr><td class="M">M</td><td><a href="#h0">.gitignore</a></td><td> | </td><td class="num">1</td><td><span class="i">+</span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h1">Makefile</a></td><td> | </td><td class="num">9</td><td><span class="i">++++++</span><span class="d">---</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h2">TODO</a></td><td> | </td><td class="num">2</td><td><span class="i">+</span><span class="d">-</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h3">csand.c</a></td><td> | </td><td class="num">16</td><td><span class="i">++++++++++++</span><span class="d">----</span></td></tr>
+<tr><td class="A">A</td><td><a href="#h4">index.html</a></td><td> | </td><td class="num">18</td><td><span class="i">++++++++++++++++++</span><span class="d"></span></td></tr>
+<tr><td class="A">A</td><td><a href="#h5">index.js</a></td><td> | </td><td class="num">158</td><td><span class="i">+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h6">shader.frag</a></td><td> | </td><td class="num">14</td><td><span class="i">++++++</span><span class="d">--------</span></td></tr>
+</table></pre><pre>7 files changed, 202 insertions(+), 16 deletions(-)
+<hr/><b>diff --git a/<a id="h0" href="../file/.gitignore.html">.gitignore</a> b/<a href="../file/.gitignore.html">.gitignore</a></b>
+<a href="#h0-0" id="h0-0" class="h">@@ -1,2 +1,3 @@
+</a> /csand
+<a href="#h0-0-1" id="h0-0-1" class="i">+/csand.wasm
+</a> /*.o
+<b>diff --git a/<a id="h1" href="../file/Makefile.html">Makefile</a> b/<a href="../file/Makefile.html">Makefile</a></b>
+<a href="#h1-0" id="h1-0" class="h">@@ -5,11 +5,14 @@ HDR = platform.h
+</a> OBJ = ${SRC:.c=.o}
+ LIBS = -lglfw -lepoxy
+ 
+<a href="#h1-0-3" id="h1-0-3" class="d">-all: csand
+</a><a href="#h1-0-4" id="h1-0-4" class="d">-
+</a> csand: ${OBJ}
+ 	${CC} -o $@ ${OBJ} ${LIBS} ${LDFLAGS}
+ 
+<a href="#h1-0-8" id="h1-0-8" class="i">+all: csand csand.wasm
+</a><a href="#h1-0-9" id="h1-0-9" class="i">+
+</a><a href="#h1-0-10" id="h1-0-10" class="i">+csand.wasm: csand.c ${HDR}
+</a><a href="#h1-0-11" id="h1-0-11" class="i">+	clang -o $@ csand.c --target=wasm32 -nostdlib -Wl,--entry=main,--import-undefined,--export-table ${CFLAGS} ${LDFLAGS}
+</a><a href="#h1-0-12" id="h1-0-12" class="i">+
+</a> .c.o:
+ 	${CC} -c -o $@ $&lt; ${CFLAGS}
+ 
+<a href="#h1-1" id="h1-1" class="h">@@ -19,6 +22,6 @@ validate:
+</a> 	glslangValidator shader.vert shader.frag
+ 
+ clean:
+<a href="#h1-1-3" id="h1-1-3" class="d">-	rm -f csand ${OBJ}
+</a><a href="#h1-1-4" id="h1-1-4" class="i">+	rm -f csand csand.wasm ${OBJ}
+</a> 
+ .PHONY: all validate clean
+<b>diff --git a/<a id="h2" href="../file/TODO.html">TODO</a> b/<a href="../file/TODO.html">TODO</a></b>
+<a href="#h2-0" id="h2-0" class="h">@@ -1 +1 @@
+</a><a href="#h2-0-0" id="h2-0-0" class="d">-Port to webassembly
+</a><a href="#h2-0-1" id="h2-0-1" class="i">+Make the web version usable on mobile devices
+</a><b>diff --git a/<a id="h3" href="../file/csand.c.html">csand.c</a> b/<a href="../file/csand.c.html">csand.c</a></b>
+<a href="#h3-0" id="h3-0" class="h">@@ -1,6 +1,6 @@
+</a> #include &quot;platform.h&quot;
+ #include &lt;stdbool.h&gt;
+<a href="#h3-0-2" id="h3-0-2" class="d">-#include &lt;stdlib.h&gt;
+</a><a href="#h3-0-3" id="h3-0-3" class="i">+#include &lt;stdint.h&gt;
+</a> 
+ #define SPEED_LIMIT 128
+ 
+<a href="#h3-1" id="h3-1" class="h">@@ -26,6 +26,7 @@ static void csandInputCallback(CsandInput input);
+</a> static void csandRenderCallback(unsigned char *data, unsigned short width, unsigned short height);
+ static void csandSimulate(CsandRenderBuffer buf);
+ static inline unsigned char *csandGetMat(CsandRenderBuffer buf, unsigned int x, unsigned int y);
+<a href="#h3-1-3" id="h3-1-3" class="i">+static uint32_t csandRand(void);
+</a> static bool csandInBounds(CsandRenderBuffer buf, int x, int y);
+ 
+ int main(void) {
+<a href="#h3-2" id="h3-2" class="h">@@ -84,7 +85,7 @@ static void csandSimulate(CsandRenderBuffer buf) {
+</a>                     if (y &lt;= 0) {
+                         continue;
+                     } else {
+<a href="#h3-2-3" id="h3-2-3" class="d">-                        int dx = rand() % 3 - 1;
+</a><a href="#h3-2-4" id="h3-2-4" class="i">+                        int dx = csandRand() % 3 - 1;
+</a>                         if (!csandInBounds(buf, x + dx, y - 1)) continue;
+                         unsigned char swap_mat = *csandGetMat(buf, x + dx, y - 1);
+ 
+<a href="#h3-3" id="h3-3" class="h">@@ -95,8 +96,8 @@ static void csandSimulate(CsandRenderBuffer buf) {
+</a>                     }
+                     break;
+                 case MAT_LIQUID: {
+<a href="#h3-3-3" id="h3-3-3" class="d">-                    int dx = rand() % 3 - 1;
+</a><a href="#h3-3-4" id="h3-3-4" class="d">-                    int dy = - (rand() % 2);
+</a><a href="#h3-3-5" id="h3-3-5" class="i">+                    int dx = csandRand() % 3 - 1;
+</a><a href="#h3-3-6" id="h3-3-6" class="i">+                    int dy = - (csandRand() % 2);
+</a>                     if (!csandInBounds(buf, x + dx, y + dy)) continue;
+ 
+                     if (*csandGetMat(buf, x + dx, y + dy) == MAT_AIR) {
+<a href="#h3-4" id="h3-4" class="h">@@ -126,6 +127,13 @@ static inline unsigned char *csandGetMat(CsandRenderBuffer buf, unsigned int x, 
+</a>     return buf.data + buf.width * y + x;
+ }
+ 
+<a href="#h3-4-3" id="h3-4-3" class="i">+static uint32_t csandRand(void)
+</a><a href="#h3-4-4" id="h3-4-4" class="i">+{
+</a><a href="#h3-4-5" id="h3-4-5" class="i">+    static uint64_t seed = 1;
+</a><a href="#h3-4-6" id="h3-4-6" class="i">+    seed = 6364136223846793005*seed + 1;
+</a><a href="#h3-4-7" id="h3-4-7" class="i">+    return seed &gt;&gt; 32;
+</a><a href="#h3-4-8" id="h3-4-8" class="i">+}
+</a><a href="#h3-4-9" id="h3-4-9" class="i">+
+</a> static bool csandInBounds(CsandRenderBuffer buf, int x, int y) {
+     return x &gt;= 0 &amp;&amp; x &lt; buf.width &amp;&amp; y &gt;= 0 &amp;&amp; y &lt; buf.height;
+ }
+<b>diff --git a/<a id="h4" href="../file/index.html.html">index.html</a> b/<a href="../file/index.html.html">index.html</a></b>
+<a href="#h4-0" id="h4-0" class="h">@@ -0,0 +1,18 @@
+</a><a href="#h4-0-0" id="h4-0-0" class="i">+&lt;!DOCTYPE html&gt;
+</a><a href="#h4-0-1" id="h4-0-1" class="i">+&lt;html&gt;
+</a><a href="#h4-0-2" id="h4-0-2" class="i">+&lt;body&gt;
+</a><a href="#h4-0-3" id="h4-0-3" class="i">+&lt;canvas id=&quot;canvas&quot; width=1024, height=512&gt;&lt;/canvas&gt;
+</a><a href="#h4-0-4" id="h4-0-4" class="i">+&lt;pre&gt;
+</a><a href="#h4-0-5" id="h4-0-5" class="i">+Controls:
+</a><a href="#h4-0-6" id="h4-0-6" class="i">+1     - Solid
+</a><a href="#h4-0-7" id="h4-0-7" class="i">+2     - Sand
+</a><a href="#h4-0-8" id="h4-0-8" class="i">+3     - Water
+</a><a href="#h4-0-9" id="h4-0-9" class="i">+0     - Air
+</a><a href="#h4-0-10" id="h4-0-10" class="i">+LMB   - Spawn particles
+</a><a href="#h4-0-11" id="h4-0-11" class="i">+Space - Toggle pause
+</a><a href="#h4-0-12" id="h4-0-12" class="i">+Minus - Decrease simulation speed
+</a><a href="#h4-0-13" id="h4-0-13" class="i">+Plus  - Increase simulation speed
+</a><a href="#h4-0-14" id="h4-0-14" class="i">+&lt;/pre&gt;
+</a><a href="#h4-0-15" id="h4-0-15" class="i">+&lt;script src=&quot;index.js&quot;&gt;&lt;/script&gt;
+</a><a href="#h4-0-16" id="h4-0-16" class="i">+&lt;/body&gt;
+</a><a href="#h4-0-17" id="h4-0-17" class="i">+&lt;/html&gt;
+</a><b>diff --git a/<a id="h5" href="../file/index.js.html">index.js</a> b/<a href="../file/index.js.html">index.js</a></b>
+<a href="#h5-0" id="h5-0" class="h">@@ -0,0 +1,158 @@
+</a><a href="#h5-0-0" id="h5-0-0" class="i">+const width = 128;
+</a><a href="#h5-0-1" id="h5-0-1" class="i">+const height = 64;
+</a><a href="#h5-0-2" id="h5-0-2" class="i">+let function_table = null;
+</a><a href="#h5-0-3" id="h5-0-3" class="i">+let input_callback = null;
+</a><a href="#h5-0-4" id="h5-0-4" class="i">+let render_callback = null;
+</a><a href="#h5-0-5" id="h5-0-5" class="i">+let canvas = null;
+</a><a href="#h5-0-6" id="h5-0-6" class="i">+let gl = null;
+</a><a href="#h5-0-7" id="h5-0-7" class="i">+let vertex_src = null;
+</a><a href="#h5-0-8" id="h5-0-8" class="i">+let fragment_src = null;
+</a><a href="#h5-0-9" id="h5-0-9" class="i">+let obj = null;
+</a><a href="#h5-0-10" id="h5-0-10" class="i">+let buf_ptr = null;
+</a><a href="#h5-0-11" id="h5-0-11" class="i">+let buf = null;
+</a><a href="#h5-0-12" id="h5-0-12" class="i">+let mouse_down = false;
+</a><a href="#h5-0-13" id="h5-0-13" class="i">+let mouse_x = 0;
+</a><a href="#h5-0-14" id="h5-0-14" class="i">+let mouse_y = 0;
+</a><a href="#h5-0-15" id="h5-0-15" class="i">+
+</a><a href="#h5-0-16" id="h5-0-16" class="i">+async function main() {
+</a><a href="#h5-0-17" id="h5-0-17" class="i">+    vertex_src = await (await fetch(&quot;shader.vert&quot;)).text();
+</a><a href="#h5-0-18" id="h5-0-18" class="i">+    fragment_src = await (await fetch(&quot;shader.frag&quot;)).text();
+</a><a href="#h5-0-19" id="h5-0-19" class="i">+
+</a><a href="#h5-0-20" id="h5-0-20" class="i">+    const import_object = {
+</a><a href="#h5-0-21" id="h5-0-21" class="i">+        env: {
+</a><a href="#h5-0-22" id="h5-0-22" class="i">+            csandPlatformInit: csandPlatformInit,
+</a><a href="#h5-0-23" id="h5-0-23" class="i">+            csandPlatformSetInputCallback: (callback_index) =&gt; {
+</a><a href="#h5-0-24" id="h5-0-24" class="i">+                input_callback = function_table.get(callback_index);
+</a><a href="#h5-0-25" id="h5-0-25" class="i">+                document.addEventListener(&quot;keydown&quot;, (event) =&gt; {
+</a><a href="#h5-0-26" id="h5-0-26" class="i">+                    const c = event.code;
+</a><a href="#h5-0-27" id="h5-0-27" class="i">+                    if (c === &quot;Digit0&quot;) {
+</a><a href="#h5-0-28" id="h5-0-28" class="i">+                        input_callback(0);
+</a><a href="#h5-0-29" id="h5-0-29" class="i">+                    } else if (c === &quot;Digit1&quot;) {
+</a><a href="#h5-0-30" id="h5-0-30" class="i">+                        input_callback(1);
+</a><a href="#h5-0-31" id="h5-0-31" class="i">+                    } else if (c === &quot;Digit2&quot;) {
+</a><a href="#h5-0-32" id="h5-0-32" class="i">+                        input_callback(2);
+</a><a href="#h5-0-33" id="h5-0-33" class="i">+                    } else if (c === &quot;Digit3&quot;) {
+</a><a href="#h5-0-34" id="h5-0-34" class="i">+                        input_callback(3);
+</a><a href="#h5-0-35" id="h5-0-35" class="i">+                    } else if (c === &quot;Space&quot;) {
+</a><a href="#h5-0-36" id="h5-0-36" class="i">+                        input_callback(4);
+</a><a href="#h5-0-37" id="h5-0-37" class="i">+                    } else if (c === &quot;Equal&quot;) {
+</a><a href="#h5-0-38" id="h5-0-38" class="i">+                        input_callback(5);
+</a><a href="#h5-0-39" id="h5-0-39" class="i">+                    } else if (c === &quot;Minus&quot;) {
+</a><a href="#h5-0-40" id="h5-0-40" class="i">+                        input_callback(6);
+</a><a href="#h5-0-41" id="h5-0-41" class="i">+                    }
+</a><a href="#h5-0-42" id="h5-0-42" class="i">+                });
+</a><a href="#h5-0-43" id="h5-0-43" class="i">+            },
+</a><a href="#h5-0-44" id="h5-0-44" class="i">+            csandPlatformSetRenderCallback: (callback_index) =&gt; {
+</a><a href="#h5-0-45" id="h5-0-45" class="i">+                render_callback = function_table.get(callback_index);
+</a><a href="#h5-0-46" id="h5-0-46" class="i">+            },
+</a><a href="#h5-0-47" id="h5-0-47" class="i">+            csandPlatformRun: csandPlatformRun,
+</a><a href="#h5-0-48" id="h5-0-48" class="i">+            csandPlatformIsMouseButtonPressed: () =&gt; {return mouse_down;},
+</a><a href="#h5-0-49" id="h5-0-49" class="i">+            csandPlatformGetCursorPos: (x_ptr, y_ptr) =&gt; {
+</a><a href="#h5-0-50" id="h5-0-50" class="i">+                const view = new DataView(obj.instance.exports.memory.buffer);
+</a><a href="#h5-0-51" id="h5-0-51" class="i">+                view.setUint16(x_ptr, mouse_x, true);
+</a><a href="#h5-0-52" id="h5-0-52" class="i">+                view.setUint16(y_ptr, mouse_y, true);
+</a><a href="#h5-0-53" id="h5-0-53" class="i">+            },
+</a><a href="#h5-0-54" id="h5-0-54" class="i">+        }
+</a><a href="#h5-0-55" id="h5-0-55" class="i">+    };
+</a><a href="#h5-0-56" id="h5-0-56" class="i">+
+</a><a href="#h5-0-57" id="h5-0-57" class="i">+    obj = await WebAssembly.instantiateStreaming(fetch(&quot;csand.wasm&quot;), import_object);
+</a><a href="#h5-0-58" id="h5-0-58" class="i">+
+</a><a href="#h5-0-59" id="h5-0-59" class="i">+    function_table = obj.instance.exports.__indirect_function_table;
+</a><a href="#h5-0-60" id="h5-0-60" class="i">+    buf_ptr = obj.instance.exports.memory.grow(1) * 64 * 1024;
+</a><a href="#h5-0-61" id="h5-0-61" class="i">+    buf = new Uint8Array(obj.instance.exports.memory.buffer, buf_ptr, width * height);
+</a><a href="#h5-0-62" id="h5-0-62" class="i">+    obj.instance.exports.main();
+</a><a href="#h5-0-63" id="h5-0-63" class="i">+}
+</a><a href="#h5-0-64" id="h5-0-64" class="i">+
+</a><a href="#h5-0-65" id="h5-0-65" class="i">+function csandPlatformInit() {
+</a><a href="#h5-0-66" id="h5-0-66" class="i">+    canvas = document.getElementById(&quot;canvas&quot;);
+</a><a href="#h5-0-67" id="h5-0-67" class="i">+    gl = canvas.getContext(&quot;webgl&quot;);
+</a><a href="#h5-0-68" id="h5-0-68" class="i">+
+</a><a href="#h5-0-69" id="h5-0-69" class="i">+    const vbo = gl.createBuffer();
+</a><a href="#h5-0-70" id="h5-0-70" class="i">+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+</a><a href="#h5-0-71" id="h5-0-71" class="i">+    const vbo_data = new Int8Array([
+</a><a href="#h5-0-72" id="h5-0-72" class="i">+        -3, -1,
+</a><a href="#h5-0-73" id="h5-0-73" class="i">+         1, -1,
+</a><a href="#h5-0-74" id="h5-0-74" class="i">+         1,  3,
+</a><a href="#h5-0-75" id="h5-0-75" class="i">+    ]);
+</a><a href="#h5-0-76" id="h5-0-76" class="i">+    gl.bufferData(gl.ARRAY_BUFFER, vbo_data, gl.STATIC_DRAW);
+</a><a href="#h5-0-77" id="h5-0-77" class="i">+
+</a><a href="#h5-0-78" id="h5-0-78" class="i">+    const program = csandLoadShaderProgram();
+</a><a href="#h5-0-79" id="h5-0-79" class="i">+    gl.useProgram(program);
+</a><a href="#h5-0-80" id="h5-0-80" class="i">+
+</a><a href="#h5-0-81" id="h5-0-81" class="i">+    const position_attr_loc = gl.getAttribLocation(program, &quot;position&quot;);
+</a><a href="#h5-0-82" id="h5-0-82" class="i">+    gl.vertexAttribPointer(position_attr_loc, 2, gl.BYTE, false, 0, 0);
+</a><a href="#h5-0-83" id="h5-0-83" class="i">+    gl.enableVertexAttribArray(position_attr_loc);
+</a><a href="#h5-0-84" id="h5-0-84" class="i">+
+</a><a href="#h5-0-85" id="h5-0-85" class="i">+    const texture = gl.createTexture();
+</a><a href="#h5-0-86" id="h5-0-86" class="i">+    gl.bindTexture(gl.TEXTURE_2D, texture);
+</a><a href="#h5-0-87" id="h5-0-87" class="i">+
+</a><a href="#h5-0-88" id="h5-0-88" class="i">+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+</a><a href="#h5-0-89" id="h5-0-89" class="i">+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+</a><a href="#h5-0-90" id="h5-0-90" class="i">+
+</a><a href="#h5-0-91" id="h5-0-91" class="i">+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, width, height, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, null);
+</a><a href="#h5-0-92" id="h5-0-92" class="i">+
+</a><a href="#h5-0-93" id="h5-0-93" class="i">+    gl.uniform1i(gl.getUniformLocation(program, &quot;texture&quot;), 0);
+</a><a href="#h5-0-94" id="h5-0-94" class="i">+
+</a><a href="#h5-0-95" id="h5-0-95" class="i">+    canvas.addEventListener(&quot;mousedown&quot;, (event) =&gt; {
+</a><a href="#h5-0-96" id="h5-0-96" class="i">+        if (event.button == 0) mouse_down = true;
+</a><a href="#h5-0-97" id="h5-0-97" class="i">+    });
+</a><a href="#h5-0-98" id="h5-0-98" class="i">+
+</a><a href="#h5-0-99" id="h5-0-99" class="i">+    document.addEventListener(&quot;mouseup&quot;, (event) =&gt; {
+</a><a href="#h5-0-100" id="h5-0-100" class="i">+        if (event.button == 0) mouse_down = false;
+</a><a href="#h5-0-101" id="h5-0-101" class="i">+    });
+</a><a href="#h5-0-102" id="h5-0-102" class="i">+
+</a><a href="#h5-0-103" id="h5-0-103" class="i">+    canvas.addEventListener(&quot;mousemove&quot;, (event) =&gt; {
+</a><a href="#h5-0-104" id="h5-0-104" class="i">+        mouse_x = event.offsetX * width / canvas.width;
+</a><a href="#h5-0-105" id="h5-0-105" class="i">+        mouse_y = height - 1 - Math.floor(event.offsetY * height / canvas.height);
+</a><a href="#h5-0-106" id="h5-0-106" class="i">+    });
+</a><a href="#h5-0-107" id="h5-0-107" class="i">+}
+</a><a href="#h5-0-108" id="h5-0-108" class="i">+
+</a><a href="#h5-0-109" id="h5-0-109" class="i">+function csandLoadShaderProgram() {
+</a><a href="#h5-0-110" id="h5-0-110" class="i">+    const vertex_shader = csandLoadShader(vertex_src, gl.VERTEX_SHADER);
+</a><a href="#h5-0-111" id="h5-0-111" class="i">+    const fragment_shader = csandLoadShader(fragment_src, gl.FRAGMENT_SHADER);
+</a><a href="#h5-0-112" id="h5-0-112" class="i">+    const program = gl.createProgram();
+</a><a href="#h5-0-113" id="h5-0-113" class="i">+    gl.attachShader(program, vertex_shader);
+</a><a href="#h5-0-114" id="h5-0-114" class="i">+    gl.attachShader(program, fragment_shader);
+</a><a href="#h5-0-115" id="h5-0-115" class="i">+    gl.linkProgram(program);
+</a><a href="#h5-0-116" id="h5-0-116" class="i">+
+</a><a href="#h5-0-117" id="h5-0-117" class="i">+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+</a><a href="#h5-0-118" id="h5-0-118" class="i">+        console.error(&quot;failed to link shader program: &quot; + gl.getProgramInfoLog(program));
+</a><a href="#h5-0-119" id="h5-0-119" class="i">+        gl.deleteProgram(program);
+</a><a href="#h5-0-120" id="h5-0-120" class="i">+        program = null;
+</a><a href="#h5-0-121" id="h5-0-121" class="i">+    }
+</a><a href="#h5-0-122" id="h5-0-122" class="i">+
+</a><a href="#h5-0-123" id="h5-0-123" class="i">+    gl.deleteShader(fragment_shader);
+</a><a href="#h5-0-124" id="h5-0-124" class="i">+    gl.deleteShader(vertex_shader);
+</a><a href="#h5-0-125" id="h5-0-125" class="i">+
+</a><a href="#h5-0-126" id="h5-0-126" class="i">+    return program;
+</a><a href="#h5-0-127" id="h5-0-127" class="i">+}
+</a><a href="#h5-0-128" id="h5-0-128" class="i">+
+</a><a href="#h5-0-129" id="h5-0-129" class="i">+function csandLoadShader(src, type) {
+</a><a href="#h5-0-130" id="h5-0-130" class="i">+    const shader = gl.createShader(type);
+</a><a href="#h5-0-131" id="h5-0-131" class="i">+
+</a><a href="#h5-0-132" id="h5-0-132" class="i">+    gl.shaderSource(shader, src);
+</a><a href="#h5-0-133" id="h5-0-133" class="i">+    gl.compileShader(shader);
+</a><a href="#h5-0-134" id="h5-0-134" class="i">+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+</a><a href="#h5-0-135" id="h5-0-135" class="i">+        console.error(&quot;failed to compile shader &#39;&quot; + name + &quot;&#39;: &quot; + gl.getShaderInfoLog(shader));
+</a><a href="#h5-0-136" id="h5-0-136" class="i">+        gl.deleteShader(shader);
+</a><a href="#h5-0-137" id="h5-0-137" class="i">+        return null;
+</a><a href="#h5-0-138" id="h5-0-138" class="i">+    }
+</a><a href="#h5-0-139" id="h5-0-139" class="i">+
+</a><a href="#h5-0-140" id="h5-0-140" class="i">+    return shader;
+</a><a href="#h5-0-141" id="h5-0-141" class="i">+}
+</a><a href="#h5-0-142" id="h5-0-142" class="i">+
+</a><a href="#h5-0-143" id="h5-0-143" class="i">+function csandPlatformRun() {
+</a><a href="#h5-0-144" id="h5-0-144" class="i">+    if (render_callback != null) {
+</a><a href="#h5-0-145" id="h5-0-145" class="i">+        render_callback(buf_ptr, width, height);
+</a><a href="#h5-0-146" id="h5-0-146" class="i">+    }
+</a><a href="#h5-0-147" id="h5-0-147" class="i">+
+</a><a href="#h5-0-148" id="h5-0-148" class="i">+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+</a><a href="#h5-0-149" id="h5-0-149" class="i">+    gl.clear(gl.COLOR_BUFFER_BIT);
+</a><a href="#h5-0-150" id="h5-0-150" class="i">+
+</a><a href="#h5-0-151" id="h5-0-151" class="i">+    gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, width, height, gl.LUMINANCE, gl.UNSIGNED_BYTE, buf);
+</a><a href="#h5-0-152" id="h5-0-152" class="i">+
+</a><a href="#h5-0-153" id="h5-0-153" class="i">+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+</a><a href="#h5-0-154" id="h5-0-154" class="i">+    requestAnimationFrame(csandPlatformRun);
+</a><a href="#h5-0-155" id="h5-0-155" class="i">+}
+</a><a href="#h5-0-156" id="h5-0-156" class="i">+
+</a><a href="#h5-0-157" id="h5-0-157" class="i">+main();
+</a><b>diff --git a/<a id="h6" href="../file/shader.frag.html">shader.frag</a> b/<a href="../file/shader.frag.html">shader.frag</a></b>
+<a href="#h6-0" id="h6-0" class="h">@@ -3,18 +3,16 @@
+</a> uniform sampler2D texture;
+ precision lowp float;
+ 
+<a href="#h6-0-3" id="h6-0-3" class="d">-vec3 color_map[4];
+</a><a href="#h6-0-4" id="h6-0-4" class="d">-
+</a> void main(void) {
+<a href="#h6-0-6" id="h6-0-6" class="d">-    color_map[0] = vec3(0.0);
+</a><a href="#h6-0-7" id="h6-0-7" class="d">-    color_map[1] = vec3(1.0, 0.0, 1.0);
+</a><a href="#h6-0-8" id="h6-0-8" class="d">-    color_map[2] = vec3(1.0, 1.0, 0.0);
+</a><a href="#h6-0-9" id="h6-0-9" class="d">-    color_map[3] = vec3(0.0, 0.0, 1.0);
+</a><a href="#h6-0-10" id="h6-0-10" class="d">-
+</a>     vec2 uv = gl_FragCoord.xy/vec2(1024.0, 512.0);
+ 
+     int mat = int(texture2D(texture, uv).r * 255.0 + 0.5);
+<a href="#h6-0-14" id="h6-0-14" class="d">-    vec3 color = color_map[mat];
+</a><a href="#h6-0-15" id="h6-0-15" class="i">+
+</a><a href="#h6-0-16" id="h6-0-16" class="i">+    vec3 color = mat == 0 ? vec3(0.0)
+</a><a href="#h6-0-17" id="h6-0-17" class="i">+               : mat == 1 ? vec3(1.0, 0.0, 1.0)
+</a><a href="#h6-0-18" id="h6-0-18" class="i">+               : mat == 2 ? vec3(1.0, 1.0, 0.0)
+</a><a href="#h6-0-19" id="h6-0-19" class="i">+               : mat == 3 ? vec3(0.0, 0.0, 1.0)
+</a><a href="#h6-0-20" id="h6-0-20" class="i">+               : vec3(1.0);
+</a> 
+     gl_FragColor = vec4(color, 1.0);
+ }
+</pre>
+</div>
+</body>
+</html>

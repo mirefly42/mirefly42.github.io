@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>renderer.c - csand - Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</title>
+<link rel="icon" type="image/png" href="../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed" href="../atom.xml" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed (tags)" href="../tags.xml" />
+<link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../"><img src="../logo.png" alt="" width="32" height="32" /></a></td><td><h1>csand</h1><span class="desc">Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</span></td></tr><tr><td></td><td>
+<a href="../log.html">Log</a> | <a href="../files.html">Files</a> | <a href="../refs.html">Refs</a> | <a href="../file/LICENSE.html">LICENSE</a></td></tr></table>
+<hr/>
+<div id="content">
+<p> renderer.c (19248B)</p><hr/><pre id="blob">
+<a href="#l1" class="line" id="l1">      1</a> #include &quot;font8x8_basic.h&quot;
+<a href="#l2" class="line" id="l2">      2</a> #include &quot;math.h&quot;
+<a href="#l3" class="line" id="l3">      3</a> #include &quot;nuklear_config.h&quot;
+<a href="#l4" class="line" id="l4">      4</a> #include &quot;platform.h&quot;
+<a href="#l5" class="line" id="l5">      5</a> #include &quot;renderer.h&quot;
+<a href="#l6" class="line" id="l6">      6</a> #include &quot;vec2.h&quot;
+<a href="#l7" class="line" id="l7">      7</a> #include &lt;GLES2/gl2.h&gt;
+<a href="#l8" class="line" id="l8">      8</a> #include &lt;stddef.h&gt;
+<a href="#l9" class="line" id="l9">      9</a> 
+<a href="#l10" class="line" id="l10">     10</a> #define FONT_GLYPH_WIDTH 8
+<a href="#l11" class="line" id="l11">     11</a> #define FONT_GLYPH_HEIGHT 8
+<a href="#l12" class="line" id="l12">     12</a> #define FONT_GLYPHS_COUNT 128
+<a href="#l13" class="line" id="l13">     13</a> #define FONT_ATLAS_WIDTH FONT_GLYPH_WIDTH
+<a href="#l14" class="line" id="l14">     14</a> #define FONT_ATLAS_HEIGHT (FONT_GLYPH_HEIGHT * FONT_GLYPHS_COUNT)
+<a href="#l15" class="line" id="l15">     15</a> 
+<a href="#l16" class="line" id="l16">     16</a> #define CSAND_GLOW_RESOLUTION_FACTOR 2
+<a href="#l17" class="line" id="l17">     17</a> 
+<a href="#l18" class="line" id="l18">     18</a> typedef struct CsandNuklearVertex {
+<a href="#l19" class="line" id="l19">     19</a>     float pos[2];
+<a href="#l20" class="line" id="l20">     20</a>     float uv[2];
+<a href="#l21" class="line" id="l21">     21</a>     unsigned char color[4];
+<a href="#l22" class="line" id="l22">     22</a> } CsandNuklearVertex;
+<a href="#l23" class="line" id="l23">     23</a> 
+<a href="#l24" class="line" id="l24">     24</a> typedef struct CsandRenderer {
+<a href="#l25" class="line" id="l25">     25</a>     struct nk_user_font nk_font;
+<a href="#l26" class="line" id="l26">     26</a>     CsandVec2Us world_size;
+<a href="#l27" class="line" id="l27">     27</a>     CsandVec2Us framebuffer_size;
+<a href="#l28" class="line" id="l28">     28</a>     CsandVec2Us viewport_offset;
+<a href="#l29" class="line" id="l29">     29</a>     CsandVec2Us viewport_size;
+<a href="#l30" class="line" id="l30">     30</a>     bool glow_enabled;
+<a href="#l31" class="line" id="l31">     31</a>     GLuint world_vbo;
+<a href="#l32" class="line" id="l32">     32</a>     GLuint world_program;
+<a href="#l33" class="line" id="l33">     33</a>     GLuint glow_fbo;
+<a href="#l34" class="line" id="l34">     34</a>     GLuint glow_program;
+<a href="#l35" class="line" id="l35">     35</a>     GLuint nuklear_vbo;
+<a href="#l36" class="line" id="l36">     36</a>     GLuint nuklear_program;
+<a href="#l37" class="line" id="l37">     37</a>     struct nk_context nk_ctx;
+<a href="#l38" class="line" id="l38">     38</a>     struct nk_convert_config nk_convert_config;
+<a href="#l39" class="line" id="l39">     39</a>     struct nk_draw_command nuklear_ctx_buffer_data[8 * 1024];
+<a href="#l40" class="line" id="l40">     40</a>     struct nk_draw_command nuklear_command_buffer_data[1024];
+<a href="#l41" class="line" id="l41">     41</a>     CsandNuklearVertex nuklear_vertex_buffer_data[64 * 1024];
+<a href="#l42" class="line" id="l42">     42</a>     nk_draw_index nuklear_element_buffer_data[256 * 1024];
+<a href="#l43" class="line" id="l43">     43</a>     struct nk_buffer cmds, vertices, elements;
+<a href="#l44" class="line" id="l44">     44</a> } CsandRenderer;
+<a href="#l45" class="line" id="l45">     45</a> 
+<a href="#l46" class="line" id="l46">     46</a> CsandRenderer csand_renderer = {0};
+<a href="#l47" class="line" id="l47">     47</a> static const char vertex_shader_src[] = {
+<a href="#l48" class="line" id="l48">     48</a> #include &quot;shader.vert.embed.h&quot;
+<a href="#l49" class="line" id="l49">     49</a>     &#39;\0&#39;
+<a href="#l50" class="line" id="l50">     50</a> };
+<a href="#l51" class="line" id="l51">     51</a> #define VERTEX_SHADER_SRC_LENGTH (sizeof(vertex_shader_src) - 1)
+<a href="#l52" class="line" id="l52">     52</a> 
+<a href="#l53" class="line" id="l53">     53</a> static const char fragment_shader_src[] = {
+<a href="#l54" class="line" id="l54">     54</a> #include &quot;shader.frag.embed.h&quot;
+<a href="#l55" class="line" id="l55">     55</a>     &#39;\0&#39;
+<a href="#l56" class="line" id="l56">     56</a> };
+<a href="#l57" class="line" id="l57">     57</a> #define FRAGMENT_SHADER_SRC_LENGTH (sizeof(fragment_shader_src) - 1)
+<a href="#l58" class="line" id="l58">     58</a> 
+<a href="#l59" class="line" id="l59">     59</a> static const char csand_nuklear_vert_src[] = {
+<a href="#l60" class="line" id="l60">     60</a> #include &quot;nuklear.vert.embed.h&quot;
+<a href="#l61" class="line" id="l61">     61</a>     &#39;\0&#39;
+<a href="#l62" class="line" id="l62">     62</a> };
+<a href="#l63" class="line" id="l63">     63</a> #define CSAND_NUKLEAR_VERT_SRC_LENGTH (sizeof(csand_nuklear_vert_src) - 1)
+<a href="#l64" class="line" id="l64">     64</a> 
+<a href="#l65" class="line" id="l65">     65</a> static const char csand_nuklear_frag_src[] = {
+<a href="#l66" class="line" id="l66">     66</a> #include &quot;nuklear.frag.embed.h&quot;
+<a href="#l67" class="line" id="l67">     67</a>     &#39;\0&#39;
+<a href="#l68" class="line" id="l68">     68</a> };
+<a href="#l69" class="line" id="l69">     69</a> #define CSAND_NUKLEAR_FRAG_SRC_LENGTH (sizeof(csand_nuklear_frag_src) - 1)
+<a href="#l70" class="line" id="l70">     70</a> 
+<a href="#l71" class="line" id="l71">     71</a> static const char csand_glow_frag_src[] = {
+<a href="#l72" class="line" id="l72">     72</a> #include &quot;glow.frag.embed.h&quot;
+<a href="#l73" class="line" id="l73">     73</a>     &#39;\0&#39;
+<a href="#l74" class="line" id="l74">     74</a> };
+<a href="#l75" class="line" id="l75">     75</a> #define CSAND_GLOW_FRAG_SRC_LENGTH (sizeof(csand_glow_frag_src) - 1)
+<a href="#l76" class="line" id="l76">     76</a> 
+<a href="#l77" class="line" id="l77">     77</a> static GLuint csandLoadShaderProgram(
+<a href="#l78" class="line" id="l78">     78</a>     const char *program_name,
+<a href="#l79" class="line" id="l79">     79</a>     const char *vertex_shader_name, const char *vertex_shader_src, size_t vertex_shader_length,
+<a href="#l80" class="line" id="l80">     80</a>     const char *fragment_shader_name, const char *fragment_shader_src, size_t fragment_shader_length
+<a href="#l81" class="line" id="l81">     81</a> );
+<a href="#l82" class="line" id="l82">     82</a> 
+<a href="#l83" class="line" id="l83">     83</a> static GLuint csandLoadShader(const char *name, const char *src, size_t size, GLenum type);
+<a href="#l84" class="line" id="l84">     84</a> static void csandUpdateWorldSize(CsandVec2Us world_size);
+<a href="#l85" class="line" id="l85">     85</a> 
+<a href="#l86" class="line" id="l86">     86</a> typedef enum {
+<a href="#l87" class="line" id="l87">     87</a>     CSAND_TEXTURE_UNIT_RENDER,
+<a href="#l88" class="line" id="l88">     88</a>     CSAND_TEXTURE_UNIT_PALETTE,
+<a href="#l89" class="line" id="l89">     89</a>     CSAND_TEXTURE_UNIT_FONT,
+<a href="#l90" class="line" id="l90">     90</a>     CSAND_TEXTURE_UNIT_GLOW,
+<a href="#l91" class="line" id="l91">     91</a> } CsandTextureUnit;
+<a href="#l92" class="line" id="l92">     92</a> 
+<a href="#l93" class="line" id="l93">     93</a> static float csandNuklearTextWidth(nk_handle handle, float h, const char *text, int length) {
+<a href="#l94" class="line" id="l94">     94</a>     (void)handle; (void)h; (void)text;
+<a href="#l95" class="line" id="l95">     95</a> 
+<a href="#l96" class="line" id="l96">     96</a>     return length * FONT_GLYPH_WIDTH;
+<a href="#l97" class="line" id="l97">     97</a> }
+<a href="#l98" class="line" id="l98">     98</a> 
+<a href="#l99" class="line" id="l99">     99</a> static void csandNuklearQueryFontGlyph(nk_handle handle, float font_height, struct nk_user_font_glyph *glyph, nk_rune codepoint, nk_rune next_codepoint) {
+<a href="#l100" class="line" id="l100">    100</a>     (void)handle; (void)font_height; (void)next_codepoint;
+<a href="#l101" class="line" id="l101">    101</a> 
+<a href="#l102" class="line" id="l102">    102</a>     glyph-&gt;width = FONT_GLYPH_WIDTH;
+<a href="#l103" class="line" id="l103">    103</a>     glyph-&gt;height = FONT_GLYPH_HEIGHT;
+<a href="#l104" class="line" id="l104">    104</a>     glyph-&gt;xadvance = FONT_GLYPH_WIDTH;
+<a href="#l105" class="line" id="l105">    105</a>     glyph-&gt;offset = nk_vec2(0, 0);
+<a href="#l106" class="line" id="l106">    106</a>     glyph-&gt;uv[0] = nk_vec2(0, codepoint * FONT_GLYPH_HEIGHT / (float)FONT_ATLAS_HEIGHT);
+<a href="#l107" class="line" id="l107">    107</a>     glyph-&gt;uv[1] = nk_vec2(1, glyph-&gt;uv[0].y + FONT_GLYPH_HEIGHT / (float)FONT_ATLAS_HEIGHT);
+<a href="#l108" class="line" id="l108">    108</a> }
+<a href="#l109" class="line" id="l109">    109</a> 
+<a href="#l110" class="line" id="l110">    110</a> static void setActiveTextureUnit(CsandTextureUnit unit) {
+<a href="#l111" class="line" id="l111">    111</a>     glActiveTexture(GL_TEXTURE0 + unit);
+<a href="#l112" class="line" id="l112">    112</a> }
+<a href="#l113" class="line" id="l113">    113</a> 
+<a href="#l114" class="line" id="l114">    114</a> static void csandNuklearInit(void) {
+<a href="#l115" class="line" id="l115">    115</a>     unsigned char font_atlas[FONT_ATLAS_HEIGHT][FONT_ATLAS_WIDTH];
+<a href="#l116" class="line" id="l116">    116</a>     for (int y = 0; y &lt; FONT_ATLAS_HEIGHT; y++) {
+<a href="#l117" class="line" id="l117">    117</a>         for (int x = 0; x &lt; FONT_ATLAS_WIDTH; x++) {
+<a href="#l118" class="line" id="l118">    118</a>             font_atlas[y][x] = font8x8_basic[y / FONT_GLYPH_HEIGHT][y % FONT_GLYPH_HEIGHT] &amp; (1 &lt;&lt; x) ? 0xFF : 0x00;
+<a href="#l119" class="line" id="l119">    119</a>         }
+<a href="#l120" class="line" id="l120">    120</a>     }
+<a href="#l121" class="line" id="l121">    121</a>     font_atlas[0][0] = 0xFF; // white pixel
+<a href="#l122" class="line" id="l122">    122</a>     struct nk_draw_null_texture null_texture = {nk_handle_id(CSAND_TEXTURE_UNIT_FONT), nk_vec2(0, 0)};
+<a href="#l123" class="line" id="l123">    123</a> 
+<a href="#l124" class="line" id="l124">    124</a>     GLuint font_texture;
+<a href="#l125" class="line" id="l125">    125</a>     glGenTextures(1, &amp;font_texture);
+<a href="#l126" class="line" id="l126">    126</a> 
+<a href="#l127" class="line" id="l127">    127</a>     setActiveTextureUnit(CSAND_TEXTURE_UNIT_FONT);
+<a href="#l128" class="line" id="l128">    128</a>     glBindTexture(GL_TEXTURE_2D, font_texture);
+<a href="#l129" class="line" id="l129">    129</a> 
+<a href="#l130" class="line" id="l130">    130</a>     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+<a href="#l131" class="line" id="l131">    131</a>     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+<a href="#l132" class="line" id="l132">    132</a>     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+<a href="#l133" class="line" id="l133">    133</a>     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+<a href="#l134" class="line" id="l134">    134</a>     glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, FONT_ATLAS_WIDTH, FONT_ATLAS_HEIGHT, 0, GL_ALPHA, GL_UNSIGNED_BYTE, font_atlas);
+<a href="#l135" class="line" id="l135">    135</a> 
+<a href="#l136" class="line" id="l136">    136</a>     csand_renderer.nk_font.height = FONT_GLYPH_HEIGHT;
+<a href="#l137" class="line" id="l137">    137</a>     csand_renderer.nk_font.width = csandNuklearTextWidth;
+<a href="#l138" class="line" id="l138">    138</a>     csand_renderer.nk_font.query = csandNuklearQueryFontGlyph;
+<a href="#l139" class="line" id="l139">    139</a> 
+<a href="#l140" class="line" id="l140">    140</a>     if (!nk_init_fixed(
+<a href="#l141" class="line" id="l141">    141</a>             &amp;csand_renderer.nk_ctx,
+<a href="#l142" class="line" id="l142">    142</a>             csand_renderer.nuklear_ctx_buffer_data,
+<a href="#l143" class="line" id="l143">    143</a>             sizeof(csand_renderer.nuklear_ctx_buffer_data),
+<a href="#l144" class="line" id="l144">    144</a>             &amp;csand_renderer.nk_font
+<a href="#l145" class="line" id="l145">    145</a>     )) {
+<a href="#l146" class="line" id="l146">    146</a>         csandPlatformPrintErr(&quot;failed to initialize nuklear context\n&quot;);
+<a href="#l147" class="line" id="l147">    147</a>     }
+<a href="#l148" class="line" id="l148">    148</a> 
+<a href="#l149" class="line" id="l149">    149</a>     static const struct nk_draw_vertex_layout_element vertex_layout[] = {
+<a href="#l150" class="line" id="l150">    150</a>         {NK_VERTEX_POSITION, NK_FORMAT_FLOAT, offsetof(CsandNuklearVertex, pos)},
+<a href="#l151" class="line" id="l151">    151</a>         {NK_VERTEX_TEXCOORD, NK_FORMAT_FLOAT, offsetof(CsandNuklearVertex, uv)},
+<a href="#l152" class="line" id="l152">    152</a>         {NK_VERTEX_COLOR, NK_FORMAT_R8G8B8A8, offsetof(CsandNuklearVertex, color)},
+<a href="#l153" class="line" id="l153">    153</a>         {NK_VERTEX_LAYOUT_END},
+<a href="#l154" class="line" id="l154">    154</a>     };
+<a href="#l155" class="line" id="l155">    155</a> 
+<a href="#l156" class="line" id="l156">    156</a>     csand_renderer.nk_convert_config = (struct nk_convert_config){
+<a href="#l157" class="line" id="l157">    157</a>         .global_alpha = 1.0f,
+<a href="#l158" class="line" id="l158">    158</a>         .line_AA = NK_ANTI_ALIASING_ON,
+<a href="#l159" class="line" id="l159">    159</a>         .shape_AA = NK_ANTI_ALIASING_ON,
+<a href="#l160" class="line" id="l160">    160</a>         .circle_segment_count = 22,
+<a href="#l161" class="line" id="l161">    161</a>         .arc_segment_count = 22,
+<a href="#l162" class="line" id="l162">    162</a>         .curve_segment_count = 22,
+<a href="#l163" class="line" id="l163">    163</a>         .tex_null = null_texture,
+<a href="#l164" class="line" id="l164">    164</a>         .vertex_layout = vertex_layout,
+<a href="#l165" class="line" id="l165">    165</a>         .vertex_size = sizeof(CsandNuklearVertex),
+<a href="#l166" class="line" id="l166">    166</a>         .vertex_alignment = NK_ALIGNOF(CsandNuklearVertex),
+<a href="#l167" class="line" id="l167">    167</a>     };
+<a href="#l168" class="line" id="l168">    168</a> 
+<a href="#l169" class="line" id="l169">    169</a>     GLuint ebo;
+<a href="#l170" class="line" id="l170">    170</a>     glGenBuffers(1, &amp;csand_renderer.nuklear_vbo);
+<a href="#l171" class="line" id="l171">    171</a>     glGenBuffers(1, &amp;ebo);
+<a href="#l172" class="line" id="l172">    172</a> 
+<a href="#l173" class="line" id="l173">    173</a>     glBindBuffer(GL_ARRAY_BUFFER, csand_renderer.nuklear_vbo);
+<a href="#l174" class="line" id="l174">    174</a>     glBufferData(GL_ARRAY_BUFFER, sizeof(csand_renderer.nuklear_vertex_buffer_data), NULL, GL_STREAM_DRAW);
+<a href="#l175" class="line" id="l175">    175</a> 
+<a href="#l176" class="line" id="l176">    176</a>     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+<a href="#l177" class="line" id="l177">    177</a>     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(csand_renderer.nuklear_element_buffer_data), NULL, GL_STREAM_DRAW);
+<a href="#l178" class="line" id="l178">    178</a> 
+<a href="#l179" class="line" id="l179">    179</a>     nk_buffer_init_fixed(&amp;csand_renderer.cmds, csand_renderer.nuklear_command_buffer_data, sizeof(csand_renderer.nuklear_command_buffer_data));
+<a href="#l180" class="line" id="l180">    180</a>     nk_buffer_init_fixed(&amp;csand_renderer.vertices, csand_renderer.nuklear_vertex_buffer_data, sizeof(csand_renderer.nuklear_vertex_buffer_data));
+<a href="#l181" class="line" id="l181">    181</a>     nk_buffer_init_fixed(&amp;csand_renderer.elements, csand_renderer.nuklear_element_buffer_data, sizeof(csand_renderer.nuklear_element_buffer_data));
+<a href="#l182" class="line" id="l182">    182</a> 
+<a href="#l183" class="line" id="l183">    183</a>     csand_renderer.nuklear_program = csandLoadShaderProgram(
+<a href="#l184" class="line" id="l184">    184</a>         &quot;nuklear&quot;,
+<a href="#l185" class="line" id="l185">    185</a>         &quot;nuklear.vert&quot;, csand_nuklear_vert_src, CSAND_NUKLEAR_VERT_SRC_LENGTH,
+<a href="#l186" class="line" id="l186">    186</a>         &quot;nuklear.frag&quot;, csand_nuklear_frag_src, CSAND_NUKLEAR_FRAG_SRC_LENGTH
+<a href="#l187" class="line" id="l187">    187</a>     );
+<a href="#l188" class="line" id="l188">    188</a> 
+<a href="#l189" class="line" id="l189">    189</a>     glUseProgram(csand_renderer.nuklear_program);
+<a href="#l190" class="line" id="l190">    190</a>     glUniform1i(glGetUniformLocation(csand_renderer.nuklear_program, &quot;texture&quot;), CSAND_TEXTURE_UNIT_FONT);
+<a href="#l191" class="line" id="l191">    191</a> }
+<a href="#l192" class="line" id="l192">    192</a> 
+<a href="#l193" class="line" id="l193">    193</a> static void setupTexture(GLint interpolation) {
+<a href="#l194" class="line" id="l194">    194</a>     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+<a href="#l195" class="line" id="l195">    195</a>     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+<a href="#l196" class="line" id="l196">    196</a>     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, interpolation);
+<a href="#l197" class="line" id="l197">    197</a>     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, interpolation);
+<a href="#l198" class="line" id="l198">    198</a> }
+<a href="#l199" class="line" id="l199">    199</a> 
+<a href="#l200" class="line" id="l200">    200</a> static void glowInit(void) {
+<a href="#l201" class="line" id="l201">    201</a>     glGenFramebuffers(1, &amp;csand_renderer.glow_fbo);
+<a href="#l202" class="line" id="l202">    202</a>     glBindFramebuffer(GL_FRAMEBUFFER, csand_renderer.glow_fbo);
+<a href="#l203" class="line" id="l203">    203</a> 
+<a href="#l204" class="line" id="l204">    204</a>     GLuint glow_texture;
+<a href="#l205" class="line" id="l205">    205</a>     glGenTextures(1, &amp;glow_texture);
+<a href="#l206" class="line" id="l206">    206</a>     setActiveTextureUnit(CSAND_TEXTURE_UNIT_GLOW);
+<a href="#l207" class="line" id="l207">    207</a>     glBindTexture(GL_TEXTURE_2D, glow_texture);
+<a href="#l208" class="line" id="l208">    208</a>     setupTexture(GL_LINEAR);
+<a href="#l209" class="line" id="l209">    209</a> 
+<a href="#l210" class="line" id="l210">    210</a>     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, glow_texture, 0);
+<a href="#l211" class="line" id="l211">    211</a> 
+<a href="#l212" class="line" id="l212">    212</a>     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+<a href="#l213" class="line" id="l213">    213</a> 
+<a href="#l214" class="line" id="l214">    214</a>     csand_renderer.glow_program = csandLoadShaderProgram(
+<a href="#l215" class="line" id="l215">    215</a>         &quot;glow&quot;,
+<a href="#l216" class="line" id="l216">    216</a>         &quot;shader.vert&quot;, vertex_shader_src, VERTEX_SHADER_SRC_LENGTH,
+<a href="#l217" class="line" id="l217">    217</a>         &quot;glow.frag&quot;, csand_glow_frag_src, CSAND_GLOW_FRAG_SRC_LENGTH
+<a href="#l218" class="line" id="l218">    218</a>     );
+<a href="#l219" class="line" id="l219">    219</a> 
+<a href="#l220" class="line" id="l220">    220</a>     glUseProgram(csand_renderer.glow_program);
+<a href="#l221" class="line" id="l221">    221</a>     glUniform1i(glGetUniformLocation(csand_renderer.glow_program, &quot;texture&quot;), CSAND_TEXTURE_UNIT_RENDER);
+<a href="#l222" class="line" id="l222">    222</a>     glUniform1i(glGetUniformLocation(csand_renderer.glow_program, &quot;palette&quot;), CSAND_TEXTURE_UNIT_PALETTE);
+<a href="#l223" class="line" id="l223">    223</a> }
+<a href="#l224" class="line" id="l224">    224</a> 
+<a href="#l225" class="line" id="l225">    225</a> void csandRendererInit(CsandVec2Us world_size, CsandVec2Us framebuffer_size, const CsandRgba *colors, uint8_t colors_count) {
+<a href="#l226" class="line" id="l226">    226</a>     glGenBuffers(1, &amp;csand_renderer.world_vbo);
+<a href="#l227" class="line" id="l227">    227</a>     glBindBuffer(GL_ARRAY_BUFFER, csand_renderer.world_vbo);
+<a href="#l228" class="line" id="l228">    228</a>     GLbyte vbo_data[3*2] = {
+<a href="#l229" class="line" id="l229">    229</a>         -3, -1,
+<a href="#l230" class="line" id="l230">    230</a>          1, -1,
+<a href="#l231" class="line" id="l231">    231</a>          1,  3,
+<a href="#l232" class="line" id="l232">    232</a>     };
+<a href="#l233" class="line" id="l233">    233</a>     glBufferData(GL_ARRAY_BUFFER, sizeof(vbo_data), vbo_data, GL_STATIC_DRAW);
+<a href="#l234" class="line" id="l234">    234</a> 
+<a href="#l235" class="line" id="l235">    235</a>     csand_renderer.world_program = csandLoadShaderProgram(
+<a href="#l236" class="line" id="l236">    236</a>         &quot;world&quot;,
+<a href="#l237" class="line" id="l237">    237</a>         &quot;shader.vert&quot;, vertex_shader_src, VERTEX_SHADER_SRC_LENGTH,
+<a href="#l238" class="line" id="l238">    238</a>         &quot;shader.frag&quot;, fragment_shader_src, FRAGMENT_SHADER_SRC_LENGTH
+<a href="#l239" class="line" id="l239">    239</a>     );
+<a href="#l240" class="line" id="l240">    240</a>     glUseProgram(csand_renderer.world_program);
+<a href="#l241" class="line" id="l241">    241</a> 
+<a href="#l242" class="line" id="l242">    242</a>     GLuint render_texture;
+<a href="#l243" class="line" id="l243">    243</a>     glGenTextures(1, &amp;render_texture);
+<a href="#l244" class="line" id="l244">    244</a> 
+<a href="#l245" class="line" id="l245">    245</a>     setActiveTextureUnit(CSAND_TEXTURE_UNIT_RENDER);
+<a href="#l246" class="line" id="l246">    246</a>     glBindTexture(GL_TEXTURE_2D, render_texture);
+<a href="#l247" class="line" id="l247">    247</a>     setupTexture(GL_NEAREST);
+<a href="#l248" class="line" id="l248">    248</a> 
+<a href="#l249" class="line" id="l249">    249</a>     glUniform1i(glGetUniformLocation(csand_renderer.world_program, &quot;texture&quot;), CSAND_TEXTURE_UNIT_RENDER);
+<a href="#l250" class="line" id="l250">    250</a>     glUniform1i(glGetUniformLocation(csand_renderer.world_program, &quot;palette&quot;), CSAND_TEXTURE_UNIT_PALETTE);
+<a href="#l251" class="line" id="l251">    251</a>     glUniform1i(glGetUniformLocation(csand_renderer.world_program, &quot;glow&quot;), CSAND_TEXTURE_UNIT_GLOW);
+<a href="#l252" class="line" id="l252">    252</a> 
+<a href="#l253" class="line" id="l253">    253</a>     glowInit();
+<a href="#l254" class="line" id="l254">    254</a> 
+<a href="#l255" class="line" id="l255">    255</a>     GLuint palette_texture;
+<a href="#l256" class="line" id="l256">    256</a>     glGenTextures(1, &amp;palette_texture);
+<a href="#l257" class="line" id="l257">    257</a> 
+<a href="#l258" class="line" id="l258">    258</a>     setActiveTextureUnit(CSAND_TEXTURE_UNIT_PALETTE);
+<a href="#l259" class="line" id="l259">    259</a>     glBindTexture(GL_TEXTURE_2D, palette_texture);
+<a href="#l260" class="line" id="l260">    260</a>     setupTexture(GL_NEAREST);
+<a href="#l261" class="line" id="l261">    261</a> 
+<a href="#l262" class="line" id="l262">    262</a>     csandRendererSetPalette(colors, colors_count);
+<a href="#l263" class="line" id="l263">    263</a> 
+<a href="#l264" class="line" id="l264">    264</a>     csandNuklearInit();
+<a href="#l265" class="line" id="l265">    265</a>     csandUpdateWorldSize(world_size);
+<a href="#l266" class="line" id="l266">    266</a>     csandRendererUpdateViewport(framebuffer_size);
+<a href="#l267" class="line" id="l267">    267</a> }
+<a href="#l268" class="line" id="l268">    268</a> 
+<a href="#l269" class="line" id="l269">    269</a> void csandRendererSetPalette(const CsandRgba *colors, uint8_t colors_count) {
+<a href="#l270" class="line" id="l270">    270</a>     setActiveTextureUnit(CSAND_TEXTURE_UNIT_PALETTE);
+<a href="#l271" class="line" id="l271">    271</a>     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, colors_count, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, colors);
+<a href="#l272" class="line" id="l272">    272</a> 
+<a href="#l273" class="line" id="l273">    273</a>     glUseProgram(csand_renderer.world_program);
+<a href="#l274" class="line" id="l274">    274</a>     glUniform1i(glGetUniformLocation(csand_renderer.world_program, &quot;palette_size&quot;), colors_count);
+<a href="#l275" class="line" id="l275">    275</a> 
+<a href="#l276" class="line" id="l276">    276</a>     glUseProgram(csand_renderer.glow_program);
+<a href="#l277" class="line" id="l277">    277</a>     glUniform1i(glGetUniformLocation(csand_renderer.glow_program, &quot;palette_size&quot;), colors_count);
+<a href="#l278" class="line" id="l278">    278</a> }
+<a href="#l279" class="line" id="l279">    279</a> 
+<a href="#l280" class="line" id="l280">    280</a> static void csandRendererRenderNuklear(void) {
+<a href="#l281" class="line" id="l281">    281</a>     nk_convert(
+<a href="#l282" class="line" id="l282">    282</a>         &amp;csand_renderer.nk_ctx,
+<a href="#l283" class="line" id="l283">    283</a>         &amp;csand_renderer.cmds,
+<a href="#l284" class="line" id="l284">    284</a>         &amp;csand_renderer.vertices,
+<a href="#l285" class="line" id="l285">    285</a>         &amp;csand_renderer.elements,
+<a href="#l286" class="line" id="l286">    286</a>         &amp;csand_renderer.nk_convert_config
+<a href="#l287" class="line" id="l287">    287</a>     );
+<a href="#l288" class="line" id="l288">    288</a> 
+<a href="#l289" class="line" id="l289">    289</a>     glBindBuffer(GL_ARRAY_BUFFER, csand_renderer.nuklear_vbo);
+<a href="#l290" class="line" id="l290">    290</a>     glBufferSubData(GL_ARRAY_BUFFER, 0, csand_renderer.vertices.size, nk_buffer_memory_const(&amp;csand_renderer.vertices));
+<a href="#l291" class="line" id="l291">    291</a>     glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, csand_renderer.elements.size, nk_buffer_memory_const(&amp;csand_renderer.elements));
+<a href="#l292" class="line" id="l292">    292</a> 
+<a href="#l293" class="line" id="l293">    293</a>     GLint position_attr_loc = glGetAttribLocation(csand_renderer.nuklear_program, &quot;position&quot;);
+<a href="#l294" class="line" id="l294">    294</a>     glVertexAttribPointer(position_attr_loc, 2, GL_FLOAT, GL_FALSE, sizeof(CsandNuklearVertex), (void *)offsetof(CsandNuklearVertex, pos));
+<a href="#l295" class="line" id="l295">    295</a>     glEnableVertexAttribArray(position_attr_loc);
+<a href="#l296" class="line" id="l296">    296</a> 
+<a href="#l297" class="line" id="l297">    297</a>     GLint uv_attr_loc = glGetAttribLocation(csand_renderer.nuklear_program, &quot;uv&quot;);
+<a href="#l298" class="line" id="l298">    298</a>     glVertexAttribPointer(uv_attr_loc, 2, GL_FLOAT, GL_FALSE, sizeof(CsandNuklearVertex), (void *)offsetof(CsandNuklearVertex, uv));
+<a href="#l299" class="line" id="l299">    299</a>     glEnableVertexAttribArray(uv_attr_loc);
+<a href="#l300" class="line" id="l300">    300</a> 
+<a href="#l301" class="line" id="l301">    301</a>     GLint color_attr_loc = glGetAttribLocation(csand_renderer.nuklear_program, &quot;color&quot;);
+<a href="#l302" class="line" id="l302">    302</a>     glVertexAttribPointer(color_attr_loc, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(CsandNuklearVertex), (void *)offsetof(CsandNuklearVertex, color));
+<a href="#l303" class="line" id="l303">    303</a>     glEnableVertexAttribArray(color_attr_loc);
+<a href="#l304" class="line" id="l304">    304</a> 
+<a href="#l305" class="line" id="l305">    305</a>     glUseProgram(csand_renderer.nuklear_program);
+<a href="#l306" class="line" id="l306">    306</a>     setActiveTextureUnit(CSAND_TEXTURE_UNIT_FONT);
+<a href="#l307" class="line" id="l307">    307</a> 
+<a href="#l308" class="line" id="l308">    308</a>     glEnable(GL_BLEND);
+<a href="#l309" class="line" id="l309">    309</a>     glBlendEquation(GL_FUNC_ADD);
+<a href="#l310" class="line" id="l310">    310</a>     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+<a href="#l311" class="line" id="l311">    311</a>     glEnable(GL_SCISSOR_TEST);
+<a href="#l312" class="line" id="l312">    312</a> 
+<a href="#l313" class="line" id="l313">    313</a>     glViewport(0, 0, csand_renderer.framebuffer_size.x, csand_renderer.framebuffer_size.y);
+<a href="#l314" class="line" id="l314">    314</a>     glUniform2f(glGetUniformLocation(csand_renderer.nuklear_program, &quot;framebuffer_size&quot;), csand_renderer.framebuffer_size.x, csand_renderer.framebuffer_size.y);
+<a href="#l315" class="line" id="l315">    315</a> 
+<a href="#l316" class="line" id="l316">    316</a>     const struct nk_draw_command *cmd = NULL;
+<a href="#l317" class="line" id="l317">    317</a>     unsigned int drawn_elements = 0;
+<a href="#l318" class="line" id="l318">    318</a>     nk_draw_foreach(cmd, &amp;csand_renderer.nk_ctx, &amp;csand_renderer.cmds) {
+<a href="#l319" class="line" id="l319">    319</a>         if (cmd-&gt;elem_count == 0) {
+<a href="#l320" class="line" id="l320">    320</a>             continue;
+<a href="#l321" class="line" id="l321">    321</a>         }
+<a href="#l322" class="line" id="l322">    322</a> 
+<a href="#l323" class="line" id="l323">    323</a>         glScissor(cmd-&gt;clip_rect.x, csand_renderer.framebuffer_size.y - 1 - cmd-&gt;clip_rect.y - cmd-&gt;clip_rect.h, cmd-&gt;clip_rect.w, cmd-&gt;clip_rect.h);
+<a href="#l324" class="line" id="l324">    324</a>         glDrawElements(GL_TRIANGLES, cmd-&gt;elem_count, GL_UNSIGNED_SHORT, (const void *)(drawn_elements * sizeof(nk_draw_index)));
+<a href="#l325" class="line" id="l325">    325</a>         drawn_elements += cmd-&gt;elem_count;
+<a href="#l326" class="line" id="l326">    326</a>     }
+<a href="#l327" class="line" id="l327">    327</a> 
+<a href="#l328" class="line" id="l328">    328</a>     glDisable(GL_SCISSOR_TEST);
+<a href="#l329" class="line" id="l329">    329</a>     glDisable(GL_BLEND);
+<a href="#l330" class="line" id="l330">    330</a> 
+<a href="#l331" class="line" id="l331">    331</a>     nk_buffer_clear(&amp;csand_renderer.elements);
+<a href="#l332" class="line" id="l332">    332</a>     nk_buffer_clear(&amp;csand_renderer.vertices);
+<a href="#l333" class="line" id="l333">    333</a>     nk_buffer_clear(&amp;csand_renderer.cmds);
+<a href="#l334" class="line" id="l334">    334</a> }
+<a href="#l335" class="line" id="l335">    335</a> 
+<a href="#l336" class="line" id="l336">    336</a> static void drawFullscreenQuad(GLuint program) {
+<a href="#l337" class="line" id="l337">    337</a>     glBindBuffer(GL_ARRAY_BUFFER, csand_renderer.world_vbo);
+<a href="#l338" class="line" id="l338">    338</a>     GLint position_attr_loc = glGetAttribLocation(program, &quot;position&quot;);
+<a href="#l339" class="line" id="l339">    339</a>     glVertexAttribPointer(position_attr_loc, 2, GL_BYTE, GL_FALSE, 0, NULL);
+<a href="#l340" class="line" id="l340">    340</a>     glEnableVertexAttribArray(position_attr_loc);
+<a href="#l341" class="line" id="l341">    341</a> 
+<a href="#l342" class="line" id="l342">    342</a>     glUseProgram(program);
+<a href="#l343" class="line" id="l343">    343</a> 
+<a href="#l344" class="line" id="l344">    344</a>     glEnable(GL_CULL_FACE);
+<a href="#l345" class="line" id="l345">    345</a> 
+<a href="#l346" class="line" id="l346">    346</a>     glDrawArrays(GL_TRIANGLES, 0, 3);
+<a href="#l347" class="line" id="l347">    347</a> 
+<a href="#l348" class="line" id="l348">    348</a>     glDisable(GL_CULL_FACE);
+<a href="#l349" class="line" id="l349">    349</a> }
+<a href="#l350" class="line" id="l350">    350</a> 
+<a href="#l351" class="line" id="l351">    351</a> void csandRendererRender(unsigned char *data, unsigned short width, unsigned short height) {
+<a href="#l352" class="line" id="l352">    352</a>     if (width != csand_renderer.world_size.x || height != csand_renderer.world_size.y) {
+<a href="#l353" class="line" id="l353">    353</a>         csandUpdateWorldSize((CsandVec2Us){width, height});
+<a href="#l354" class="line" id="l354">    354</a>     }
+<a href="#l355" class="line" id="l355">    355</a> 
+<a href="#l356" class="line" id="l356">    356</a>     glBindFramebuffer(GL_FRAMEBUFFER, csand_renderer.glow_fbo);
+<a href="#l357" class="line" id="l357">    357</a>     glClearColor(0, 0, 0, 1);
+<a href="#l358" class="line" id="l358">    358</a>     glClear(GL_COLOR_BUFFER_BIT);
+<a href="#l359" class="line" id="l359">    359</a> 
+<a href="#l360" class="line" id="l360">    360</a>     if (csand_renderer.glow_enabled) {
+<a href="#l361" class="line" id="l361">    361</a>         glViewport(0, 0, width * CSAND_GLOW_RESOLUTION_FACTOR, height * CSAND_GLOW_RESOLUTION_FACTOR);
+<a href="#l362" class="line" id="l362">    362</a>         drawFullscreenQuad(csand_renderer.glow_program);
+<a href="#l363" class="line" id="l363">    363</a>     }
+<a href="#l364" class="line" id="l364">    364</a> 
+<a href="#l365" class="line" id="l365">    365</a>     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+<a href="#l366" class="line" id="l366">    366</a> 
+<a href="#l367" class="line" id="l367">    367</a>     glClearColor(0.06, 0.12, 0.17, 1.0);
+<a href="#l368" class="line" id="l368">    368</a>     glClear(GL_COLOR_BUFFER_BIT);
+<a href="#l369" class="line" id="l369">    369</a> 
+<a href="#l370" class="line" id="l370">    370</a>     setActiveTextureUnit(CSAND_TEXTURE_UNIT_RENDER);
+<a href="#l371" class="line" id="l371">    371</a>     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_LUMINANCE, GL_UNSIGNED_BYTE, data);
+<a href="#l372" class="line" id="l372">    372</a> 
+<a href="#l373" class="line" id="l373">    373</a>     glViewport(
+<a href="#l374" class="line" id="l374">    374</a>         csand_renderer.viewport_offset.x,
+<a href="#l375" class="line" id="l375">    375</a>         csand_renderer.viewport_offset.y,
+<a href="#l376" class="line" id="l376">    376</a>         csand_renderer.viewport_size.x,
+<a href="#l377" class="line" id="l377">    377</a>         csand_renderer.viewport_size.y
+<a href="#l378" class="line" id="l378">    378</a>     );
+<a href="#l379" class="line" id="l379">    379</a> 
+<a href="#l380" class="line" id="l380">    380</a>     drawFullscreenQuad(csand_renderer.world_program);
+<a href="#l381" class="line" id="l381">    381</a> 
+<a href="#l382" class="line" id="l382">    382</a>     csandRendererRenderNuklear();
+<a href="#l383" class="line" id="l383">    383</a> }
+<a href="#l384" class="line" id="l384">    384</a> 
+<a href="#l385" class="line" id="l385">    385</a> void csandRendererUpdateViewport(CsandVec2Us framebuffer_size) {
+<a href="#l386" class="line" id="l386">    386</a>     csand_renderer.framebuffer_size = framebuffer_size;
+<a href="#l387" class="line" id="l387">    387</a>     float scale_x = framebuffer_size.x / (float)csand_renderer.world_size.x;
+<a href="#l388" class="line" id="l388">    388</a>     float scale_y = framebuffer_size.y / (float)csand_renderer.world_size.y;
+<a href="#l389" class="line" id="l389">    389</a> 
+<a href="#l390" class="line" id="l390">    390</a>     CsandVec2F viewport_size_float = csandVec2FMulScalar(
+<a href="#l391" class="line" id="l391">    391</a>         CSAND_VEC2_CONVERT(CsandVec2F, csand_renderer.world_size),
+<a href="#l392" class="line" id="l392">    392</a>         csandFMin(scale_x, scale_y)
+<a href="#l393" class="line" id="l393">    393</a>     );
+<a href="#l394" class="line" id="l394">    394</a> 
+<a href="#l395" class="line" id="l395">    395</a>     csand_renderer.viewport_size = CSAND_VEC2_CONVERT(CsandVec2Us, viewport_size_float);
+<a href="#l396" class="line" id="l396">    396</a>     csand_renderer.viewport_offset = csandVec2UsSub(
+<a href="#l397" class="line" id="l397">    397</a>         csandVec2UsDivScalar(framebuffer_size, 2),
+<a href="#l398" class="line" id="l398">    398</a>         csandVec2UsDivScalar(csand_renderer.viewport_size, 2)
+<a href="#l399" class="line" id="l399">    399</a>     );
+<a href="#l400" class="line" id="l400">    400</a> }
+<a href="#l401" class="line" id="l401">    401</a> 
+<a href="#l402" class="line" id="l402">    402</a> bool csandRendererGetGlow(void) {
+<a href="#l403" class="line" id="l403">    403</a>     return csand_renderer.glow_enabled;
+<a href="#l404" class="line" id="l404">    404</a> }
+<a href="#l405" class="line" id="l405">    405</a> 
+<a href="#l406" class="line" id="l406">    406</a> void csandRendererSetGlow(bool enabled) {
+<a href="#l407" class="line" id="l407">    407</a>     csand_renderer.glow_enabled = enabled;
+<a href="#l408" class="line" id="l408">    408</a> }
+<a href="#l409" class="line" id="l409">    409</a> 
+<a href="#l410" class="line" id="l410">    410</a> CsandVec2Us csandRendererScreenSpaceToWorldSpace(CsandVec2Us vec) {
+<a href="#l411" class="line" id="l411">    411</a>     CsandVec2L result = csandVec2LClamp(
+<a href="#l412" class="line" id="l412">    412</a>         csandVec2LDiv(
+<a href="#l413" class="line" id="l413">    413</a>             csandVec2LMul(
+<a href="#l414" class="line" id="l414">    414</a>                 csandVec2LSub(
+<a href="#l415" class="line" id="l415">    415</a>                     (CsandVec2L){
+<a href="#l416" class="line" id="l416">    416</a>                         vec.x,
+<a href="#l417" class="line" id="l417">    417</a>                         csandPlatformGetWindowSize().y - 1 - vec.y,
+<a href="#l418" class="line" id="l418">    418</a>                     },
+<a href="#l419" class="line" id="l419">    419</a>                     CSAND_VEC2_CONVERT(CsandVec2L, csand_renderer.viewport_offset)
+<a href="#l420" class="line" id="l420">    420</a>                 ),
+<a href="#l421" class="line" id="l421">    421</a>                 CSAND_VEC2_CONVERT(CsandVec2L, csand_renderer.world_size)
+<a href="#l422" class="line" id="l422">    422</a>             ),
+<a href="#l423" class="line" id="l423">    423</a>             CSAND_VEC2_CONVERT(CsandVec2L, csand_renderer.viewport_size)
+<a href="#l424" class="line" id="l424">    424</a>         ),
+<a href="#l425" class="line" id="l425">    425</a>         (CsandVec2L){0},
+<a href="#l426" class="line" id="l426">    426</a>         csandVec2LSubScalar(CSAND_VEC2_CONVERT(CsandVec2L, csand_renderer.world_size), 1)
+<a href="#l427" class="line" id="l427">    427</a>     );
+<a href="#l428" class="line" id="l428">    428</a> 
+<a href="#l429" class="line" id="l429">    429</a>     return CSAND_VEC2_CONVERT(CsandVec2Us, result);
+<a href="#l430" class="line" id="l430">    430</a> }
+<a href="#l431" class="line" id="l431">    431</a> 
+<a href="#l432" class="line" id="l432">    432</a> struct nk_context *csandRendererNuklearContext(void) {
+<a href="#l433" class="line" id="l433">    433</a>     return &amp;csand_renderer.nk_ctx;
+<a href="#l434" class="line" id="l434">    434</a> }
+<a href="#l435" class="line" id="l435">    435</a> 
+<a href="#l436" class="line" id="l436">    436</a> static GLuint csandLoadShaderProgram(
+<a href="#l437" class="line" id="l437">    437</a>     const char *program_name,
+<a href="#l438" class="line" id="l438">    438</a>     const char *vertex_shader_name, const char *vertex_shader_src, size_t vertex_shader_length,
+<a href="#l439" class="line" id="l439">    439</a>     const char *fragment_shader_name, const char *fragment_shader_src, size_t fragment_shader_length
+<a href="#l440" class="line" id="l440">    440</a> ) {
+<a href="#l441" class="line" id="l441">    441</a>     GLuint vertex_shader = csandLoadShader(vertex_shader_name, vertex_shader_src, vertex_shader_length, GL_VERTEX_SHADER);
+<a href="#l442" class="line" id="l442">    442</a>     GLuint fragment_shader = csandLoadShader(fragment_shader_name, fragment_shader_src, fragment_shader_length, GL_FRAGMENT_SHADER);
+<a href="#l443" class="line" id="l443">    443</a>     GLuint program = glCreateProgram();
+<a href="#l444" class="line" id="l444">    444</a>     glAttachShader(program, vertex_shader);
+<a href="#l445" class="line" id="l445">    445</a>     glAttachShader(program, fragment_shader);
+<a href="#l446" class="line" id="l446">    446</a>     glLinkProgram(program);
+<a href="#l447" class="line" id="l447">    447</a> 
+<a href="#l448" class="line" id="l448">    448</a>     GLint status;
+<a href="#l449" class="line" id="l449">    449</a>     glGetProgramiv(program, GL_LINK_STATUS, &amp;status);
+<a href="#l450" class="line" id="l450">    450</a> 
+<a href="#l451" class="line" id="l451">    451</a>     if (status != GL_TRUE) {
+<a href="#l452" class="line" id="l452">    452</a>         char info_log[1024];
+<a href="#l453" class="line" id="l453">    453</a>         glGetProgramInfoLog(program, sizeof(info_log), NULL, info_log);
+<a href="#l454" class="line" id="l454">    454</a>         csandPlatformPrintErr(&quot;failed to link shader program &#39;&quot;);
+<a href="#l455" class="line" id="l455">    455</a>         csandPlatformPrintErr(program_name);
+<a href="#l456" class="line" id="l456">    456</a>         csandPlatformPrintErr(&quot;&#39;: &quot;);
+<a href="#l457" class="line" id="l457">    457</a>         csandPlatformPrintErr(info_log);
+<a href="#l458" class="line" id="l458">    458</a>         csandPlatformPrintErr(&quot;\n&quot;);
+<a href="#l459" class="line" id="l459">    459</a>         glDeleteProgram(program);
+<a href="#l460" class="line" id="l460">    460</a>         program = 0;
+<a href="#l461" class="line" id="l461">    461</a>     }
+<a href="#l462" class="line" id="l462">    462</a> 
+<a href="#l463" class="line" id="l463">    463</a>     glDeleteShader(fragment_shader);
+<a href="#l464" class="line" id="l464">    464</a>     glDeleteShader(vertex_shader);
+<a href="#l465" class="line" id="l465">    465</a> 
+<a href="#l466" class="line" id="l466">    466</a>     return program;
+<a href="#l467" class="line" id="l467">    467</a> }
+<a href="#l468" class="line" id="l468">    468</a> 
+<a href="#l469" class="line" id="l469">    469</a> static GLuint csandLoadShader(const char *name, const char *src, size_t size, GLenum type) {
+<a href="#l470" class="line" id="l470">    470</a>     GLenum shader = glCreateShader(type);
+<a href="#l471" class="line" id="l471">    471</a> 
+<a href="#l472" class="line" id="l472">    472</a>     GLint length[1] = {size};
+<a href="#l473" class="line" id="l473">    473</a>     glShaderSource(shader, 1, (const char **)&amp;src, length);
+<a href="#l474" class="line" id="l474">    474</a> 
+<a href="#l475" class="line" id="l475">    475</a>     glCompileShader(shader);
+<a href="#l476" class="line" id="l476">    476</a> 
+<a href="#l477" class="line" id="l477">    477</a>     GLint status;
+<a href="#l478" class="line" id="l478">    478</a>     glGetShaderiv(shader, GL_COMPILE_STATUS, &amp;status);
+<a href="#l479" class="line" id="l479">    479</a>     if (status != GL_TRUE) {
+<a href="#l480" class="line" id="l480">    480</a>         char info_log[1024];
+<a href="#l481" class="line" id="l481">    481</a> 
+<a href="#l482" class="line" id="l482">    482</a>         glGetShaderInfoLog(shader, sizeof(info_log), NULL, info_log);
+<a href="#l483" class="line" id="l483">    483</a>         csandPlatformPrintErr(&quot;failed to compile shader &#39;&quot;);
+<a href="#l484" class="line" id="l484">    484</a>         csandPlatformPrintErr(name);
+<a href="#l485" class="line" id="l485">    485</a>         csandPlatformPrintErr(&quot;&#39;: &quot;);
+<a href="#l486" class="line" id="l486">    486</a>         csandPlatformPrintErr(info_log);
+<a href="#l487" class="line" id="l487">    487</a>         csandPlatformPrintErr(&quot;\n&quot;);
+<a href="#l488" class="line" id="l488">    488</a> 
+<a href="#l489" class="line" id="l489">    489</a>         glDeleteShader(shader);
+<a href="#l490" class="line" id="l490">    490</a>         return 0;
+<a href="#l491" class="line" id="l491">    491</a>     }
+<a href="#l492" class="line" id="l492">    492</a> 
+<a href="#l493" class="line" id="l493">    493</a>     return shader;
+<a href="#l494" class="line" id="l494">    494</a> }
+<a href="#l495" class="line" id="l495">    495</a> 
+<a href="#l496" class="line" id="l496">    496</a> static void csandUpdateWorldSize(CsandVec2Us world_size) {
+<a href="#l497" class="line" id="l497">    497</a>     csand_renderer.world_size = world_size;
+<a href="#l498" class="line" id="l498">    498</a> 
+<a href="#l499" class="line" id="l499">    499</a>     setActiveTextureUnit(CSAND_TEXTURE_UNIT_RENDER);
+<a href="#l500" class="line" id="l500">    500</a>     glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, world_size.x, world_size.y, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, NULL);
+<a href="#l501" class="line" id="l501">    501</a> 
+<a href="#l502" class="line" id="l502">    502</a>     setActiveTextureUnit(CSAND_TEXTURE_UNIT_GLOW);
+<a href="#l503" class="line" id="l503">    503</a>     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, world_size.x * CSAND_GLOW_RESOLUTION_FACTOR, world_size.y * CSAND_GLOW_RESOLUTION_FACTOR, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+<a href="#l504" class="line" id="l504">    504</a>     glUseProgram(csand_renderer.glow_program);
+<a href="#l505" class="line" id="l505">    505</a>     glUniform2i(glGetUniformLocation(csand_renderer.glow_program, &quot;world_size&quot;), world_size.x, world_size.y);
+<a href="#l506" class="line" id="l506">    506</a> }
+</pre>
+</div>
+</body>
+</html>

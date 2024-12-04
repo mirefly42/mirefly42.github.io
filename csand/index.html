@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+}
+
+#game {
+    position: relative;
+    touch-action: pinch-zoom;
+}
+</style>
+</head>
+
+<body>
+<div id="game">
+    <canvas id="canvas" width=1024, height=512></canvas>
+</div>
+<pre>
+Controls:
+1     - Wall
+2     - Sand
+3     - Water
+4     - Fire
+5     - Wood
+6     - Coal
+7     - Oil
+8     - Hydrogen gas
+9     - Hydrogen liquid
+0     - Air
+LMB   - Spawn particles
+Space - Toggle pause
+Minus - Decrease simulation speed
+Plus  - Increase simulation speed
+&gt;     - Simulate a single frame (speed dependent)
+F     - Toggle fullscreen
+Tab   - Toggle super secret menu (don't tell anybody)
+</pre>
+<script src="index.js" type="module"></script>
+</body>
+</html>

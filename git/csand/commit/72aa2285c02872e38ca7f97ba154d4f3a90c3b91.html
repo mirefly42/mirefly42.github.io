@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tweak fire - csand - Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</title>
+<link rel="icon" type="image/png" href="../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed" href="../atom.xml" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed (tags)" href="../tags.xml" />
+<link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../"><img src="../logo.png" alt="" width="32" height="32" /></a></td><td><h1>csand</h1><span class="desc">Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</span></td></tr><tr><td></td><td>
+<a href="../log.html">Log</a> | <a href="../files.html">Files</a> | <a href="../refs.html">Refs</a> | <a href="../file/LICENSE.html">LICENSE</a></td></tr></table>
+<hr/>
+<div id="content">
+<pre><b>commit</b> <a href="../commit/72aa2285c02872e38ca7f97ba154d4f3a90c3b91.html">72aa2285c02872e38ca7f97ba154d4f3a90c3b91</a>
+<b>parent</b> <a href="../commit/09ecccae04d1f4e4ccce89654336f8849c7184c9.html">09ecccae04d1f4e4ccce89654336f8849c7184c9</a>
+<b>Author:</b> mirefly &lt;<a href="mailto:"></a>&gt;
+<b>Date:</b>   Thu,  5 Dec 2024 23:32:32 +0700
+
+Tweak fire
+
+<b>Diffstat:</b>
+<table><tr><td class="M">M</td><td><a href="#h0">csand.c</a></td><td> | </td><td class="num">19</td><td><span class="i">++++++++++++</span><span class="d">-------</span></td></tr>
+</table></pre><pre>1 file changed, 12 insertions(+), 7 deletions(-)
+<hr/><b>diff --git a/<a id="h0" href="../file/csand.c.html">csand.c</a> b/<a href="../file/csand.c.html">csand.c</a></b>
+<a href="#h0-0" id="h0-0" class="h">@@ -54,11 +54,11 @@ static const CsandMaterialProperties materials[MATERIALS_COUNT] = {
+</a>     [MAT_FIRE_POWDER]     = {&quot;fire powder&quot;,     600000,  MAT_KIND_POWDER, NPROB(0.05),  NPROB(0),    MAT_SMOKE},
+     [MAT_FIRE_LIQUID]     = {&quot;fire liquid&quot;,     50000,   MAT_KIND_FLUID,  NPROB(0.06),  NPROB(0),    MAT_AIR},
+     [MAT_SMOKE]           = {&quot;smoke&quot;,           750,     MAT_KIND_FLUID,  NPROB(0.002), NPROB(0),    MAT_AIR},
+<a href="#h0-0-3" id="h0-0-3" class="d">-    [MAT_WOOD]            = {&quot;wood&quot;,            900000,  MAT_KIND_SOLID,  NPROB(0),     NPROB(0.50), MAT_AIR},
+</a><a href="#h0-0-4" id="h0-0-4" class="d">-    [MAT_COAL]            = {&quot;coal&quot;,            1500000, MAT_KIND_POWDER, NPROB(0),     NPROB(0.45), MAT_AIR},
+</a><a href="#h0-0-5" id="h0-0-5" class="d">-    [MAT_OIL]             = {&quot;oil&quot;,             750000,  MAT_KIND_FLUID,  NPROB(0),     NPROB(0.4),  MAT_AIR},
+</a><a href="#h0-0-6" id="h0-0-6" class="i">+    [MAT_WOOD]            = {&quot;wood&quot;,            900000,  MAT_KIND_SOLID,  NPROB(0),     NPROB(0.5),  MAT_AIR},
+</a><a href="#h0-0-7" id="h0-0-7" class="i">+    [MAT_COAL]            = {&quot;coal&quot;,            1500000, MAT_KIND_POWDER, NPROB(0),     NPROB(0.3),  MAT_AIR},
+</a><a href="#h0-0-8" id="h0-0-8" class="i">+    [MAT_OIL]             = {&quot;oil&quot;,             750000,  MAT_KIND_FLUID,  NPROB(0),     NPROB(0.25), MAT_AIR},
+</a>     [MAT_HYDROGEN_GAS]    = {&quot;hydrogen gas&quot;,    100,     MAT_KIND_FLUID,  NPROB(0),     NPROB(1),    MAT_AIR},
+<a href="#h0-0-10" id="h0-0-10" class="d">-    [MAT_HYDROGEN_LIQUID] = {&quot;hydrogen liquid&quot;, 70800,   MAT_KIND_FLUID,  3,            NPROB(0.25), MAT_HYDROGEN_GAS},
+</a><a href="#h0-0-11" id="h0-0-11" class="i">+    [MAT_HYDROGEN_LIQUID] = {&quot;hydrogen liquid&quot;, 70800,   MAT_KIND_FLUID,  3,            NPROB(0.1),  MAT_HYDROGEN_GAS},
+</a> };
+ 
+ static const CsandRgba palette[MATERIALS_COUNT] = {
+<a href="#h0-1" id="h0-1" class="h">@@ -201,8 +201,12 @@ static void csandSimulate(CsandRenderBuffer buf) {
+</a> 
+             if (csandMatIsFire(mat)) {
+                 tryIgnite(buf, sx, sy);
+<a href="#h0-1-3" id="h0-1-3" class="i">+                swap_mat = *csandGetMat(buf, sx, sy) &amp; (~MAT_UPDATED_BIT);
+</a><a href="#h0-1-4" id="h0-1-4" class="i">+                swap_mat_props = materials[swap_mat];
+</a>             } else if (csandMatIsFire(swap_mat)) {
+                 tryIgnite(buf, x, y);
+<a href="#h0-1-7" id="h0-1-7" class="i">+                mat = *csandGetMat(buf, x, y) &amp; (~MAT_UPDATED_BIT);
+</a><a href="#h0-1-8" id="h0-1-8" class="i">+                mat_props = materials[mat];
+</a>             }
+ 
+             if (mat_props.kind != MAT_KIND_SOLID &amp;&amp; swap_mat_props.kind != MAT_KIND_SOLID &amp;&amp; swap_mat_props.density &lt; mat_props.density) {
+<a href="#h0-2" id="h0-2" class="h">@@ -253,8 +257,9 @@ static void tryIgnite(CsandRenderBuffer buf, unsigned int x, unsigned int y) {
+</a>         return;
+     }
+ 
+<a href="#h0-2-3" id="h0-2-3" class="d">-    for (int dy = 2; dy &gt;= -2; dy--) {
+</a><a href="#h0-2-4" id="h0-2-4" class="d">-        for (int dx = -2; dx &lt;= 2; dx++) {
+</a><a href="#h0-2-5" id="h0-2-5" class="i">+    const int air_range = 2;
+</a><a href="#h0-2-6" id="h0-2-6" class="i">+    for (int dy = air_range; dy &gt;= -air_range; dy--) {
+</a><a href="#h0-2-7" id="h0-2-7" class="i">+        for (int dx = -air_range; dx &lt;= air_range; dx++) {
+</a>             if (!(dx == 0 &amp;&amp; dy == 0) &amp;&amp; csandInBounds(buf, x + dx, y + dy) &amp;&amp; *csandGetMat(buf, x + dx, y + dy) == MAT_AIR) {
+                 switch (mat_props.kind) {
+                     case MAT_KIND_SOLID:
+<a href="#h0-3" id="h0-3" class="h">@@ -266,7 +271,7 @@ static void tryIgnite(CsandRenderBuffer buf, unsigned int x, unsigned int y) {
+</a>                         break;
+                 }
+ 
+<a href="#h0-3-3" id="h0-3-3" class="d">-                *csandGetMat(buf, x, y) = mat;
+</a><a href="#h0-3-4" id="h0-3-4" class="i">+                *csandGetMat(buf, x, y) = mat | MAT_UPDATED_BIT;
+</a>                 return;
+             }
+         }
+</pre>
+</div>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Use an enum to keep track of used OpenGL texture units - csand - Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</title>
+<link rel="icon" type="image/png" href="../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed" href="../atom.xml" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed (tags)" href="../tags.xml" />
+<link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../"><img src="../logo.png" alt="" width="32" height="32" /></a></td><td><h1>csand</h1><span class="desc">Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</span></td></tr><tr><td></td><td>
+<a href="../log.html">Log</a> | <a href="../files.html">Files</a> | <a href="../refs.html">Refs</a> | <a href="../file/LICENSE.html">LICENSE</a></td></tr></table>
+<hr/>
+<div id="content">
+<pre><b>commit</b> <a href="../commit/72da7fc2a8aa1a2d5fda8bf4318d8f23dc16725c.html">72da7fc2a8aa1a2d5fda8bf4318d8f23dc16725c</a>
+<b>parent</b> <a href="../commit/98ebfcd413d60fdb9bad9cc72829711c859fc152.html">98ebfcd413d60fdb9bad9cc72829711c859fc152</a>
+<b>Author:</b> mirefly &lt;<a href="mailto:"></a>&gt;
+<b>Date:</b>   Mon, 17 Nov 2025 22:18:15 +0700
+
+Use an enum to keep track of used OpenGL texture units
+
+<b>Diffstat:</b>
+<table><tr><td class="M">M</td><td><a href="#h0">renderer.c</a></td><td> | </td><td class="num">34</td><td><span class="i">++++++++++++++++++++</span><span class="d">--------------</span></td></tr>
+</table></pre><pre>1 file changed, 20 insertions(+), 14 deletions(-)
+<hr/><b>diff --git a/<a id="h0" href="../file/renderer.c.html">renderer.c</a> b/<a href="../file/renderer.c.html">renderer.c</a></b>
+<a href="#h0-0" id="h0-0" class="h">@@ -72,9 +72,11 @@ static GLuint csandLoadShaderProgram(
+</a> static GLuint csandLoadShader(const char *name, const char *src, size_t size, GLenum type);
+ static void csandUpdateWorldSize(CsandVec2Us world_size);
+ 
+<a href="#h0-0-3" id="h0-0-3" class="d">-#define CSAND_RENDER_TEXTURE GL_TEXTURE0
+</a><a href="#h0-0-4" id="h0-0-4" class="d">-#define CSAND_PALETTE_TEXTURE GL_TEXTURE1
+</a><a href="#h0-0-5" id="h0-0-5" class="d">-#define CSAND_FONT_TEXTURE GL_TEXTURE2
+</a><a href="#h0-0-6" id="h0-0-6" class="i">+typedef enum {
+</a><a href="#h0-0-7" id="h0-0-7" class="i">+    CSAND_TEXTURE_UNIT_RENDER,
+</a><a href="#h0-0-8" id="h0-0-8" class="i">+    CSAND_TEXTURE_UNIT_PALETTE,
+</a><a href="#h0-0-9" id="h0-0-9" class="i">+    CSAND_TEXTURE_UNIT_FONT,
+</a><a href="#h0-0-10" id="h0-0-10" class="i">+} CsandTextureUnit;
+</a> 
+ static float csandNuklearTextWidth(nk_handle handle, float h, const char *text, int length) {
+     (void)handle; (void)h; (void)text;
+<a href="#h0-1" id="h0-1" class="h">@@ -93,6 +95,10 @@ static void csandNuklearQueryFontGlyph(nk_handle handle, float font_height, stru
+</a>     glyph-&gt;uv[1] = nk_vec2(1, glyph-&gt;uv[0].y + FONT_GLYPH_HEIGHT / (float)FONT_ATLAS_HEIGHT);
+ }
+ 
+<a href="#h0-1-3" id="h0-1-3" class="i">+static void setActiveTextureUnit(CsandTextureUnit unit) {
+</a><a href="#h0-1-4" id="h0-1-4" class="i">+    glActiveTexture(GL_TEXTURE0 + unit);
+</a><a href="#h0-1-5" id="h0-1-5" class="i">+}
+</a><a href="#h0-1-6" id="h0-1-6" class="i">+
+</a> static void csandNuklearInit(void) {
+     unsigned char font_atlas[FONT_ATLAS_HEIGHT][FONT_ATLAS_WIDTH];
+     for (int y = 0; y &lt; FONT_ATLAS_HEIGHT; y++) {
+<a href="#h0-2" id="h0-2" class="h">@@ -101,12 +107,12 @@ static void csandNuklearInit(void) {
+</a>         }
+     }
+     font_atlas[0][0] = 0xFF; // white pixel
+<a href="#h0-2-3" id="h0-2-3" class="d">-    struct nk_draw_null_texture null_texture = {nk_handle_id(CSAND_FONT_TEXTURE), nk_vec2(0, 0)};
+</a><a href="#h0-2-4" id="h0-2-4" class="i">+    struct nk_draw_null_texture null_texture = {nk_handle_id(CSAND_TEXTURE_UNIT_FONT), nk_vec2(0, 0)};
+</a> 
+     GLuint font_texture;
+     glGenTextures(1, &amp;font_texture);
+ 
+<a href="#h0-2-9" id="h0-2-9" class="d">-    glActiveTexture(CSAND_FONT_TEXTURE);
+</a><a href="#h0-2-10" id="h0-2-10" class="i">+    setActiveTextureUnit(CSAND_TEXTURE_UNIT_FONT);
+</a>     glBindTexture(GL_TEXTURE_2D, font_texture);
+ 
+     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+<a href="#h0-3" id="h0-3" class="h">@@ -169,7 +175,7 @@ static void csandNuklearInit(void) {
+</a>     );
+ 
+     glUseProgram(csand_renderer.nuklear_program);
+<a href="#h0-3-3" id="h0-3-3" class="d">-    glUniform1i(glGetUniformLocation(csand_renderer.nuklear_program, &quot;texture&quot;), 2);
+</a><a href="#h0-3-4" id="h0-3-4" class="i">+    glUniform1i(glGetUniformLocation(csand_renderer.nuklear_program, &quot;texture&quot;), CSAND_TEXTURE_UNIT_FONT);
+</a> }
+ 
+ void csandRendererInit(CsandVec2Us world_size, CsandVec2Us framebuffer_size, const CsandRgba *colors, uint8_t colors_count) {
+<a href="#h0-4" id="h0-4" class="h">@@ -192,7 +198,7 @@ void csandRendererInit(CsandVec2Us world_size, CsandVec2Us framebuffer_size, con
+</a>     GLuint render_texture;
+     glGenTextures(1, &amp;render_texture);
+ 
+<a href="#h0-4-3" id="h0-4-3" class="d">-    glActiveTexture(CSAND_RENDER_TEXTURE);
+</a><a href="#h0-4-4" id="h0-4-4" class="i">+    setActiveTextureUnit(CSAND_TEXTURE_UNIT_RENDER);
+</a>     glBindTexture(GL_TEXTURE_2D, render_texture);
+ 
+     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+<a href="#h0-5" id="h0-5" class="h">@@ -200,12 +206,12 @@ void csandRendererInit(CsandVec2Us world_size, CsandVec2Us framebuffer_size, con
+</a>     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+ 
+<a href="#h0-5-3" id="h0-5-3" class="d">-    glUniform1i(glGetUniformLocation(csand_renderer.world_program, &quot;texture&quot;), 0);
+</a><a href="#h0-5-4" id="h0-5-4" class="i">+    glUniform1i(glGetUniformLocation(csand_renderer.world_program, &quot;texture&quot;), CSAND_TEXTURE_UNIT_RENDER);
+</a> 
+     GLuint palette_texture;
+     glGenTextures(1, &amp;palette_texture);
+ 
+<a href="#h0-5-9" id="h0-5-9" class="d">-    glActiveTexture(CSAND_PALETTE_TEXTURE);
+</a><a href="#h0-5-10" id="h0-5-10" class="i">+    setActiveTextureUnit(CSAND_TEXTURE_UNIT_PALETTE);
+</a>     glBindTexture(GL_TEXTURE_2D, palette_texture);
+ 
+     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+<a href="#h0-6" id="h0-6" class="h">@@ -221,10 +227,10 @@ void csandRendererInit(CsandVec2Us world_size, CsandVec2Us framebuffer_size, con
+</a> }
+ 
+ void csandRendererSetPalette(const CsandRgba *colors, uint8_t colors_count) {
+<a href="#h0-6-3" id="h0-6-3" class="d">-    glActiveTexture(CSAND_PALETTE_TEXTURE);
+</a><a href="#h0-6-4" id="h0-6-4" class="i">+    setActiveTextureUnit(CSAND_TEXTURE_UNIT_PALETTE);
+</a>     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, colors_count, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, colors);
+     glUseProgram(csand_renderer.world_program);
+<a href="#h0-6-7" id="h0-6-7" class="d">-    glUniform1i(glGetUniformLocation(csand_renderer.world_program, &quot;palette&quot;), 1);
+</a><a href="#h0-6-8" id="h0-6-8" class="i">+    glUniform1i(glGetUniformLocation(csand_renderer.world_program, &quot;palette&quot;), CSAND_TEXTURE_UNIT_PALETTE);
+</a>     glUniform1i(glGetUniformLocation(csand_renderer.world_program, &quot;palette_size&quot;), colors_count);
+ }
+ 
+<a href="#h0-7" id="h0-7" class="h">@@ -254,7 +260,7 @@ static void csandRendererRenderNuklear(void) {
+</a>     glEnableVertexAttribArray(color_attr_loc);
+ 
+     glUseProgram(csand_renderer.nuklear_program);
+<a href="#h0-7-3" id="h0-7-3" class="d">-    glActiveTexture(CSAND_FONT_TEXTURE);
+</a><a href="#h0-7-4" id="h0-7-4" class="i">+    setActiveTextureUnit(CSAND_TEXTURE_UNIT_FONT);
+</a> 
+     glEnable(GL_BLEND);
+     glBlendEquation(GL_FUNC_ADD);
+<a href="#h0-8" id="h0-8" class="h">@@ -297,7 +303,7 @@ void csandRendererRender(unsigned char *data, unsigned short width, unsigned sho
+</a>     glVertexAttribPointer(position_attr_loc, 2, GL_BYTE, GL_FALSE, 0, NULL);
+     glEnableVertexAttribArray(position_attr_loc);
+ 
+<a href="#h0-8-3" id="h0-8-3" class="d">-    glActiveTexture(CSAND_RENDER_TEXTURE);
+</a><a href="#h0-8-4" id="h0-8-4" class="i">+    setActiveTextureUnit(CSAND_TEXTURE_UNIT_RENDER);
+</a>     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_LUMINANCE, GL_UNSIGNED_BYTE, data);
+ 
+     glUseProgram(csand_renderer.world_program);
+<a href="#h0-9" id="h0-9" class="h">@@ -422,7 +428,7 @@ static GLuint csandLoadShader(const char *name, const char *src, size_t size, GL
+</a> }
+ 
+ static void csandUpdateWorldSize(CsandVec2Us world_size) {
+<a href="#h0-9-3" id="h0-9-3" class="d">-    glActiveTexture(CSAND_RENDER_TEXTURE);
+</a><a href="#h0-9-4" id="h0-9-4" class="i">+    setActiveTextureUnit(CSAND_TEXTURE_UNIT_RENDER);
+</a> 
+     csand_renderer.world_size = world_size;
+     glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, world_size.x, world_size.y, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, NULL);
+</pre>
+</div>
+</body>
+</html>

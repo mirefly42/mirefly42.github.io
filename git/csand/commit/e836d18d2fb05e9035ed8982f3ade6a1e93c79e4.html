@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Allow drawing on pause - csand - Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</title>
+<link rel="icon" type="image/png" href="../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed" href="../atom.xml" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed (tags)" href="../tags.xml" />
+<link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../"><img src="../logo.png" alt="" width="32" height="32" /></a></td><td><h1>csand</h1><span class="desc">Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</span></td></tr><tr><td></td><td>
+<a href="../log.html">Log</a> | <a href="../files.html">Files</a> | <a href="../refs.html">Refs</a> | <a href="../file/LICENSE.html">LICENSE</a></td></tr></table>
+<hr/>
+<div id="content">
+<pre><b>commit</b> <a href="../commit/e836d18d2fb05e9035ed8982f3ade6a1e93c79e4.html">e836d18d2fb05e9035ed8982f3ade6a1e93c79e4</a>
+<b>parent</b> <a href="../commit/57cf3e431922b371911debd41a21aece9a31e88e.html">57cf3e431922b371911debd41a21aece9a31e88e</a>
+<b>Author:</b> mirefly &lt;<a href="mailto:"></a>&gt;
+<b>Date:</b>   Thu,  5 Dec 2024 22:19:45 +0700
+
+Allow drawing on pause
+
+<b>Diffstat:</b>
+<table><tr><td class="M">M</td><td><a href="#h0">csand.c</a></td><td> | </td><td class="num">18</td><td><span class="i">+++++++++++</span><span class="d">-------</span></td></tr>
+</table></pre><pre>1 file changed, 11 insertions(+), 7 deletions(-)
+<hr/><b>diff --git a/<a id="h0" href="../file/csand.c.html">csand.c</a> b/<a href="../file/csand.c.html">csand.c</a></b>
+<a href="#h0-0" id="h0-0" class="h">@@ -150,11 +150,21 @@ static void csandInputCallback(CsandInput input) {
+</a> }
+ 
+ static void csandRenderCallback(unsigned char *data, unsigned short width, unsigned short height) {
+<a href="#h0-0-3" id="h0-0-3" class="i">+    CsandRenderBuffer render_buf = {data, width, height};
+</a><a href="#h0-0-4" id="h0-0-4" class="i">+
+</a><a href="#h0-0-5" id="h0-0-5" class="i">+    bool draw = csandPlatformIsMouseButtonPressed(CSAND_MOUSE_BUTTON_LEFT);
+</a><a href="#h0-0-6" id="h0-0-6" class="i">+    unsigned short x, y;
+</a><a href="#h0-0-7" id="h0-0-7" class="i">+    csandPlatformGetCursorPos(&amp;x, &amp;y);
+</a><a href="#h0-0-8" id="h0-0-8" class="i">+
+</a>     if (!pause) {
+<a href="#h0-0-10" id="h0-0-10" class="d">-        CsandRenderBuffer render_buf = {data, width, height};
+</a>         for (unsigned long i = 0; i &lt; speed; i++) {
+             csandSimulate(render_buf);
+<a href="#h0-0-13" id="h0-0-13" class="i">+            if (draw) {
+</a><a href="#h0-0-14" id="h0-0-14" class="i">+                *csandGetMat(render_buf, x, y) = draw_mat;
+</a><a href="#h0-0-15" id="h0-0-15" class="i">+            }
+</a>         }
+<a href="#h0-0-17" id="h0-0-17" class="i">+    } else if (draw) {
+</a><a href="#h0-0-18" id="h0-0-18" class="i">+        *csandGetMat(render_buf, x, y) = draw_mat;
+</a>     }
+ }
+ 
+<a href="#h0-1" id="h0-1" class="h">@@ -202,12 +212,6 @@ static void csandSimulate(CsandRenderBuffer buf) {
+</a>         }
+     }
+ 
+<a href="#h0-1-3" id="h0-1-3" class="d">-    if (csandPlatformIsMouseButtonPressed(CSAND_MOUSE_BUTTON_LEFT)) {
+</a><a href="#h0-1-4" id="h0-1-4" class="d">-        unsigned short x, y;
+</a><a href="#h0-1-5" id="h0-1-5" class="d">-        csandPlatformGetCursorPos(&amp;x, &amp;y);
+</a><a href="#h0-1-6" id="h0-1-6" class="d">-        *csandGetMat(buf, x, y) = draw_mat | MAT_UPDATED_BIT;
+</a><a href="#h0-1-7" id="h0-1-7" class="d">-    }
+</a><a href="#h0-1-8" id="h0-1-8" class="d">-
+</a>     for (unsigned int i = 0; i &lt; buf.width * buf.height; i++) {
+         buf.data[i] &amp;= ~MAT_UPDATED_BIT;
+     }
+</pre>
+</div>
+</body>
+</html>

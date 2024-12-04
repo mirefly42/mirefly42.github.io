@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Add developer menu - csand - Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</title>
+<link rel="icon" type="image/png" href="../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed" href="../atom.xml" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed (tags)" href="../tags.xml" />
+<link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../"><img src="../logo.png" alt="" width="32" height="32" /></a></td><td><h1>csand</h1><span class="desc">Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</span></td></tr><tr><td></td><td>
+<a href="../log.html">Log</a> | <a href="../files.html">Files</a> | <a href="../refs.html">Refs</a> | <a href="../file/LICENSE.html">LICENSE</a></td></tr></table>
+<hr/>
+<div id="content">
+<pre><b>commit</b> <a href="../commit/bee9a5034a10298dc9a1fc225646b0b69d5c5177.html">bee9a5034a10298dc9a1fc225646b0b69d5c5177</a>
+<b>parent</b> <a href="../commit/a6347118d6a6e45e1f61f9fb3c017e5f336d3305.html">a6347118d6a6e45e1f61f9fb3c017e5f336d3305</a>
+<b>Author:</b> mirefly &lt;<a href="mailto:"></a>&gt;
+<b>Date:</b>   Tue, 24 Jun 2025 07:10:50 +0700
+
+Add developer menu
+
+<b>Diffstat:</b>
+<table><tr><td class="M">M</td><td><a href="#h0">Makefile</a></td><td> | </td><td class="num">18</td><td><span class="i">++++++++++++</span><span class="d">------</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h1">compile_flags.txt</a></td><td> | </td><td class="num">1</td><td><span class="i">+</span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h2">csand.c</a></td><td> | </td><td class="num">296</td><td><span class="i">++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span><span class="d">-------</span></td></tr>
+<tr><td class="A">A</td><td><a href="#h3">nuklear.c</a></td><td> | </td><td class="num">2</td><td><span class="i">++</span><span class="d"></span></td></tr>
+<tr><td class="A">A</td><td><a href="#h4">nuklear.frag</a></td><td> | </td><td class="num">10</td><td><span class="i">++++++++++</span><span class="d"></span></td></tr>
+<tr><td class="A">A</td><td><a href="#h5">nuklear.vert</a></td><td> | </td><td class="num">14</td><td><span class="i">++++++++++++++</span><span class="d"></span></td></tr>
+<tr><td class="A">A</td><td><a href="#h6">nuklear_config.h</a></td><td> | </td><td class="num">11</td><td><span class="i">+++++++++++</span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h7">platform.h</a></td><td> | </td><td class="num">163</td><td><span class="i">++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span><span class="d">---------</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h8">platform_glfw.c</a></td><td> | </td><td class="num">98</td><td><span class="i">++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span><span class="d">-----------------------</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h9">renderer.c</a></td><td> | </td><td class="num">252</td><td><span class="i">+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span><span class="d">----------</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h10">renderer.h</a></td><td> | </td><td class="num">3</td><td><span class="i">+++</span><span class="d"></span></td></tr>
+</table></pre><pre>11 files changed, 763 insertions(+), 105 deletions(-)
+<hr/><b>diff --git a/<a id="h0" href="../file/Makefile.html">Makefile</a> b/<a href="../file/Makefile.html">Makefile</a></b>
+<a href="#h0-0" id="h0-0" class="h">@@ -1,10 +1,10 @@
+</a> .POSIX:
+ 
+<a href="#h0-0-2" id="h0-0-2" class="d">-SRC = csand.c platform_glfw.c renderer.c
+</a><a href="#h0-0-3" id="h0-0-3" class="d">-EMBED_HDR = shader.vert.embed.h shader.frag.embed.h
+</a><a href="#h0-0-4" id="h0-0-4" class="d">-HDR = math.h platform.h random.h renderer.h rgba.h vec2.h x_macros.h ${EMBED_HDR}
+</a><a href="#h0-0-5" id="h0-0-5" class="i">+SRC = csand.c nuklear.c platform_glfw.c renderer.c
+</a><a href="#h0-0-6" id="h0-0-6" class="i">+EMBED_HDR = nuklear.vert.embed.h nuklear.frag.embed.h shader.vert.embed.h shader.frag.embed.h
+</a><a href="#h0-0-7" id="h0-0-7" class="i">+HDR = math.h nuklear_config.h platform.h random.h renderer.h rgba.h vec2.h x_macros.h ${EMBED_HDR}
+</a> OBJ = ${SRC:.c=.o}
+<a href="#h0-0-9" id="h0-0-9" class="d">-LIBS = -lglfw -lGLESv2
+</a><a href="#h0-0-10" id="h0-0-10" class="i">+LIBS = -lglfw -lGLESv2 -lm
+</a> 
+ csand: ${OBJ}
+ 	${CC} -o $@ ${OBJ} ${LIBS} ${LDFLAGS}
+<a href="#h0-1" id="h0-1" class="h">@@ -23,13 +23,19 @@ shader.vert.embed.h: embed shader.vert
+</a> shader.frag.embed.h: embed shader.frag
+ 	./embed &lt; shader.frag &gt; $@
+ 
+<a href="#h0-1-3" id="h0-1-3" class="i">+nuklear.vert.embed.h: embed nuklear.vert
+</a><a href="#h0-1-4" id="h0-1-4" class="i">+	./embed &lt; nuklear.vert &gt; $@
+</a><a href="#h0-1-5" id="h0-1-5" class="i">+
+</a><a href="#h0-1-6" id="h0-1-6" class="i">+nuklear.frag.embed.h: embed nuklear.frag
+</a><a href="#h0-1-7" id="h0-1-7" class="i">+	./embed &lt; nuklear.frag &gt; $@
+</a><a href="#h0-1-8" id="h0-1-8" class="i">+
+</a> .c.o:
+<a href="#h0-1-10" id="h0-1-10" class="d">-	${CC} -c -o $@ $&lt; ${CFLAGS}
+</a><a href="#h0-1-11" id="h0-1-11" class="i">+	${CC} -c -o $@ $&lt; -Ithird_party/include ${CFLAGS}
+</a> 
+ ${OBJ}: ${HDR}
+ 
+ validate:
+<a href="#h0-1-16" id="h0-1-16" class="d">-	glslangValidator shader.vert shader.frag
+</a><a href="#h0-1-17" id="h0-1-17" class="i">+	glslangValidator nuklear.vert nuklear.frag shader.vert shader.frag
+</a> 
+ clean:
+ 	rm -f csand csand.wasm embed ${EMBED_HDR} ${OBJ}
+<b>diff --git a/<a id="h1" href="../file/compile_flags.txt.html">compile_flags.txt</a> b/<a href="../file/compile_flags.txt.html">compile_flags.txt</a></b>
+<a href="#h1-0" id="h1-0" class="h">@@ -1,2 +1,3 @@
+</a> -xc
+ -std=c99
+<a href="#h1-0-2" id="h1-0-2" class="i">+-Ithird_party/include
+</a><b>diff --git a/<a id="h2" href="../file/csand.c.html">csand.c</a> b/<a href="../file/csand.c.html">csand.c</a></b>
+<a href="#h2-0" id="h2-0" class="h">@@ -1,9 +1,11 @@
+</a><a href="#h2-0-0" id="h2-0-0" class="d">-#include &quot;math.h&quot;
+</a><a href="#h2-0-1" id="h2-0-1" class="i">+#include &quot;nuklear_config.h&quot;
+</a> #include &quot;platform.h&quot;
+ #include &quot;random.h&quot;
+ #include &quot;renderer.h&quot;
+ #include &quot;rgba.h&quot;
+<a href="#h2-0-6" id="h2-0-6" class="i">+#include &lt;limits.h&gt;
+</a> #include &lt;stdbool.h&gt;
+<a href="#h2-0-8" id="h2-0-8" class="i">+#include &lt;stddef.h&gt;
+</a> #include &lt;stdint.h&gt;
+ 
+ #define SPEED_LIMIT 128
+<a href="#h2-1" id="h2-1" class="h">@@ -22,10 +24,11 @@ enum {
+</a>     MAT_OIL,
+     MAT_HYDROGEN_GAS,
+     MAT_HYDROGEN_LIQUID,
+<a href="#h2-1-3" id="h2-1-3" class="d">-    MATERIALS_COUNT,
+</a>     MAT_UPDATED_BIT = 0x80
+ };
+ 
+<a href="#h2-1-7" id="h2-1-7" class="i">+#define MATERIALS_COUNT MAT_UPDATED_BIT
+</a><a href="#h2-1-8" id="h2-1-8" class="i">+
+</a> #define WIDTH 128
+ #define HEIGHT 72
+ 
+<a href="#h2-2" id="h2-2" class="h">@@ -37,6 +40,9 @@ static unsigned long speed = 1;
+</a> static unsigned char draw_mat = MAT_SAND;
+ static unsigned char data[WIDTH * HEIGHT] = {0};
+ static bool input_next_frame = false;
+<a href="#h2-2-3" id="h2-2-3" class="i">+static bool any_nuklear_item_active = false;
+</a><a href="#h2-2-4" id="h2-2-4" class="i">+static bool developer_menu_enabled = false;
+</a><a href="#h2-2-5" id="h2-2-5" class="i">+static struct nk_rect developer_menu_bounds = {10, 10, 730, 540};
+</a> 
+ typedef struct CsandRenderBuffer {
+     unsigned char *data;
+<a href="#h2-3" id="h2-3" class="h">@@ -50,6 +56,7 @@ typedef enum {
+</a>     MAT_KIND_SOLID,
+     MAT_KIND_POWDER,
+     MAT_KIND_FLUID,
+<a href="#h2-3-3" id="h2-3-3" class="i">+    MAT_KINDS_COUNT,
+</a> } CsandMaterialKind;
+ 
+ typedef struct CsandMaterialProperties {
+<a href="#h2-4" id="h2-4" class="h">@@ -61,7 +68,7 @@ typedef struct CsandMaterialProperties {
+</a>     unsigned char decay_mat;
+ } CsandMaterialProperties;
+ 
+<a href="#h2-4-3" id="h2-4-3" class="d">-static const CsandMaterialProperties materials[MATERIALS_COUNT] = {
+</a><a href="#h2-4-4" id="h2-4-4" class="i">+static CsandMaterialProperties materials[MATERIALS_COUNT] = {
+</a>     [MAT_AIR]             = {&quot;air&quot;,             1000,    MAT_KIND_FLUID,  NPROB(0),     NPROB(0),    MAT_AIR},
+     [MAT_WALL]            = {&quot;wall&quot;,            2500000, MAT_KIND_SOLID,  NPROB(0),     NPROB(0),    MAT_AIR},
+     [MAT_SAND]            = {&quot;sand&quot;,            1500000, MAT_KIND_POWDER, NPROB(0),     NPROB(0),    MAT_AIR},
+<a href="#h2-5" id="h2-5" class="h">@@ -77,7 +84,7 @@ static const CsandMaterialProperties materials[MATERIALS_COUNT] = {
+</a>     [MAT_HYDROGEN_LIQUID] = {&quot;hydrogen liquid&quot;, 70800,   MAT_KIND_FLUID,  3,            NPROB(0.1),  MAT_HYDROGEN_GAS},
+ };
+ 
+<a href="#h2-5-3" id="h2-5-3" class="d">-static const CsandRgba palette[MATERIALS_COUNT] = {
+</a><a href="#h2-5-4" id="h2-5-4" class="i">+static CsandRgba palette[MATERIALS_COUNT] = {
+</a>     [MAT_AIR]             = {0x00, 0x00, 0x00, 0xFF},
+     [MAT_WALL]            = {0xFF, 0x00, 0xFF, 0xFF},
+     [MAT_SAND]            = {0xFF, 0xFF, 0x00, 0xFF},
+<a href="#h2-6" id="h2-6" class="h">@@ -93,7 +100,29 @@ static const CsandRgba palette[MATERIALS_COUNT] = {
+</a>     [MAT_HYDROGEN_LIQUID] = {0x57, 0x8F, 0xC8, 0xFF},
+ };
+ 
+<a href="#h2-6-3" id="h2-6-3" class="d">-static void csandInputCallback(CsandInput input);
+</a><a href="#h2-6-4" id="h2-6-4" class="i">+static void csandKeyCallback(CsandKey key, CsandAction action, CsandModSet mods);
+</a><a href="#h2-6-5" id="h2-6-5" class="i">+static void csandCharCallback(uint32_t codepoint);
+</a><a href="#h2-6-6" id="h2-6-6" class="i">+static void csandMouseButtonCallback(CsandMouseButton button, unsigned int pressed) {
+</a><a href="#h2-6-7" id="h2-6-7" class="i">+    CsandVec2Us pos = csandPlatformGetCursorPos();
+</a><a href="#h2-6-8" id="h2-6-8" class="i">+    struct nk_context *nk_ctx = csandRendererNuklearContext();
+</a><a href="#h2-6-9" id="h2-6-9" class="i">+    switch (button) {
+</a><a href="#h2-6-10" id="h2-6-10" class="i">+        case CSAND_MOUSE_BUTTON_LEFT:
+</a><a href="#h2-6-11" id="h2-6-11" class="i">+            nk_input_button(nk_ctx, NK_BUTTON_LEFT, pos.x, pos.y, pressed);
+</a><a href="#h2-6-12" id="h2-6-12" class="i">+            break;
+</a><a href="#h2-6-13" id="h2-6-13" class="i">+        case CSAND_MOUSE_BUTTON_RIGHT:
+</a><a href="#h2-6-14" id="h2-6-14" class="i">+            nk_input_button(nk_ctx, NK_BUTTON_RIGHT, pos.x, pos.y, pressed);
+</a><a href="#h2-6-15" id="h2-6-15" class="i">+            break;
+</a><a href="#h2-6-16" id="h2-6-16" class="i">+    }
+</a><a href="#h2-6-17" id="h2-6-17" class="i">+}
+</a><a href="#h2-6-18" id="h2-6-18" class="i">+
+</a><a href="#h2-6-19" id="h2-6-19" class="i">+static void csandMouseMotionCallback(double x, double y) {
+</a><a href="#h2-6-20" id="h2-6-20" class="i">+    nk_input_motion(csandRendererNuklearContext(), x, y);
+</a><a href="#h2-6-21" id="h2-6-21" class="i">+}
+</a><a href="#h2-6-22" id="h2-6-22" class="i">+
+</a><a href="#h2-6-23" id="h2-6-23" class="i">+static void csandMouseScrollCallback(double x, double y) {
+</a><a href="#h2-6-24" id="h2-6-24" class="i">+    nk_input_scroll(csandRendererNuklearContext(), nk_vec2(x, y));
+</a><a href="#h2-6-25" id="h2-6-25" class="i">+}
+</a><a href="#h2-6-26" id="h2-6-26" class="i">+
+</a> static void csandRenderCallback(double time);
+ static void csandSimulate(CsandRenderBuffer buf);
+ static inline unsigned char *csandGetMat(CsandRenderBuffer buf, unsigned int x, unsigned int y);
+<a href="#h2-7" id="h2-7" class="h">@@ -104,66 +133,281 @@ static void tryIgnite(CsandRenderBuffer buf, unsigned int x, unsigned int y);
+</a> int main(void) {
+     csandPlatformInit();
+     csandRendererInit((CsandVec2Us){WIDTH, HEIGHT}, csandPlatformGetFramebufferSize(), palette, MATERIALS_COUNT);
+<a href="#h2-7-3" id="h2-7-3" class="d">-    csandPlatformSetInputCallback(csandInputCallback);
+</a><a href="#h2-7-4" id="h2-7-4" class="i">+    csandPlatformSetKeyCallback(csandKeyCallback);
+</a><a href="#h2-7-5" id="h2-7-5" class="i">+    csandPlatformSetCharCallback(csandCharCallback);
+</a><a href="#h2-7-6" id="h2-7-6" class="i">+    csandPlatformSetMouseButtonCallback(csandMouseButtonCallback);
+</a><a href="#h2-7-7" id="h2-7-7" class="i">+    csandPlatformSetMouseMotionCallback(csandMouseMotionCallback);
+</a><a href="#h2-7-8" id="h2-7-8" class="i">+    csandPlatformSetMouseScrollCallback(csandMouseScrollCallback);
+</a>     csandPlatformSetRenderCallback(csandRenderCallback);
+     csandPlatformSetFramebufferSizeCallback(csandRendererUpdateViewport);
+<a href="#h2-7-11" id="h2-7-11" class="i">+    nk_input_begin(csandRendererNuklearContext());
+</a>     csandPlatformRun();
+ }
+ 
+<a href="#h2-7-15" id="h2-7-15" class="d">-static void csandInputCallback(CsandInput input) {
+</a><a href="#h2-7-16" id="h2-7-16" class="d">-    switch (input) {
+</a><a href="#h2-7-17" id="h2-7-17" class="d">-        case CSAND_INPUT_SELECT_MAT0:
+</a><a href="#h2-7-18" id="h2-7-18" class="i">+static void csandSendKeyStateToNuklear(CsandKey key, CsandAction action, CsandModSet mods) {
+</a><a href="#h2-7-19" id="h2-7-19" class="i">+    struct nk_context *nk_ctx = csandRendererNuklearContext();
+</a><a href="#h2-7-20" id="h2-7-20" class="i">+    switch (key) {
+</a><a href="#h2-7-21" id="h2-7-21" class="i">+        case CSAND_KEY_LEFT_SHIFT:
+</a><a href="#h2-7-22" id="h2-7-22" class="i">+        case CSAND_KEY_RIGHT_SHIFT:
+</a><a href="#h2-7-23" id="h2-7-23" class="i">+            nk_input_key(nk_ctx, NK_KEY_SHIFT, action);
+</a><a href="#h2-7-24" id="h2-7-24" class="i">+            break;
+</a><a href="#h2-7-25" id="h2-7-25" class="i">+        case CSAND_KEY_LEFT_CONTROL:
+</a><a href="#h2-7-26" id="h2-7-26" class="i">+        case CSAND_KEY_RIGHT_CONTROL:
+</a><a href="#h2-7-27" id="h2-7-27" class="i">+            nk_input_key(nk_ctx, NK_KEY_CTRL, action);
+</a><a href="#h2-7-28" id="h2-7-28" class="i">+            break;
+</a><a href="#h2-7-29" id="h2-7-29" class="i">+        case CSAND_KEY_DELETE:
+</a><a href="#h2-7-30" id="h2-7-30" class="i">+            nk_input_key(nk_ctx, NK_KEY_DEL, action);
+</a><a href="#h2-7-31" id="h2-7-31" class="i">+            break;
+</a><a href="#h2-7-32" id="h2-7-32" class="i">+        case CSAND_KEY_ENTER:
+</a><a href="#h2-7-33" id="h2-7-33" class="i">+            nk_input_key(nk_ctx, NK_KEY_ENTER, action);
+</a><a href="#h2-7-34" id="h2-7-34" class="i">+            break;
+</a><a href="#h2-7-35" id="h2-7-35" class="i">+        case CSAND_KEY_TAB:
+</a><a href="#h2-7-36" id="h2-7-36" class="i">+            nk_input_key(nk_ctx, NK_KEY_TAB, action);
+</a><a href="#h2-7-37" id="h2-7-37" class="i">+            break;
+</a><a href="#h2-7-38" id="h2-7-38" class="i">+        case CSAND_KEY_BACKSPACE:
+</a><a href="#h2-7-39" id="h2-7-39" class="i">+            nk_input_key(nk_ctx, NK_KEY_BACKSPACE, action);
+</a><a href="#h2-7-40" id="h2-7-40" class="i">+            break;
+</a><a href="#h2-7-41" id="h2-7-41" class="i">+        case CSAND_KEY_C:
+</a><a href="#h2-7-42" id="h2-7-42" class="i">+            if (mods == CSAND_MOD_CONTROL) {
+</a><a href="#h2-7-43" id="h2-7-43" class="i">+                nk_input_key(nk_ctx, NK_KEY_COPY, action);
+</a><a href="#h2-7-44" id="h2-7-44" class="i">+            }
+</a><a href="#h2-7-45" id="h2-7-45" class="i">+            break;
+</a><a href="#h2-7-46" id="h2-7-46" class="i">+        case CSAND_KEY_X:
+</a><a href="#h2-7-47" id="h2-7-47" class="i">+            if (mods == CSAND_MOD_CONTROL) {
+</a><a href="#h2-7-48" id="h2-7-48" class="i">+                nk_input_key(nk_ctx, NK_KEY_CUT, action);
+</a><a href="#h2-7-49" id="h2-7-49" class="i">+            }
+</a><a href="#h2-7-50" id="h2-7-50" class="i">+            break;
+</a><a href="#h2-7-51" id="h2-7-51" class="i">+        case CSAND_KEY_V:
+</a><a href="#h2-7-52" id="h2-7-52" class="i">+            if (mods == CSAND_MOD_CONTROL) {
+</a><a href="#h2-7-53" id="h2-7-53" class="i">+                nk_input_key(nk_ctx, NK_KEY_PASTE, action);
+</a><a href="#h2-7-54" id="h2-7-54" class="i">+            }
+</a><a href="#h2-7-55" id="h2-7-55" class="i">+            break;
+</a><a href="#h2-7-56" id="h2-7-56" class="i">+        case CSAND_KEY_UP:
+</a><a href="#h2-7-57" id="h2-7-57" class="i">+            nk_input_key(nk_ctx, NK_KEY_UP, action);
+</a><a href="#h2-7-58" id="h2-7-58" class="i">+            break;
+</a><a href="#h2-7-59" id="h2-7-59" class="i">+        case CSAND_KEY_DOWN:
+</a><a href="#h2-7-60" id="h2-7-60" class="i">+            nk_input_key(nk_ctx, NK_KEY_DOWN, action);
+</a><a href="#h2-7-61" id="h2-7-61" class="i">+            break;
+</a><a href="#h2-7-62" id="h2-7-62" class="i">+        case CSAND_KEY_LEFT:
+</a><a href="#h2-7-63" id="h2-7-63" class="i">+            if (mods == CSAND_MOD_CONTROL) {
+</a><a href="#h2-7-64" id="h2-7-64" class="i">+                nk_input_key(nk_ctx, NK_KEY_TEXT_WORD_LEFT, action);
+</a><a href="#h2-7-65" id="h2-7-65" class="i">+            } else {
+</a><a href="#h2-7-66" id="h2-7-66" class="i">+                nk_input_key(nk_ctx, NK_KEY_LEFT, action);
+</a><a href="#h2-7-67" id="h2-7-67" class="i">+            }
+</a><a href="#h2-7-68" id="h2-7-68" class="i">+            break;
+</a><a href="#h2-7-69" id="h2-7-69" class="i">+        case CSAND_KEY_RIGHT:
+</a><a href="#h2-7-70" id="h2-7-70" class="i">+            if (mods == CSAND_MOD_CONTROL) {
+</a><a href="#h2-7-71" id="h2-7-71" class="i">+                nk_input_key(nk_ctx, NK_KEY_TEXT_WORD_RIGHT, action);
+</a><a href="#h2-7-72" id="h2-7-72" class="i">+            } else {
+</a><a href="#h2-7-73" id="h2-7-73" class="i">+                nk_input_key(nk_ctx, NK_KEY_RIGHT, action);
+</a><a href="#h2-7-74" id="h2-7-74" class="i">+            }
+</a><a href="#h2-7-75" id="h2-7-75" class="i">+            break;
+</a><a href="#h2-7-76" id="h2-7-76" class="i">+        case CSAND_KEY_B:
+</a><a href="#h2-7-77" id="h2-7-77" class="i">+            if (mods == CSAND_MOD_CONTROL) {
+</a><a href="#h2-7-78" id="h2-7-78" class="i">+                nk_input_key(nk_ctx, NK_KEY_TEXT_LINE_START, action);
+</a><a href="#h2-7-79" id="h2-7-79" class="i">+            }
+</a><a href="#h2-7-80" id="h2-7-80" class="i">+            break;
+</a><a href="#h2-7-81" id="h2-7-81" class="i">+        case CSAND_KEY_E:
+</a><a href="#h2-7-82" id="h2-7-82" class="i">+            if (mods == CSAND_MOD_CONTROL) {
+</a><a href="#h2-7-83" id="h2-7-83" class="i">+                nk_input_key(nk_ctx, NK_KEY_TEXT_LINE_END, action);
+</a><a href="#h2-7-84" id="h2-7-84" class="i">+            }
+</a><a href="#h2-7-85" id="h2-7-85" class="i">+            break;
+</a><a href="#h2-7-86" id="h2-7-86" class="i">+        case CSAND_KEY_HOME:
+</a><a href="#h2-7-87" id="h2-7-87" class="i">+            nk_input_key(nk_ctx, NK_KEY_TEXT_START, action);
+</a><a href="#h2-7-88" id="h2-7-88" class="i">+            nk_input_key(nk_ctx, NK_KEY_SCROLL_START, action);
+</a><a href="#h2-7-89" id="h2-7-89" class="i">+            break;
+</a><a href="#h2-7-90" id="h2-7-90" class="i">+        case CSAND_KEY_END:
+</a><a href="#h2-7-91" id="h2-7-91" class="i">+            nk_input_key(nk_ctx, NK_KEY_TEXT_END, action);
+</a><a href="#h2-7-92" id="h2-7-92" class="i">+            nk_input_key(nk_ctx, NK_KEY_SCROLL_END, action);
+</a><a href="#h2-7-93" id="h2-7-93" class="i">+            break;
+</a><a href="#h2-7-94" id="h2-7-94" class="i">+        case CSAND_KEY_Z:
+</a><a href="#h2-7-95" id="h2-7-95" class="i">+            if (mods == CSAND_MOD_CONTROL) {
+</a><a href="#h2-7-96" id="h2-7-96" class="i">+                nk_input_key(nk_ctx, NK_KEY_TEXT_UNDO, action);
+</a><a href="#h2-7-97" id="h2-7-97" class="i">+            }
+</a><a href="#h2-7-98" id="h2-7-98" class="i">+            break;
+</a><a href="#h2-7-99" id="h2-7-99" class="i">+        case CSAND_KEY_R:
+</a><a href="#h2-7-100" id="h2-7-100" class="i">+            if (mods == CSAND_MOD_CONTROL) {
+</a><a href="#h2-7-101" id="h2-7-101" class="i">+                nk_input_key(nk_ctx, NK_KEY_TEXT_REDO, action);
+</a><a href="#h2-7-102" id="h2-7-102" class="i">+            }
+</a><a href="#h2-7-103" id="h2-7-103" class="i">+            break;
+</a><a href="#h2-7-104" id="h2-7-104" class="i">+        case CSAND_KEY_A:
+</a><a href="#h2-7-105" id="h2-7-105" class="i">+            if (mods == CSAND_MOD_CONTROL) {
+</a><a href="#h2-7-106" id="h2-7-106" class="i">+                nk_input_key(nk_ctx, NK_KEY_TEXT_SELECT_ALL, action);
+</a><a href="#h2-7-107" id="h2-7-107" class="i">+            }
+</a><a href="#h2-7-108" id="h2-7-108" class="i">+        default:
+</a><a href="#h2-7-109" id="h2-7-109" class="i">+            break;
+</a><a href="#h2-7-110" id="h2-7-110" class="i">+    }
+</a><a href="#h2-7-111" id="h2-7-111" class="i">+}
+</a><a href="#h2-7-112" id="h2-7-112" class="i">+
+</a><a href="#h2-7-113" id="h2-7-113" class="i">+static void csandKeyCallback(CsandKey key, CsandAction action, CsandModSet mods) {
+</a><a href="#h2-7-114" id="h2-7-114" class="i">+    csandSendKeyStateToNuklear(key, action, mods);
+</a><a href="#h2-7-115" id="h2-7-115" class="i">+
+</a><a href="#h2-7-116" id="h2-7-116" class="i">+    if (action != CSAND_ACTION_PRESS || any_nuklear_item_active) return;
+</a><a href="#h2-7-117" id="h2-7-117" class="i">+
+</a><a href="#h2-7-118" id="h2-7-118" class="i">+    switch (key) {
+</a><a href="#h2-7-119" id="h2-7-119" class="i">+        case CSAND_KEY_0:
+</a>             draw_mat = MAT_AIR;
+             break;
+<a href="#h2-7-122" id="h2-7-122" class="d">-        case CSAND_INPUT_SELECT_MAT1:
+</a><a href="#h2-7-123" id="h2-7-123" class="i">+        case CSAND_KEY_1:
+</a>             draw_mat = MAT_WALL;
+             break;
+<a href="#h2-7-126" id="h2-7-126" class="d">-        case CSAND_INPUT_SELECT_MAT2:
+</a><a href="#h2-7-127" id="h2-7-127" class="i">+        case CSAND_KEY_2:
+</a>             draw_mat = MAT_SAND;
+             break;
+<a href="#h2-7-130" id="h2-7-130" class="d">-        case CSAND_INPUT_SELECT_MAT3:
+</a><a href="#h2-7-131" id="h2-7-131" class="i">+        case CSAND_KEY_3:
+</a>             draw_mat = MAT_WATER;
+             break;
+<a href="#h2-7-134" id="h2-7-134" class="d">-        case CSAND_INPUT_SELECT_MAT4:
+</a><a href="#h2-7-135" id="h2-7-135" class="i">+        case CSAND_KEY_4:
+</a>             draw_mat = MAT_FIRE_GAS;
+             break;
+<a href="#h2-7-138" id="h2-7-138" class="d">-        case CSAND_INPUT_SELECT_MAT5:
+</a><a href="#h2-7-139" id="h2-7-139" class="i">+        case CSAND_KEY_5:
+</a>             draw_mat = MAT_WOOD;
+             break;
+<a href="#h2-7-142" id="h2-7-142" class="d">-        case CSAND_INPUT_SELECT_MAT6:
+</a><a href="#h2-7-143" id="h2-7-143" class="i">+        case CSAND_KEY_6:
+</a>             draw_mat = MAT_COAL;
+             break;
+<a href="#h2-7-146" id="h2-7-146" class="d">-        case CSAND_INPUT_SELECT_MAT7:
+</a><a href="#h2-7-147" id="h2-7-147" class="i">+        case CSAND_KEY_7:
+</a>             draw_mat = MAT_OIL;
+             break;
+<a href="#h2-7-150" id="h2-7-150" class="d">-        case CSAND_INPUT_SELECT_MAT8:
+</a><a href="#h2-7-151" id="h2-7-151" class="i">+        case CSAND_KEY_8:
+</a>             draw_mat = MAT_HYDROGEN_GAS;
+             break;
+<a href="#h2-7-154" id="h2-7-154" class="d">-        case CSAND_INPUT_SELECT_MAT9:
+</a><a href="#h2-7-155" id="h2-7-155" class="i">+        case CSAND_KEY_9:
+</a>             draw_mat = MAT_HYDROGEN_LIQUID;
+             break;
+<a href="#h2-7-158" id="h2-7-158" class="d">-        case CSAND_INPUT_PAUSE_TOGGLE:
+</a><a href="#h2-7-159" id="h2-7-159" class="i">+        case CSAND_KEY_SPACE:
+</a>             pause = !pause;
+             break;
+<a href="#h2-7-162" id="h2-7-162" class="d">-        case CSAND_INPUT_SPEED_INCREASE:
+</a><a href="#h2-7-163" id="h2-7-163" class="i">+        case CSAND_KEY_EQUAL:
+</a>             if (speed &lt; SPEED_LIMIT) {
+                 speed *= 2;
+             }
+             break;
+<a href="#h2-7-168" id="h2-7-168" class="d">-        case CSAND_INPUT_SPEED_DECREASE:
+</a><a href="#h2-7-169" id="h2-7-169" class="i">+        case CSAND_KEY_MINUS:
+</a>             if (speed &gt; 1) {
+                 speed /= 2;
+             }
+             break;
+<a href="#h2-7-174" id="h2-7-174" class="d">-        case CSAND_INPUT_NEXT_FRAME:
+</a><a href="#h2-7-175" id="h2-7-175" class="i">+        case CSAND_KEY_PERIOD:
+</a>             input_next_frame = true;
+             pause = true;
+             break;
+<a href="#h2-7-179" id="h2-7-179" class="i">+        case CSAND_KEY_F:
+</a><a href="#h2-7-180" id="h2-7-180" class="i">+            csandPlatformToggleFullscreen();
+</a><a href="#h2-7-181" id="h2-7-181" class="i">+            break;
+</a><a href="#h2-7-182" id="h2-7-182" class="i">+        case CSAND_KEY_TAB:
+</a><a href="#h2-7-183" id="h2-7-183" class="i">+            developer_menu_enabled = !developer_menu_enabled;
+</a><a href="#h2-7-184" id="h2-7-184" class="i">+            break;
+</a><a href="#h2-7-185" id="h2-7-185" class="i">+        default:
+</a><a href="#h2-7-186" id="h2-7-186" class="i">+            break;
+</a>     }
+ }
+ 
+<a href="#h2-7-190" id="h2-7-190" class="i">+static void csandCharCallback(uint32_t codepoint) {
+</a><a href="#h2-7-191" id="h2-7-191" class="i">+    nk_input_unicode(csandRendererNuklearContext(), codepoint);
+</a><a href="#h2-7-192" id="h2-7-192" class="i">+}
+</a><a href="#h2-7-193" id="h2-7-193" class="i">+
+</a><a href="#h2-7-194" id="h2-7-194" class="i">+static void csandDrawDeveloperMenu(void) {
+</a><a href="#h2-7-195" id="h2-7-195" class="i">+    struct nk_context *nk_ctx = csandRendererNuklearContext();
+</a><a href="#h2-7-196" id="h2-7-196" class="i">+
+</a><a href="#h2-7-197" id="h2-7-197" class="i">+    nk_flags win_flags = NK_WINDOW_BORDER | NK_WINDOW_MOVABLE |
+</a><a href="#h2-7-198" id="h2-7-198" class="i">+        NK_WINDOW_SCALABLE | NK_WINDOW_TITLE;
+</a><a href="#h2-7-199" id="h2-7-199" class="i">+
+</a><a href="#h2-7-200" id="h2-7-200" class="i">+    if (nk_begin(nk_ctx, &quot;Developer menu&quot;, developer_menu_bounds, win_flags)) {
+</a><a href="#h2-7-201" id="h2-7-201" class="i">+        developer_menu_bounds = nk_window_get_bounds(nk_ctx);
+</a><a href="#h2-7-202" id="h2-7-202" class="i">+
+</a><a href="#h2-7-203" id="h2-7-203" class="i">+        float id_width = 25;
+</a><a href="#h2-7-204" id="h2-7-204" class="i">+        float name_width = 120;
+</a><a href="#h2-7-205" id="h2-7-205" class="i">+        float density_width = 90;
+</a><a href="#h2-7-206" id="h2-7-206" class="i">+        float other_width = 80;
+</a><a href="#h2-7-207" id="h2-7-207" class="i">+        float row_height = 25;
+</a><a href="#h2-7-208" id="h2-7-208" class="i">+        int cols = 8;
+</a><a href="#h2-7-209" id="h2-7-209" class="i">+        nk_flags align = NK_TEXT_ALIGN_LEFT | NK_TEXT_ALIGN_MIDDLE;
+</a><a href="#h2-7-210" id="h2-7-210" class="i">+        nk_layout_row_begin(nk_ctx, NK_STATIC, row_height, cols);
+</a><a href="#h2-7-211" id="h2-7-211" class="i">+        {
+</a><a href="#h2-7-212" id="h2-7-212" class="i">+            nk_layout_row_push(nk_ctx, id_width);
+</a><a href="#h2-7-213" id="h2-7-213" class="i">+            nk_label(nk_ctx, &quot;ID&quot;, align);
+</a><a href="#h2-7-214" id="h2-7-214" class="i">+            nk_layout_row_push(nk_ctx, name_width);
+</a><a href="#h2-7-215" id="h2-7-215" class="i">+            nk_label(nk_ctx, &quot;COLOR&quot;, align);
+</a><a href="#h2-7-216" id="h2-7-216" class="i">+            nk_label(nk_ctx, &quot;MATERIAL&quot;, align);
+</a><a href="#h2-7-217" id="h2-7-217" class="i">+            nk_layout_row_push(nk_ctx, density_width);
+</a><a href="#h2-7-218" id="h2-7-218" class="i">+            nk_label(nk_ctx, &quot;DENSITY&quot;, align);
+</a><a href="#h2-7-219" id="h2-7-219" class="i">+            nk_layout_row_push(nk_ctx, other_width);
+</a><a href="#h2-7-220" id="h2-7-220" class="i">+            nk_label(nk_ctx, &quot;KIND&quot;, align);
+</a><a href="#h2-7-221" id="h2-7-221" class="i">+            nk_label(nk_ctx, &quot;DECAY PROBABILITY&quot;, align);
+</a><a href="#h2-7-222" id="h2-7-222" class="i">+            nk_label(nk_ctx, &quot;IGNITION PROBABILITY&quot;, align);
+</a><a href="#h2-7-223" id="h2-7-223" class="i">+            nk_label(nk_ctx, &quot;DECAY MATERIAL&quot;, align);
+</a><a href="#h2-7-224" id="h2-7-224" class="i">+        }
+</a><a href="#h2-7-225" id="h2-7-225" class="i">+        nk_layout_row_end(nk_ctx);
+</a><a href="#h2-7-226" id="h2-7-226" class="i">+
+</a><a href="#h2-7-227" id="h2-7-227" class="i">+        bool palette_changed = false;
+</a><a href="#h2-7-228" id="h2-7-228" class="i">+
+</a><a href="#h2-7-229" id="h2-7-229" class="i">+        for (unsigned int i = 0; i &lt; MATERIALS_COUNT; i++) {
+</a><a href="#h2-7-230" id="h2-7-230" class="i">+            CsandMaterialProperties *props = &amp;materials[i];
+</a><a href="#h2-7-231" id="h2-7-231" class="i">+
+</a><a href="#h2-7-232" id="h2-7-232" class="i">+            nk_layout_row_begin(nk_ctx, NK_STATIC, row_height, cols);
+</a><a href="#h2-7-233" id="h2-7-233" class="i">+
+</a><a href="#h2-7-234" id="h2-7-234" class="i">+            nk_layout_row_push(nk_ctx, id_width);
+</a><a href="#h2-7-235" id="h2-7-235" class="i">+            nk_labelf(nk_ctx, align, &quot;%u&quot;, i);
+</a><a href="#h2-7-236" id="h2-7-236" class="i">+
+</a><a href="#h2-7-237" id="h2-7-237" class="i">+            nk_layout_row_push(nk_ctx, name_width);
+</a><a href="#h2-7-238" id="h2-7-238" class="i">+
+</a><a href="#h2-7-239" id="h2-7-239" class="i">+            CsandRgba *color = palette + i;
+</a><a href="#h2-7-240" id="h2-7-240" class="i">+            if (nk_combo_begin_color(nk_ctx, (struct nk_color){color-&gt;r, color-&gt;g, color-&gt;b, 0xFF}, nk_vec2(300, 300))) {
+</a><a href="#h2-7-241" id="h2-7-241" class="i">+                nk_layout_row_dynamic(nk_ctx, row_height, 3);
+</a><a href="#h2-7-242" id="h2-7-242" class="i">+                color-&gt;r = nk_propertyi(nk_ctx, &quot;#R&quot;, 0x00, color-&gt;r, 0xFF, 1, 1);
+</a><a href="#h2-7-243" id="h2-7-243" class="i">+                color-&gt;g = nk_propertyi(nk_ctx, &quot;#G&quot;, 0x00, color-&gt;g, 0xFF, 1, 1);
+</a><a href="#h2-7-244" id="h2-7-244" class="i">+                color-&gt;b = nk_propertyi(nk_ctx, &quot;#B&quot;, 0x00, color-&gt;b, 0xFF, 1, 1);
+</a><a href="#h2-7-245" id="h2-7-245" class="i">+                color-&gt;a = 0xFF;
+</a><a href="#h2-7-246" id="h2-7-246" class="i">+                palette_changed = true;
+</a><a href="#h2-7-247" id="h2-7-247" class="i">+                nk_combo_end(nk_ctx);
+</a><a href="#h2-7-248" id="h2-7-248" class="i">+            }
+</a><a href="#h2-7-249" id="h2-7-249" class="i">+
+</a><a href="#h2-7-250" id="h2-7-250" class="i">+            const char *name = props-&gt;name;
+</a><a href="#h2-7-251" id="h2-7-251" class="i">+            if (name == NULL) {
+</a><a href="#h2-7-252" id="h2-7-252" class="i">+                name = &quot;unnamed&quot;;
+</a><a href="#h2-7-253" id="h2-7-253" class="i">+            }
+</a><a href="#h2-7-254" id="h2-7-254" class="i">+
+</a><a href="#h2-7-255" id="h2-7-255" class="i">+            if (nk_button_label(nk_ctx, name)) {
+</a><a href="#h2-7-256" id="h2-7-256" class="i">+                draw_mat = i;
+</a><a href="#h2-7-257" id="h2-7-257" class="i">+            }
+</a><a href="#h2-7-258" id="h2-7-258" class="i">+
+</a><a href="#h2-7-259" id="h2-7-259" class="i">+            nk_layout_row_push(nk_ctx, density_width);
+</a><a href="#h2-7-260" id="h2-7-260" class="i">+            props-&gt;density = nk_propertyi(nk_ctx, &quot;##density&quot;, 0, props-&gt;density, INT_MAX, 25, 500);
+</a><a href="#h2-7-261" id="h2-7-261" class="i">+
+</a><a href="#h2-7-262" id="h2-7-262" class="i">+            nk_layout_row_push(nk_ctx, other_width);
+</a><a href="#h2-7-263" id="h2-7-263" class="i">+            static const char *kinds[] = {
+</a><a href="#h2-7-264" id="h2-7-264" class="i">+                [MAT_KIND_SOLID] = &quot;solid&quot;,
+</a><a href="#h2-7-265" id="h2-7-265" class="i">+                [MAT_KIND_POWDER] = &quot;powder&quot;,
+</a><a href="#h2-7-266" id="h2-7-266" class="i">+                [MAT_KIND_FLUID] = &quot;fluid&quot;
+</a><a href="#h2-7-267" id="h2-7-267" class="i">+            };
+</a><a href="#h2-7-268" id="h2-7-268" class="i">+
+</a><a href="#h2-7-269" id="h2-7-269" class="i">+            props-&gt;kind = nk_combo(nk_ctx, kinds, sizeof(kinds) / sizeof(kinds[0]), props-&gt;kind, row_height, nk_vec2(other_width, row_height*(MAT_KINDS_COUNT + 1)));
+</a><a href="#h2-7-270" id="h2-7-270" class="i">+            props-&gt;decay_prob = nk_propertyi(nk_ctx, &quot;##decay_prob&quot;, 0, props-&gt;decay_prob, UINT16_MAX, 1, 1);
+</a><a href="#h2-7-271" id="h2-7-271" class="i">+            props-&gt;ignition_prob = nk_propertyi(nk_ctx, &quot;##ignition_prob&quot;, 0, props-&gt;ignition_prob, UINT16_MAX, 1, 1);
+</a><a href="#h2-7-272" id="h2-7-272" class="i">+            props-&gt;decay_mat = nk_propertyi(nk_ctx, &quot;##decay_mat&quot;, 0, props-&gt;decay_mat, MATERIALS_COUNT - 1, 1, 0.5);
+</a><a href="#h2-7-273" id="h2-7-273" class="i">+
+</a><a href="#h2-7-274" id="h2-7-274" class="i">+            nk_layout_row_end(nk_ctx);
+</a><a href="#h2-7-275" id="h2-7-275" class="i">+        }
+</a><a href="#h2-7-276" id="h2-7-276" class="i">+
+</a><a href="#h2-7-277" id="h2-7-277" class="i">+        if (palette_changed) {
+</a><a href="#h2-7-278" id="h2-7-278" class="i">+            csandRendererSetPalette(palette, MATERIALS_COUNT);
+</a><a href="#h2-7-279" id="h2-7-279" class="i">+        }
+</a><a href="#h2-7-280" id="h2-7-280" class="i">+    }
+</a><a href="#h2-7-281" id="h2-7-281" class="i">+    nk_end(nk_ctx);
+</a><a href="#h2-7-282" id="h2-7-282" class="i">+}
+</a><a href="#h2-7-283" id="h2-7-283" class="i">+
+</a> static void csandRenderCallback(double time) {
+<a href="#h2-7-285" id="h2-7-285" class="d">-    bool draw = csandPlatformIsMouseButtonPressed(CSAND_MOUSE_BUTTON_LEFT);
+</a><a href="#h2-7-286" id="h2-7-286" class="i">+    struct nk_context *nk_ctx = csandRendererNuklearContext();
+</a><a href="#h2-7-287" id="h2-7-287" class="i">+    nk_input_end(nk_ctx);
+</a><a href="#h2-7-288" id="h2-7-288" class="i">+
+</a><a href="#h2-7-289" id="h2-7-289" class="i">+    if (developer_menu_enabled) {
+</a><a href="#h2-7-290" id="h2-7-290" class="i">+        csandDrawDeveloperMenu();
+</a><a href="#h2-7-291" id="h2-7-291" class="i">+    }
+</a><a href="#h2-7-292" id="h2-7-292" class="i">+
+</a><a href="#h2-7-293" id="h2-7-293" class="i">+    any_nuklear_item_active = nk_item_is_any_active(nk_ctx);
+</a><a href="#h2-7-294" id="h2-7-294" class="i">+
+</a><a href="#h2-7-295" id="h2-7-295" class="i">+    bool draw = !any_nuklear_item_active &amp;&amp; csandPlatformIsMouseButtonPressed(CSAND_MOUSE_BUTTON_LEFT);
+</a>     CsandVec2Us cur_pos = csandRendererScreenSpaceToWorldSpace(csandPlatformGetCursorPos());
+ 
+     if (time &gt;= next_tick_time &amp;&amp; (!pause || input_next_frame)) {
+<a href="#h2-8" id="h2-8" class="h">@@ -180,6 +424,9 @@ static void csandRenderCallback(double time) {
+</a>     }
+ 
+     csandRendererRender(data, WIDTH, HEIGHT);
+<a href="#h2-8-3" id="h2-8-3" class="i">+    nk_clear(nk_ctx);
+</a><a href="#h2-8-4" id="h2-8-4" class="i">+
+</a><a href="#h2-8-5" id="h2-8-5" class="i">+    nk_input_begin(nk_ctx);
+</a> }
+ 
+ static void csandSimulate(CsandRenderBuffer buf) {
+<a href="#h2-9" id="h2-9" class="h">@@ -239,7 +486,6 @@ static inline unsigned char *csandGetMat(CsandRenderBuffer buf, unsigned int x, 
+</a>     return buf.data + buf.width * y + x;
+ }
+ 
+<a href="#h2-9-3" id="h2-9-3" class="d">-
+</a> static bool csandInBounds(CsandRenderBuffer buf, int x, int y) {
+     return x &gt;= 0 &amp;&amp; x &lt; buf.width &amp;&amp; y &gt;= 0 &amp;&amp; y &lt; buf.height;
+ }
+<a href="#h2-10" id="h2-10" class="h">@@ -268,6 +514,8 @@ static void tryIgnite(CsandRenderBuffer buf, unsigned int x, unsigned int y) {
+</a>                     case MAT_KIND_FLUID:
+                         mat = csandRand() &amp; 1 ? MAT_FIRE_GAS : MAT_FIRE_LIQUID;
+                         break;
+<a href="#h2-10-3" id="h2-10-3" class="i">+                    case MAT_KINDS_COUNT:
+</a><a href="#h2-10-4" id="h2-10-4" class="i">+                        break;
+</a>                 }
+ 
+                 *csandGetMat(buf, x, y) = mat | MAT_UPDATED_BIT;
+<b>diff --git a/<a id="h3" href="../file/nuklear.c.html">nuklear.c</a> b/<a href="../file/nuklear.c.html">nuklear.c</a></b>
+<a href="#h3-0" id="h3-0" class="h">@@ -0,0 +1,2 @@
+</a><a href="#h3-0-0" id="h3-0-0" class="i">+#define NK_IMPLEMENTATION
+</a><a href="#h3-0-1" id="h3-0-1" class="i">+#include &quot;nuklear_config.h&quot;
+</a><b>diff --git a/<a id="h4" href="../file/nuklear.frag.html">nuklear.frag</a> b/<a href="../file/nuklear.frag.html">nuklear.frag</a></b>
+<a href="#h4-0" id="h4-0" class="h">@@ -0,0 +1,10 @@
+</a><a href="#h4-0-0" id="h4-0-0" class="i">+#version 100
+</a><a href="#h4-0-1" id="h4-0-1" class="i">+
+</a><a href="#h4-0-2" id="h4-0-2" class="i">+uniform sampler2D texture;
+</a><a href="#h4-0-3" id="h4-0-3" class="i">+precision lowp float;
+</a><a href="#h4-0-4" id="h4-0-4" class="i">+varying vec2 var_uv;
+</a><a href="#h4-0-5" id="h4-0-5" class="i">+varying vec4 var_color;
+</a><a href="#h4-0-6" id="h4-0-6" class="i">+
+</a><a href="#h4-0-7" id="h4-0-7" class="i">+void main(void) {
+</a><a href="#h4-0-8" id="h4-0-8" class="i">+    gl_FragColor = var_color * texture2D(texture, var_uv).aaaa;
+</a><a href="#h4-0-9" id="h4-0-9" class="i">+}
+</a><b>diff --git a/<a id="h5" href="../file/nuklear.vert.html">nuklear.vert</a> b/<a href="../file/nuklear.vert.html">nuklear.vert</a></b>
+<a href="#h5-0" id="h5-0" class="h">@@ -0,0 +1,14 @@
+</a><a href="#h5-0-0" id="h5-0-0" class="i">+#version 100
+</a><a href="#h5-0-1" id="h5-0-1" class="i">+
+</a><a href="#h5-0-2" id="h5-0-2" class="i">+attribute vec2 position;
+</a><a href="#h5-0-3" id="h5-0-3" class="i">+attribute vec2 uv;
+</a><a href="#h5-0-4" id="h5-0-4" class="i">+attribute vec4 color;
+</a><a href="#h5-0-5" id="h5-0-5" class="i">+varying vec2 var_uv;
+</a><a href="#h5-0-6" id="h5-0-6" class="i">+varying vec4 var_color;
+</a><a href="#h5-0-7" id="h5-0-7" class="i">+uniform vec2 framebuffer_size;
+</a><a href="#h5-0-8" id="h5-0-8" class="i">+
+</a><a href="#h5-0-9" id="h5-0-9" class="i">+void main(void) {
+</a><a href="#h5-0-10" id="h5-0-10" class="i">+    var_uv = uv;
+</a><a href="#h5-0-11" id="h5-0-11" class="i">+    var_color = color;
+</a><a href="#h5-0-12" id="h5-0-12" class="i">+    gl_Position = vec4(vec2(position.x, framebuffer_size.y - 1.0 - position.y) / framebuffer_size * 2.0 - 1.0, 0.0, 1.0);
+</a><a href="#h5-0-13" id="h5-0-13" class="i">+}
+</a><b>diff --git a/<a id="h6" href="../file/nuklear_config.h.html">nuklear_config.h</a> b/<a href="../file/nuklear_config.h.html">nuklear_config.h</a></b>
+<a href="#h6-0" id="h6-0" class="h">@@ -0,0 +1,11 @@
+</a><a href="#h6-0-0" id="h6-0-0" class="i">+#ifndef CSAND_NUKLEAR_CONFIG_H
+</a><a href="#h6-0-1" id="h6-0-1" class="i">+#define CSAND_NUKLEAR_CONFIG_H
+</a><a href="#h6-0-2" id="h6-0-2" class="i">+
+</a><a href="#h6-0-3" id="h6-0-3" class="i">+#define NK_INCLUDE_DEFAULT_ALLOCATOR
+</a><a href="#h6-0-4" id="h6-0-4" class="i">+#define NK_INCLUDE_STANDARD_VARARGS
+</a><a href="#h6-0-5" id="h6-0-5" class="i">+#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
+</a><a href="#h6-0-6" id="h6-0-6" class="i">+#define NK_INCLUDE_FONT_BAKING
+</a><a href="#h6-0-7" id="h6-0-7" class="i">+#define NK_INCLUDE_DEFAULT_FONT
+</a><a href="#h6-0-8" id="h6-0-8" class="i">+#include &quot;nuklear.h&quot;
+</a><a href="#h6-0-9" id="h6-0-9" class="i">+
+</a><a href="#h6-0-10" id="h6-0-10" class="i">+#endif
+</a><b>diff --git a/<a id="h7" href="../file/platform.h.html">platform.h</a> b/<a href="../file/platform.h.html">platform.h</a></b>
+<a href="#h7-0" id="h7-0" class="h">@@ -5,21 +5,141 @@
+</a> #include &lt;stdint.h&gt;
+ 
+ typedef enum {
+<a href="#h7-0-3" id="h7-0-3" class="d">-    CSAND_INPUT_SELECT_MAT0,
+</a><a href="#h7-0-4" id="h7-0-4" class="d">-    CSAND_INPUT_SELECT_MAT1,
+</a><a href="#h7-0-5" id="h7-0-5" class="d">-    CSAND_INPUT_SELECT_MAT2,
+</a><a href="#h7-0-6" id="h7-0-6" class="d">-    CSAND_INPUT_SELECT_MAT3,
+</a><a href="#h7-0-7" id="h7-0-7" class="d">-    CSAND_INPUT_SELECT_MAT4,
+</a><a href="#h7-0-8" id="h7-0-8" class="d">-    CSAND_INPUT_SELECT_MAT5,
+</a><a href="#h7-0-9" id="h7-0-9" class="d">-    CSAND_INPUT_SELECT_MAT6,
+</a><a href="#h7-0-10" id="h7-0-10" class="d">-    CSAND_INPUT_SELECT_MAT7,
+</a><a href="#h7-0-11" id="h7-0-11" class="d">-    CSAND_INPUT_SELECT_MAT8,
+</a><a href="#h7-0-12" id="h7-0-12" class="d">-    CSAND_INPUT_SELECT_MAT9,
+</a><a href="#h7-0-13" id="h7-0-13" class="d">-    CSAND_INPUT_PAUSE_TOGGLE,
+</a><a href="#h7-0-14" id="h7-0-14" class="d">-    CSAND_INPUT_SPEED_INCREASE,
+</a><a href="#h7-0-15" id="h7-0-15" class="d">-    CSAND_INPUT_SPEED_DECREASE,
+</a><a href="#h7-0-16" id="h7-0-16" class="d">-    CSAND_INPUT_NEXT_FRAME,
+</a><a href="#h7-0-17" id="h7-0-17" class="d">-} CsandInput;
+</a><a href="#h7-0-18" id="h7-0-18" class="i">+    CSAND_KEY_SPACE = 32,
+</a><a href="#h7-0-19" id="h7-0-19" class="i">+    CSAND_KEY_APOSTROPHE = 39,
+</a><a href="#h7-0-20" id="h7-0-20" class="i">+    CSAND_KEY_COMMA = 44,
+</a><a href="#h7-0-21" id="h7-0-21" class="i">+    CSAND_KEY_MINUS = 45,
+</a><a href="#h7-0-22" id="h7-0-22" class="i">+    CSAND_KEY_PERIOD = 46,
+</a><a href="#h7-0-23" id="h7-0-23" class="i">+    CSAND_KEY_SLASH = 47,
+</a><a href="#h7-0-24" id="h7-0-24" class="i">+    CSAND_KEY_0 = 48,
+</a><a href="#h7-0-25" id="h7-0-25" class="i">+    CSAND_KEY_1 = 49,
+</a><a href="#h7-0-26" id="h7-0-26" class="i">+    CSAND_KEY_2 = 50,
+</a><a href="#h7-0-27" id="h7-0-27" class="i">+    CSAND_KEY_3 = 51,
+</a><a href="#h7-0-28" id="h7-0-28" class="i">+    CSAND_KEY_4 = 52,
+</a><a href="#h7-0-29" id="h7-0-29" class="i">+    CSAND_KEY_5 = 53,
+</a><a href="#h7-0-30" id="h7-0-30" class="i">+    CSAND_KEY_6 = 54,
+</a><a href="#h7-0-31" id="h7-0-31" class="i">+    CSAND_KEY_7 = 55,
+</a><a href="#h7-0-32" id="h7-0-32" class="i">+    CSAND_KEY_8 = 56,
+</a><a href="#h7-0-33" id="h7-0-33" class="i">+    CSAND_KEY_9 = 57,
+</a><a href="#h7-0-34" id="h7-0-34" class="i">+    CSAND_KEY_SEMICOLON = 59,
+</a><a href="#h7-0-35" id="h7-0-35" class="i">+    CSAND_KEY_EQUAL = 61,
+</a><a href="#h7-0-36" id="h7-0-36" class="i">+    CSAND_KEY_A = 65,
+</a><a href="#h7-0-37" id="h7-0-37" class="i">+    CSAND_KEY_B = 66,
+</a><a href="#h7-0-38" id="h7-0-38" class="i">+    CSAND_KEY_C = 67,
+</a><a href="#h7-0-39" id="h7-0-39" class="i">+    CSAND_KEY_D = 68,
+</a><a href="#h7-0-40" id="h7-0-40" class="i">+    CSAND_KEY_E = 69,
+</a><a href="#h7-0-41" id="h7-0-41" class="i">+    CSAND_KEY_F = 70,
+</a><a href="#h7-0-42" id="h7-0-42" class="i">+    CSAND_KEY_G = 71,
+</a><a href="#h7-0-43" id="h7-0-43" class="i">+    CSAND_KEY_H = 72,
+</a><a href="#h7-0-44" id="h7-0-44" class="i">+    CSAND_KEY_I = 73,
+</a><a href="#h7-0-45" id="h7-0-45" class="i">+    CSAND_KEY_J = 74,
+</a><a href="#h7-0-46" id="h7-0-46" class="i">+    CSAND_KEY_K = 75,
+</a><a href="#h7-0-47" id="h7-0-47" class="i">+    CSAND_KEY_L = 76,
+</a><a href="#h7-0-48" id="h7-0-48" class="i">+    CSAND_KEY_M = 77,
+</a><a href="#h7-0-49" id="h7-0-49" class="i">+    CSAND_KEY_N = 78,
+</a><a href="#h7-0-50" id="h7-0-50" class="i">+    CSAND_KEY_O = 79,
+</a><a href="#h7-0-51" id="h7-0-51" class="i">+    CSAND_KEY_P = 80,
+</a><a href="#h7-0-52" id="h7-0-52" class="i">+    CSAND_KEY_Q = 81,
+</a><a href="#h7-0-53" id="h7-0-53" class="i">+    CSAND_KEY_R = 82,
+</a><a href="#h7-0-54" id="h7-0-54" class="i">+    CSAND_KEY_S = 83,
+</a><a href="#h7-0-55" id="h7-0-55" class="i">+    CSAND_KEY_T = 84,
+</a><a href="#h7-0-56" id="h7-0-56" class="i">+    CSAND_KEY_U = 85,
+</a><a href="#h7-0-57" id="h7-0-57" class="i">+    CSAND_KEY_V = 86,
+</a><a href="#h7-0-58" id="h7-0-58" class="i">+    CSAND_KEY_W = 87,
+</a><a href="#h7-0-59" id="h7-0-59" class="i">+    CSAND_KEY_X = 88,
+</a><a href="#h7-0-60" id="h7-0-60" class="i">+    CSAND_KEY_Y = 89,
+</a><a href="#h7-0-61" id="h7-0-61" class="i">+    CSAND_KEY_Z = 90,
+</a><a href="#h7-0-62" id="h7-0-62" class="i">+    CSAND_KEY_LEFT_BRACKET = 91,
+</a><a href="#h7-0-63" id="h7-0-63" class="i">+    CSAND_KEY_BACKSLASH = 92,
+</a><a href="#h7-0-64" id="h7-0-64" class="i">+    CSAND_KEY_RIGHT_BRACKET = 93,
+</a><a href="#h7-0-65" id="h7-0-65" class="i">+    CSAND_KEY_GRAVE_ACCENT = 96,
+</a><a href="#h7-0-66" id="h7-0-66" class="i">+    CSAND_KEY_WORLD_1 = 161,
+</a><a href="#h7-0-67" id="h7-0-67" class="i">+    CSAND_KEY_WORLD_2 = 162,
+</a><a href="#h7-0-68" id="h7-0-68" class="i">+    CSAND_KEY_ESCAPE = 256,
+</a><a href="#h7-0-69" id="h7-0-69" class="i">+    CSAND_KEY_ENTER = 257,
+</a><a href="#h7-0-70" id="h7-0-70" class="i">+    CSAND_KEY_TAB = 258,
+</a><a href="#h7-0-71" id="h7-0-71" class="i">+    CSAND_KEY_BACKSPACE = 259,
+</a><a href="#h7-0-72" id="h7-0-72" class="i">+    CSAND_KEY_INSERT = 260,
+</a><a href="#h7-0-73" id="h7-0-73" class="i">+    CSAND_KEY_DELETE = 261,
+</a><a href="#h7-0-74" id="h7-0-74" class="i">+    CSAND_KEY_RIGHT = 262,
+</a><a href="#h7-0-75" id="h7-0-75" class="i">+    CSAND_KEY_LEFT = 263,
+</a><a href="#h7-0-76" id="h7-0-76" class="i">+    CSAND_KEY_DOWN = 264,
+</a><a href="#h7-0-77" id="h7-0-77" class="i">+    CSAND_KEY_UP = 265,
+</a><a href="#h7-0-78" id="h7-0-78" class="i">+    CSAND_KEY_PAGE_UP = 266,
+</a><a href="#h7-0-79" id="h7-0-79" class="i">+    CSAND_KEY_PAGE_DOWN = 267,
+</a><a href="#h7-0-80" id="h7-0-80" class="i">+    CSAND_KEY_HOME = 268,
+</a><a href="#h7-0-81" id="h7-0-81" class="i">+    CSAND_KEY_END = 269,
+</a><a href="#h7-0-82" id="h7-0-82" class="i">+    CSAND_KEY_CAPS_LOCK = 280,
+</a><a href="#h7-0-83" id="h7-0-83" class="i">+    CSAND_KEY_SCROLL_LOCK = 281,
+</a><a href="#h7-0-84" id="h7-0-84" class="i">+    CSAND_KEY_NUM_LOCK = 282,
+</a><a href="#h7-0-85" id="h7-0-85" class="i">+    CSAND_KEY_PRINT_SCREEN = 283,
+</a><a href="#h7-0-86" id="h7-0-86" class="i">+    CSAND_KEY_PAUSE = 284,
+</a><a href="#h7-0-87" id="h7-0-87" class="i">+    CSAND_KEY_F1 = 290,
+</a><a href="#h7-0-88" id="h7-0-88" class="i">+    CSAND_KEY_F2 = 291,
+</a><a href="#h7-0-89" id="h7-0-89" class="i">+    CSAND_KEY_F3 = 292,
+</a><a href="#h7-0-90" id="h7-0-90" class="i">+    CSAND_KEY_F4 = 293,
+</a><a href="#h7-0-91" id="h7-0-91" class="i">+    CSAND_KEY_F5 = 294,
+</a><a href="#h7-0-92" id="h7-0-92" class="i">+    CSAND_KEY_F6 = 295,
+</a><a href="#h7-0-93" id="h7-0-93" class="i">+    CSAND_KEY_F7 = 296,
+</a><a href="#h7-0-94" id="h7-0-94" class="i">+    CSAND_KEY_F8 = 297,
+</a><a href="#h7-0-95" id="h7-0-95" class="i">+    CSAND_KEY_F9 = 298,
+</a><a href="#h7-0-96" id="h7-0-96" class="i">+    CSAND_KEY_F10 = 299,
+</a><a href="#h7-0-97" id="h7-0-97" class="i">+    CSAND_KEY_F11 = 300,
+</a><a href="#h7-0-98" id="h7-0-98" class="i">+    CSAND_KEY_F12 = 301,
+</a><a href="#h7-0-99" id="h7-0-99" class="i">+    CSAND_KEY_F13 = 302,
+</a><a href="#h7-0-100" id="h7-0-100" class="i">+    CSAND_KEY_F14 = 303,
+</a><a href="#h7-0-101" id="h7-0-101" class="i">+    CSAND_KEY_F15 = 304,
+</a><a href="#h7-0-102" id="h7-0-102" class="i">+    CSAND_KEY_F16 = 305,
+</a><a href="#h7-0-103" id="h7-0-103" class="i">+    CSAND_KEY_F17 = 306,
+</a><a href="#h7-0-104" id="h7-0-104" class="i">+    CSAND_KEY_F18 = 307,
+</a><a href="#h7-0-105" id="h7-0-105" class="i">+    CSAND_KEY_F19 = 308,
+</a><a href="#h7-0-106" id="h7-0-106" class="i">+    CSAND_KEY_F20 = 309,
+</a><a href="#h7-0-107" id="h7-0-107" class="i">+    CSAND_KEY_F21 = 310,
+</a><a href="#h7-0-108" id="h7-0-108" class="i">+    CSAND_KEY_F22 = 311,
+</a><a href="#h7-0-109" id="h7-0-109" class="i">+    CSAND_KEY_F23 = 312,
+</a><a href="#h7-0-110" id="h7-0-110" class="i">+    CSAND_KEY_F24 = 313,
+</a><a href="#h7-0-111" id="h7-0-111" class="i">+    CSAND_KEY_F25 = 314,
+</a><a href="#h7-0-112" id="h7-0-112" class="i">+    CSAND_KEY_KP_0 = 320,
+</a><a href="#h7-0-113" id="h7-0-113" class="i">+    CSAND_KEY_KP_1 = 321,
+</a><a href="#h7-0-114" id="h7-0-114" class="i">+    CSAND_KEY_KP_2 = 322,
+</a><a href="#h7-0-115" id="h7-0-115" class="i">+    CSAND_KEY_KP_3 = 323,
+</a><a href="#h7-0-116" id="h7-0-116" class="i">+    CSAND_KEY_KP_4 = 324,
+</a><a href="#h7-0-117" id="h7-0-117" class="i">+    CSAND_KEY_KP_5 = 325,
+</a><a href="#h7-0-118" id="h7-0-118" class="i">+    CSAND_KEY_KP_6 = 326,
+</a><a href="#h7-0-119" id="h7-0-119" class="i">+    CSAND_KEY_KP_7 = 327,
+</a><a href="#h7-0-120" id="h7-0-120" class="i">+    CSAND_KEY_KP_8 = 328,
+</a><a href="#h7-0-121" id="h7-0-121" class="i">+    CSAND_KEY_KP_9 = 329,
+</a><a href="#h7-0-122" id="h7-0-122" class="i">+    CSAND_KEY_KP_DECIMAL = 330,
+</a><a href="#h7-0-123" id="h7-0-123" class="i">+    CSAND_KEY_KP_DIVIDE = 331,
+</a><a href="#h7-0-124" id="h7-0-124" class="i">+    CSAND_KEY_KP_MULTIPLY = 332,
+</a><a href="#h7-0-125" id="h7-0-125" class="i">+    CSAND_KEY_KP_SUBTRACT = 333,
+</a><a href="#h7-0-126" id="h7-0-126" class="i">+    CSAND_KEY_KP_ADD = 334,
+</a><a href="#h7-0-127" id="h7-0-127" class="i">+    CSAND_KEY_KP_ENTER = 335,
+</a><a href="#h7-0-128" id="h7-0-128" class="i">+    CSAND_KEY_KP_EQUAL = 336,
+</a><a href="#h7-0-129" id="h7-0-129" class="i">+    CSAND_KEY_LEFT_SHIFT = 340,
+</a><a href="#h7-0-130" id="h7-0-130" class="i">+    CSAND_KEY_LEFT_CONTROL = 341,
+</a><a href="#h7-0-131" id="h7-0-131" class="i">+    CSAND_KEY_LEFT_ALT = 342,
+</a><a href="#h7-0-132" id="h7-0-132" class="i">+    CSAND_KEY_LEFT_SUPER = 343,
+</a><a href="#h7-0-133" id="h7-0-133" class="i">+    CSAND_KEY_RIGHT_SHIFT = 344,
+</a><a href="#h7-0-134" id="h7-0-134" class="i">+    CSAND_KEY_RIGHT_CONTROL = 345,
+</a><a href="#h7-0-135" id="h7-0-135" class="i">+    CSAND_KEY_RIGHT_ALT = 346,
+</a><a href="#h7-0-136" id="h7-0-136" class="i">+    CSAND_KEY_RIGHT_SUPER = 347,
+</a><a href="#h7-0-137" id="h7-0-137" class="i">+    CSAND_KEY_MENU = 348,
+</a><a href="#h7-0-138" id="h7-0-138" class="i">+} CsandKey;
+</a><a href="#h7-0-139" id="h7-0-139" class="i">+
+</a><a href="#h7-0-140" id="h7-0-140" class="i">+typedef enum {
+</a><a href="#h7-0-141" id="h7-0-141" class="i">+    CSAND_MOD_NONE,
+</a><a href="#h7-0-142" id="h7-0-142" class="i">+    CSAND_MOD_SHIFT = 0x1,
+</a><a href="#h7-0-143" id="h7-0-143" class="i">+    CSAND_MOD_CONTROL = 0x2,
+</a><a href="#h7-0-144" id="h7-0-144" class="i">+    CSAND_MOD_ALT = 0x4,
+</a><a href="#h7-0-145" id="h7-0-145" class="i">+} CsandMod;
+</a><a href="#h7-0-146" id="h7-0-146" class="i">+
+</a><a href="#h7-0-147" id="h7-0-147" class="i">+typedef CsandMod CsandModSet;
+</a><a href="#h7-0-148" id="h7-0-148" class="i">+
+</a><a href="#h7-0-149" id="h7-0-149" class="i">+typedef enum {
+</a><a href="#h7-0-150" id="h7-0-150" class="i">+    CSAND_ACTION_RELEASE,
+</a><a href="#h7-0-151" id="h7-0-151" class="i">+    CSAND_ACTION_PRESS,
+</a><a href="#h7-0-152" id="h7-0-152" class="i">+} CsandAction;
+</a> 
+ typedef enum {
+     CSAND_MOUSE_BUTTON_LEFT,
+<a href="#h7-1" id="h7-1" class="h">@@ -27,12 +147,20 @@ typedef enum {
+</a> } CsandMouseButton;
+ 
+ typedef void (*CsandRenderCallback)(double time);
+<a href="#h7-1-3" id="h7-1-3" class="d">-typedef void (*CsandInputCallback)(CsandInput input);
+</a><a href="#h7-1-4" id="h7-1-4" class="i">+typedef void (*CsandKeyCallback)(CsandKey key, CsandAction action, CsandModSet mods);
+</a><a href="#h7-1-5" id="h7-1-5" class="i">+typedef void (*CsandCharCallback)(uint32_t codepoint);
+</a><a href="#h7-1-6" id="h7-1-6" class="i">+typedef void (*CsandMouseButtonCallback)(CsandMouseButton button, unsigned int pressed);
+</a><a href="#h7-1-7" id="h7-1-7" class="i">+typedef void (*CsandMouseMotionCallback)(double x, double y);
+</a><a href="#h7-1-8" id="h7-1-8" class="i">+typedef void (*CsandMouseScrollCallback)(double x, double y);
+</a> typedef void (*CsandFramebufferSizeCallback)(CsandVec2Us size);
+ 
+ void csandPlatformInit(void);
+ void csandPlatformSetRenderCallback(CsandRenderCallback callback);
+<a href="#h7-1-13" id="h7-1-13" class="d">-void csandPlatformSetInputCallback(CsandInputCallback callback);
+</a><a href="#h7-1-14" id="h7-1-14" class="i">+void csandPlatformSetKeyCallback(CsandKeyCallback callback);
+</a><a href="#h7-1-15" id="h7-1-15" class="i">+void csandPlatformSetCharCallback(CsandCharCallback callback);
+</a><a href="#h7-1-16" id="h7-1-16" class="i">+void csandPlatformSetMouseButtonCallback(CsandMouseButtonCallback callback);
+</a><a href="#h7-1-17" id="h7-1-17" class="i">+void csandPlatformSetMouseMotionCallback(CsandMouseMotionCallback callback);
+</a><a href="#h7-1-18" id="h7-1-18" class="i">+void csandPlatformSetMouseScrollCallback(CsandMouseScrollCallback callback);
+</a> void csandPlatformSetFramebufferSizeCallback(CsandFramebufferSizeCallback callback);
+ unsigned int csandPlatformIsMouseButtonPressed(CsandMouseButton button);
+ CsandVec2Us csandPlatformGetCursorPos(void);
+<a href="#h7-2" id="h7-2" class="h">@@ -40,5 +168,6 @@ CsandVec2Us csandPlatformGetWindowSize(void);
+</a> CsandVec2Us csandPlatformGetFramebufferSize(void);
+ void csandPlatformRun(void);
+ void csandPlatformPrintErr(const char *str);
+<a href="#h7-2-3" id="h7-2-3" class="i">+void csandPlatformToggleFullscreen(void);
+</a> 
+ #endif
+<b>diff --git a/<a id="h8" href="../file/platform_glfw.c.html">platform_glfw.c</a> b/<a href="../file/platform_glfw.c.html">platform_glfw.c</a></b>
+<a href="#h8-0" id="h8-0" class="h">@@ -9,7 +9,11 @@
+</a> typedef struct CsandPlatform {
+     GLFWwindow *window;
+     CsandRenderCallback render_callback;
+<a href="#h8-0-3" id="h8-0-3" class="d">-    CsandInputCallback input_callback;
+</a><a href="#h8-0-4" id="h8-0-4" class="i">+    CsandKeyCallback key_callback;
+</a><a href="#h8-0-5" id="h8-0-5" class="i">+    CsandCharCallback char_callback;
+</a><a href="#h8-0-6" id="h8-0-6" class="i">+    CsandMouseButtonCallback mouse_button_callback;
+</a><a href="#h8-0-7" id="h8-0-7" class="i">+    CsandMouseMotionCallback mouse_motion_callback;
+</a><a href="#h8-0-8" id="h8-0-8" class="i">+    CsandMouseScrollCallback mouse_scroll_callback;
+</a>     CsandFramebufferSizeCallback framebuffer_size_callback;
+     CsandVec2I windowed_mode_pos;
+     CsandVec2I windowed_mode_size;
+<a href="#h8-1" id="h8-1" class="h">@@ -21,7 +25,7 @@ static void csandGlfwErrorCallback(int code, const char *msg) {
+</a>     fprintf(stderr, &quot;glfw error %d: %s\n&quot;, code, msg);
+ }
+ 
+<a href="#h8-1-3" id="h8-1-3" class="d">-static void csandToggleFullscreen(void) {
+</a><a href="#h8-1-4" id="h8-1-4" class="i">+void csandPlatformToggleFullscreen(void) {
+</a>     if (glfwGetWindowMonitor(platform.window)) {
+         glfwSetWindowMonitor(
+             platform.window,
+<a href="#h8-2" id="h8-2" class="h">@@ -62,33 +66,51 @@ static void csandGlfwKeyCallback(GLFWwindow *window, int key, int scancode, int 
+</a>     (void)scancode;
+     (void)mods;
+ 
+<a href="#h8-2-3" id="h8-2-3" class="d">-    if (!platform.input_callback) {
+</a><a href="#h8-2-4" id="h8-2-4" class="i">+    if (!platform.key_callback) {
+</a>         return;
+     }
+ 
+<a href="#h8-2-8" id="h8-2-8" class="d">-    if (action == GLFW_PRESS) {
+</a><a href="#h8-2-9" id="h8-2-9" class="d">-        switch (key) {
+</a><a href="#h8-2-10" id="h8-2-10" class="d">-            case GLFW_KEY_SPACE:
+</a><a href="#h8-2-11" id="h8-2-11" class="d">-                platform.input_callback(CSAND_INPUT_PAUSE_TOGGLE);
+</a><a href="#h8-2-12" id="h8-2-12" class="d">-                break;
+</a><a href="#h8-2-13" id="h8-2-13" class="d">-            case GLFW_KEY_EQUAL:
+</a><a href="#h8-2-14" id="h8-2-14" class="d">-                platform.input_callback(CSAND_INPUT_SPEED_INCREASE);
+</a><a href="#h8-2-15" id="h8-2-15" class="d">-                break;
+</a><a href="#h8-2-16" id="h8-2-16" class="d">-            case GLFW_KEY_MINUS:
+</a><a href="#h8-2-17" id="h8-2-17" class="d">-                platform.input_callback(CSAND_INPUT_SPEED_DECREASE);
+</a><a href="#h8-2-18" id="h8-2-18" class="d">-                break;
+</a><a href="#h8-2-19" id="h8-2-19" class="d">-            case GLFW_KEY_PERIOD:
+</a><a href="#h8-2-20" id="h8-2-20" class="d">-                platform.input_callback(CSAND_INPUT_NEXT_FRAME);
+</a><a href="#h8-2-21" id="h8-2-21" class="d">-                break;
+</a><a href="#h8-2-22" id="h8-2-22" class="d">-            case GLFW_KEY_F:
+</a><a href="#h8-2-23" id="h8-2-23" class="d">-                csandToggleFullscreen();
+</a><a href="#h8-2-24" id="h8-2-24" class="d">-                break;
+</a><a href="#h8-2-25" id="h8-2-25" class="d">-            default:
+</a><a href="#h8-2-26" id="h8-2-26" class="d">-                if (key &gt;= GLFW_KEY_0 &amp;&amp; key &lt;= GLFW_KEY_9) {
+</a><a href="#h8-2-27" id="h8-2-27" class="d">-                    platform.input_callback(key - GLFW_KEY_0 + CSAND_INPUT_SELECT_MAT0);
+</a><a href="#h8-2-28" id="h8-2-28" class="d">-                }
+</a><a href="#h8-2-29" id="h8-2-29" class="d">-                break;
+</a><a href="#h8-2-30" id="h8-2-30" class="d">-        }
+</a><a href="#h8-2-31" id="h8-2-31" class="i">+    switch (action) {
+</a><a href="#h8-2-32" id="h8-2-32" class="i">+        case GLFW_RELEASE:
+</a><a href="#h8-2-33" id="h8-2-33" class="i">+        case GLFW_PRESS:
+</a><a href="#h8-2-34" id="h8-2-34" class="i">+            platform.key_callback(key, action, mods &amp; (GLFW_MOD_SHIFT | GLFW_MOD_CONTROL | GLFW_MOD_ALT));
+</a><a href="#h8-2-35" id="h8-2-35" class="i">+            break;
+</a><a href="#h8-2-36" id="h8-2-36" class="i">+    }
+</a><a href="#h8-2-37" id="h8-2-37" class="i">+}
+</a><a href="#h8-2-38" id="h8-2-38" class="i">+
+</a><a href="#h8-2-39" id="h8-2-39" class="i">+static void csandGlfwCharCallback(GLFWwindow *window, unsigned int codepoint) {
+</a><a href="#h8-2-40" id="h8-2-40" class="i">+    (void)window;
+</a><a href="#h8-2-41" id="h8-2-41" class="i">+    if (platform.char_callback) {
+</a><a href="#h8-2-42" id="h8-2-42" class="i">+        platform.char_callback(codepoint);
+</a><a href="#h8-2-43" id="h8-2-43" class="i">+    }
+</a><a href="#h8-2-44" id="h8-2-44" class="i">+}
+</a><a href="#h8-2-45" id="h8-2-45" class="i">+
+</a><a href="#h8-2-46" id="h8-2-46" class="i">+static void csandGlfwMouseButtonCallback(GLFWwindow *window, int button, int action, int mods) {
+</a><a href="#h8-2-47" id="h8-2-47" class="i">+    (void)window;
+</a><a href="#h8-2-48" id="h8-2-48" class="i">+    (void)mods;
+</a><a href="#h8-2-49" id="h8-2-49" class="i">+
+</a><a href="#h8-2-50" id="h8-2-50" class="i">+    if (
+</a><a href="#h8-2-51" id="h8-2-51" class="i">+        platform.mouse_button_callback &amp;&amp;
+</a><a href="#h8-2-52" id="h8-2-52" class="i">+        (button == GLFW_MOUSE_BUTTON_LEFT || button == GLFW_MOUSE_BUTTON_RIGHT) &amp;&amp;
+</a><a href="#h8-2-53" id="h8-2-53" class="i">+        (action == GLFW_RELEASE || action == GLFW_PRESS)
+</a><a href="#h8-2-54" id="h8-2-54" class="i">+    ) {
+</a><a href="#h8-2-55" id="h8-2-55" class="i">+        platform.mouse_button_callback(button, action);
+</a><a href="#h8-2-56" id="h8-2-56" class="i">+    }
+</a><a href="#h8-2-57" id="h8-2-57" class="i">+}
+</a><a href="#h8-2-58" id="h8-2-58" class="i">+
+</a><a href="#h8-2-59" id="h8-2-59" class="i">+static void csandGlfwCursorPosCallback(GLFWwindow *window, double x, double y) {
+</a><a href="#h8-2-60" id="h8-2-60" class="i">+    (void)window;
+</a><a href="#h8-2-61" id="h8-2-61" class="i">+
+</a><a href="#h8-2-62" id="h8-2-62" class="i">+    if (platform.mouse_motion_callback) {
+</a><a href="#h8-2-63" id="h8-2-63" class="i">+        platform.mouse_motion_callback(x, y);
+</a><a href="#h8-2-64" id="h8-2-64" class="i">+    }
+</a><a href="#h8-2-65" id="h8-2-65" class="i">+}
+</a><a href="#h8-2-66" id="h8-2-66" class="i">+
+</a><a href="#h8-2-67" id="h8-2-67" class="i">+static void csandGlfwScrollCallback(GLFWwindow *window, double x, double y) {
+</a><a href="#h8-2-68" id="h8-2-68" class="i">+    (void)window;
+</a><a href="#h8-2-69" id="h8-2-69" class="i">+
+</a><a href="#h8-2-70" id="h8-2-70" class="i">+    if (platform.mouse_scroll_callback) {
+</a><a href="#h8-2-71" id="h8-2-71" class="i">+        platform.mouse_scroll_callback(x, y);
+</a>     }
+ }
+ 
+<a href="#h8-3" id="h8-3" class="h">@@ -123,6 +145,10 @@ void csandPlatformInit(void) {
+</a>     glfwMakeContextCurrent(platform.window);
+ 
+     glfwSetKeyCallback(platform.window, csandGlfwKeyCallback);
+<a href="#h8-3-3" id="h8-3-3" class="i">+    glfwSetCharCallback(platform.window, csandGlfwCharCallback);
+</a><a href="#h8-3-4" id="h8-3-4" class="i">+    glfwSetMouseButtonCallback(platform.window, csandGlfwMouseButtonCallback);
+</a><a href="#h8-3-5" id="h8-3-5" class="i">+    glfwSetCursorPosCallback(platform.window, csandGlfwCursorPosCallback);
+</a><a href="#h8-3-6" id="h8-3-6" class="i">+    glfwSetScrollCallback(platform.window, csandGlfwScrollCallback);
+</a>     glfwSetFramebufferSizeCallback(platform.window, csandGlfwFramebufferSizeCallback);
+ }
+ 
+<a href="#h8-4" id="h8-4" class="h">@@ -130,8 +156,24 @@ void csandPlatformSetRenderCallback(CsandRenderCallback callback) {
+</a>     platform.render_callback = callback;
+ }
+ 
+<a href="#h8-4-3" id="h8-4-3" class="d">-void csandPlatformSetInputCallback(CsandInputCallback callback) {
+</a><a href="#h8-4-4" id="h8-4-4" class="d">-    platform.input_callback = callback;
+</a><a href="#h8-4-5" id="h8-4-5" class="i">+void csandPlatformSetKeyCallback(CsandKeyCallback callback) {
+</a><a href="#h8-4-6" id="h8-4-6" class="i">+    platform.key_callback = callback;
+</a><a href="#h8-4-7" id="h8-4-7" class="i">+}
+</a><a href="#h8-4-8" id="h8-4-8" class="i">+
+</a><a href="#h8-4-9" id="h8-4-9" class="i">+void csandPlatformSetCharCallback(CsandCharCallback callback) {
+</a><a href="#h8-4-10" id="h8-4-10" class="i">+    platform.char_callback = callback;
+</a><a href="#h8-4-11" id="h8-4-11" class="i">+}
+</a><a href="#h8-4-12" id="h8-4-12" class="i">+
+</a><a href="#h8-4-13" id="h8-4-13" class="i">+void csandPlatformSetMouseButtonCallback(CsandMouseButtonCallback callback) {
+</a><a href="#h8-4-14" id="h8-4-14" class="i">+    platform.mouse_button_callback = callback;
+</a><a href="#h8-4-15" id="h8-4-15" class="i">+}
+</a><a href="#h8-4-16" id="h8-4-16" class="i">+
+</a><a href="#h8-4-17" id="h8-4-17" class="i">+void csandPlatformSetMouseMotionCallback(CsandMouseMotionCallback callback) {
+</a><a href="#h8-4-18" id="h8-4-18" class="i">+    platform.mouse_motion_callback = callback;
+</a><a href="#h8-4-19" id="h8-4-19" class="i">+}
+</a><a href="#h8-4-20" id="h8-4-20" class="i">+
+</a><a href="#h8-4-21" id="h8-4-21" class="i">+void csandPlatformSetMouseScrollCallback(CsandMouseScrollCallback callback) {
+</a><a href="#h8-4-22" id="h8-4-22" class="i">+    platform.mouse_scroll_callback = callback;
+</a> }
+ 
+ void csandPlatformSetFramebufferSizeCallback(CsandFramebufferSizeCallback callback) {
+<b>diff --git a/<a id="h9" href="../file/renderer.c.html">renderer.c</a> b/<a href="../file/renderer.c.html">renderer.c</a></b>
+<a href="#h9-0" id="h9-0" class="h">@@ -1,17 +1,33 @@
+</a><a href="#h9-0-0" id="h9-0-0" class="d">-#include &quot;renderer.h&quot;
+</a><a href="#h9-0-1" id="h9-0-1" class="d">-#include &quot;vec2.h&quot;
+</a> #include &quot;math.h&quot;
+<a href="#h9-0-3" id="h9-0-3" class="i">+#include &quot;nuklear_config.h&quot;
+</a> #include &quot;platform.h&quot;
+<a href="#h9-0-5" id="h9-0-5" class="i">+#include &quot;renderer.h&quot;
+</a><a href="#h9-0-6" id="h9-0-6" class="i">+#include &quot;vec2.h&quot;
+</a> #include &lt;GLES2/gl2.h&gt;
+ #include &lt;stddef.h&gt;
+<a href="#h9-0-9" id="h9-0-9" class="i">+#include &lt;stdlib.h&gt;
+</a> 
+ typedef struct CsandRenderer {
+     CsandVec2Us world_size;
+<a href="#h9-0-13" id="h9-0-13" class="i">+    CsandVec2Us framebuffer_size;
+</a>     CsandVec2Us viewport_offset;
+     CsandVec2Us viewport_size;
+<a href="#h9-0-16" id="h9-0-16" class="d">-    GLuint program;
+</a><a href="#h9-0-17" id="h9-0-17" class="i">+    GLuint world_vbo;
+</a><a href="#h9-0-18" id="h9-0-18" class="i">+    GLuint world_program;
+</a><a href="#h9-0-19" id="h9-0-19" class="i">+    GLuint nuklear_vbo;
+</a><a href="#h9-0-20" id="h9-0-20" class="i">+    GLuint nuklear_program;
+</a><a href="#h9-0-21" id="h9-0-21" class="i">+    struct nk_context nk_ctx;
+</a><a href="#h9-0-22" id="h9-0-22" class="i">+    struct nk_font_atlas nk_font_atlas;
+</a><a href="#h9-0-23" id="h9-0-23" class="i">+    struct nk_convert_config nk_convert_config;
+</a><a href="#h9-0-24" id="h9-0-24" class="i">+    struct nk_buffer cmds, vertices, elements;
+</a> } CsandRenderer;
+ 
+<a href="#h9-0-27" id="h9-0-27" class="i">+typedef struct CsandNuklearVertex {
+</a><a href="#h9-0-28" id="h9-0-28" class="i">+    float pos[2];
+</a><a href="#h9-0-29" id="h9-0-29" class="i">+    float uv[2];
+</a><a href="#h9-0-30" id="h9-0-30" class="i">+    unsigned char color[4];
+</a><a href="#h9-0-31" id="h9-0-31" class="i">+} CsandNuklearVertex;
+</a><a href="#h9-0-32" id="h9-0-32" class="i">+
+</a> CsandRenderer csand_renderer;
+ static const char vertex_shader_src[] = {
+ #include &quot;shader.vert.embed.h&quot;
+<a href="#h9-1" id="h9-1" class="h">@@ -25,21 +41,110 @@ static const char fragment_shader_src[] = {
+</a> };
+ #define FRAGMENT_SHADER_SRC_LENGTH (sizeof(fragment_shader_src) - 1)
+ 
+<a href="#h9-1-3" id="h9-1-3" class="d">-static GLuint csandLoadShaderProgram(void);
+</a><a href="#h9-1-4" id="h9-1-4" class="i">+static const char csand_nuklear_vert_src[] = {
+</a><a href="#h9-1-5" id="h9-1-5" class="i">+#include &quot;nuklear.vert.embed.h&quot;
+</a><a href="#h9-1-6" id="h9-1-6" class="i">+    &#39;\0&#39;
+</a><a href="#h9-1-7" id="h9-1-7" class="i">+};
+</a><a href="#h9-1-8" id="h9-1-8" class="i">+#define CSAND_NUKLEAR_VERT_SRC_LENGTH (sizeof(csand_nuklear_vert_src) - 1)
+</a><a href="#h9-1-9" id="h9-1-9" class="i">+
+</a><a href="#h9-1-10" id="h9-1-10" class="i">+static const char csand_nuklear_frag_src[] = {
+</a><a href="#h9-1-11" id="h9-1-11" class="i">+#include &quot;nuklear.frag.embed.h&quot;
+</a><a href="#h9-1-12" id="h9-1-12" class="i">+    &#39;\0&#39;
+</a><a href="#h9-1-13" id="h9-1-13" class="i">+};
+</a><a href="#h9-1-14" id="h9-1-14" class="i">+#define CSAND_NUKLEAR_FRAG_SRC_LENGTH (sizeof(csand_nuklear_frag_src) - 1)
+</a><a href="#h9-1-15" id="h9-1-15" class="i">+
+</a><a href="#h9-1-16" id="h9-1-16" class="i">+static GLuint csandLoadShaderProgram(
+</a><a href="#h9-1-17" id="h9-1-17" class="i">+    const char *program_name,
+</a><a href="#h9-1-18" id="h9-1-18" class="i">+    const char *vertex_shader_name, const char *vertex_shader_src, size_t vertex_shader_length,
+</a><a href="#h9-1-19" id="h9-1-19" class="i">+    const char *fragment_shader_name, const char *fragment_shader_src, size_t fragment_shader_length
+</a><a href="#h9-1-20" id="h9-1-20" class="i">+);
+</a><a href="#h9-1-21" id="h9-1-21" class="i">+
+</a> static GLuint csandLoadShader(const char *name, const char *src, size_t size, GLenum type);
+ static void csandUpdateWorldSize(CsandVec2Us world_size);
+ 
+ #define CSAND_RENDER_TEXTURE GL_TEXTURE0
+ #define CSAND_PALETTE_TEXTURE GL_TEXTURE1
+<a href="#h9-1-27" id="h9-1-27" class="i">+#define CSAND_FONT_TEXTURE GL_TEXTURE2
+</a><a href="#h9-1-28" id="h9-1-28" class="i">+
+</a><a href="#h9-1-29" id="h9-1-29" class="i">+#define CSAND_NUKLEAR_VERTEX_BUFFER_CAPACITY (512 * 1024 * 4)
+</a><a href="#h9-1-30" id="h9-1-30" class="i">+#define CSAND_NUKLEAR_ELEMENT_BUFFER_CAPACITY (128 * 1024 * 4)
+</a><a href="#h9-1-31" id="h9-1-31" class="i">+
+</a><a href="#h9-1-32" id="h9-1-32" class="i">+static void csandNuklearInit(void) {
+</a><a href="#h9-1-33" id="h9-1-33" class="i">+    nk_font_atlas_init_default(&amp;csand_renderer.nk_font_atlas);
+</a><a href="#h9-1-34" id="h9-1-34" class="i">+    nk_font_atlas_begin(&amp;csand_renderer.nk_font_atlas);
+</a><a href="#h9-1-35" id="h9-1-35" class="i">+
+</a><a href="#h9-1-36" id="h9-1-36" class="i">+    int w, h;
+</a><a href="#h9-1-37" id="h9-1-37" class="i">+    const void *pixels = nk_font_atlas_bake(&amp;csand_renderer.nk_font_atlas, &amp;w, &amp;h, NK_FONT_ATLAS_ALPHA8);
+</a><a href="#h9-1-38" id="h9-1-38" class="i">+
+</a><a href="#h9-1-39" id="h9-1-39" class="i">+    GLuint font_texture;
+</a><a href="#h9-1-40" id="h9-1-40" class="i">+    glGenTextures(1, &amp;font_texture);
+</a><a href="#h9-1-41" id="h9-1-41" class="i">+
+</a><a href="#h9-1-42" id="h9-1-42" class="i">+    glActiveTexture(CSAND_FONT_TEXTURE);
+</a><a href="#h9-1-43" id="h9-1-43" class="i">+    glBindTexture(GL_TEXTURE_2D, font_texture);
+</a><a href="#h9-1-44" id="h9-1-44" class="i">+
+</a><a href="#h9-1-45" id="h9-1-45" class="i">+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+</a><a href="#h9-1-46" id="h9-1-46" class="i">+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+</a><a href="#h9-1-47" id="h9-1-47" class="i">+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+</a><a href="#h9-1-48" id="h9-1-48" class="i">+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+</a><a href="#h9-1-49" id="h9-1-49" class="i">+    glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, w, h, 0, GL_ALPHA, GL_UNSIGNED_BYTE, pixels);
+</a><a href="#h9-1-50" id="h9-1-50" class="i">+
+</a><a href="#h9-1-51" id="h9-1-51" class="i">+    struct nk_draw_null_texture null_texture;
+</a><a href="#h9-1-52" id="h9-1-52" class="i">+    nk_font_atlas_end(&amp;csand_renderer.nk_font_atlas, nk_handle_id(CSAND_FONT_TEXTURE), &amp;null_texture);
+</a><a href="#h9-1-53" id="h9-1-53" class="i">+    nk_font_atlas_cleanup(&amp;csand_renderer.nk_font_atlas);
+</a><a href="#h9-1-54" id="h9-1-54" class="i">+
+</a><a href="#h9-1-55" id="h9-1-55" class="i">+    if (!nk_init_default(&amp;csand_renderer.nk_ctx, &amp;csand_renderer.nk_font_atlas.default_font-&gt;handle)) {
+</a><a href="#h9-1-56" id="h9-1-56" class="i">+        csandPlatformPrintErr(&quot;failed to initialize nuklear context\n&quot;);
+</a><a href="#h9-1-57" id="h9-1-57" class="i">+    }
+</a><a href="#h9-1-58" id="h9-1-58" class="i">+
+</a><a href="#h9-1-59" id="h9-1-59" class="i">+    static const struct nk_draw_vertex_layout_element vertex_layout[] = {
+</a><a href="#h9-1-60" id="h9-1-60" class="i">+        {NK_VERTEX_POSITION, NK_FORMAT_FLOAT, offsetof(CsandNuklearVertex, pos)},
+</a><a href="#h9-1-61" id="h9-1-61" class="i">+        {NK_VERTEX_TEXCOORD, NK_FORMAT_FLOAT, offsetof(CsandNuklearVertex, uv)},
+</a><a href="#h9-1-62" id="h9-1-62" class="i">+        {NK_VERTEX_COLOR, NK_FORMAT_R8G8B8A8, offsetof(CsandNuklearVertex, color)},
+</a><a href="#h9-1-63" id="h9-1-63" class="i">+        {NK_VERTEX_LAYOUT_END},
+</a><a href="#h9-1-64" id="h9-1-64" class="i">+    };
+</a><a href="#h9-1-65" id="h9-1-65" class="i">+
+</a><a href="#h9-1-66" id="h9-1-66" class="i">+    csand_renderer.nk_convert_config = (struct nk_convert_config){
+</a><a href="#h9-1-67" id="h9-1-67" class="i">+        .global_alpha = 1.0f,
+</a><a href="#h9-1-68" id="h9-1-68" class="i">+        .line_AA = NK_ANTI_ALIASING_ON,
+</a><a href="#h9-1-69" id="h9-1-69" class="i">+        .shape_AA = NK_ANTI_ALIASING_ON,
+</a><a href="#h9-1-70" id="h9-1-70" class="i">+        .circle_segment_count = 22,
+</a><a href="#h9-1-71" id="h9-1-71" class="i">+        .arc_segment_count = 22,
+</a><a href="#h9-1-72" id="h9-1-72" class="i">+        .curve_segment_count = 22,
+</a><a href="#h9-1-73" id="h9-1-73" class="i">+        .tex_null = null_texture,
+</a><a href="#h9-1-74" id="h9-1-74" class="i">+        .vertex_layout = vertex_layout,
+</a><a href="#h9-1-75" id="h9-1-75" class="i">+        .vertex_size = sizeof(CsandNuklearVertex),
+</a><a href="#h9-1-76" id="h9-1-76" class="i">+        .vertex_alignment = NK_ALIGNOF(CsandNuklearVertex),
+</a><a href="#h9-1-77" id="h9-1-77" class="i">+    };
+</a><a href="#h9-1-78" id="h9-1-78" class="i">+
+</a><a href="#h9-1-79" id="h9-1-79" class="i">+    GLuint ebo;
+</a><a href="#h9-1-80" id="h9-1-80" class="i">+    glGenBuffers(1, &amp;csand_renderer.nuklear_vbo);
+</a><a href="#h9-1-81" id="h9-1-81" class="i">+    glGenBuffers(1, &amp;ebo);
+</a><a href="#h9-1-82" id="h9-1-82" class="i">+
+</a><a href="#h9-1-83" id="h9-1-83" class="i">+    glBindBuffer(GL_ARRAY_BUFFER, csand_renderer.nuklear_vbo);
+</a><a href="#h9-1-84" id="h9-1-84" class="i">+    glBufferData(GL_ARRAY_BUFFER, CSAND_NUKLEAR_VERTEX_BUFFER_CAPACITY, NULL, GL_STREAM_DRAW);
+</a><a href="#h9-1-85" id="h9-1-85" class="i">+
+</a><a href="#h9-1-86" id="h9-1-86" class="i">+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+</a><a href="#h9-1-87" id="h9-1-87" class="i">+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, CSAND_NUKLEAR_ELEMENT_BUFFER_CAPACITY, NULL, GL_STREAM_DRAW);
+</a><a href="#h9-1-88" id="h9-1-88" class="i">+
+</a><a href="#h9-1-89" id="h9-1-89" class="i">+    nk_buffer_init_default(&amp;csand_renderer.cmds);
+</a><a href="#h9-1-90" id="h9-1-90" class="i">+    nk_buffer_init_default(&amp;csand_renderer.vertices);
+</a><a href="#h9-1-91" id="h9-1-91" class="i">+    nk_buffer_init_default(&amp;csand_renderer.elements);
+</a><a href="#h9-1-92" id="h9-1-92" class="i">+
+</a><a href="#h9-1-93" id="h9-1-93" class="i">+    csand_renderer.nuklear_program = csandLoadShaderProgram(
+</a><a href="#h9-1-94" id="h9-1-94" class="i">+        &quot;nuklear&quot;,
+</a><a href="#h9-1-95" id="h9-1-95" class="i">+        &quot;nuklear.vert&quot;, csand_nuklear_vert_src, CSAND_NUKLEAR_VERT_SRC_LENGTH,
+</a><a href="#h9-1-96" id="h9-1-96" class="i">+        &quot;nuklear.frag&quot;, csand_nuklear_frag_src, CSAND_NUKLEAR_FRAG_SRC_LENGTH
+</a><a href="#h9-1-97" id="h9-1-97" class="i">+    );
+</a><a href="#h9-1-98" id="h9-1-98" class="i">+
+</a><a href="#h9-1-99" id="h9-1-99" class="i">+    glUseProgram(csand_renderer.nuklear_program);
+</a><a href="#h9-1-100" id="h9-1-100" class="i">+    glUniform1i(glGetUniformLocation(csand_renderer.nuklear_program, &quot;texture&quot;), 2);
+</a><a href="#h9-1-101" id="h9-1-101" class="i">+}
+</a> 
+ void csandRendererInit(CsandVec2Us world_size, CsandVec2Us framebuffer_size, const CsandRgba *colors, uint8_t colors_count) {
+     csand_renderer = (CsandRenderer){0};
+ 
+<a href="#h9-1-106" id="h9-1-106" class="d">-    glEnable(GL_CULL_FACE);
+</a><a href="#h9-1-107" id="h9-1-107" class="d">-
+</a><a href="#h9-1-108" id="h9-1-108" class="d">-    GLuint vbo;
+</a><a href="#h9-1-109" id="h9-1-109" class="d">-    glGenBuffers(1, &amp;vbo);
+</a><a href="#h9-1-110" id="h9-1-110" class="d">-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+</a><a href="#h9-1-111" id="h9-1-111" class="i">+    glGenBuffers(1, &amp;csand_renderer.world_vbo);
+</a><a href="#h9-1-112" id="h9-1-112" class="i">+    glBindBuffer(GL_ARRAY_BUFFER, csand_renderer.world_vbo);
+</a>     GLbyte vbo_data[3*2] = {
+         -3, -1,
+          1, -1,
+<a href="#h9-2" id="h9-2" class="h">@@ -47,12 +152,12 @@ void csandRendererInit(CsandVec2Us world_size, CsandVec2Us framebuffer_size, con
+</a>     };
+     glBufferData(GL_ARRAY_BUFFER, sizeof(vbo_data), vbo_data, GL_STATIC_DRAW);
+ 
+<a href="#h9-2-3" id="h9-2-3" class="d">-    csand_renderer.program = csandLoadShaderProgram();
+</a><a href="#h9-2-4" id="h9-2-4" class="d">-    glUseProgram(csand_renderer.program);
+</a><a href="#h9-2-5" id="h9-2-5" class="d">-
+</a><a href="#h9-2-6" id="h9-2-6" class="d">-    GLint position_attr_loc = glGetAttribLocation(csand_renderer.program, &quot;position&quot;);
+</a><a href="#h9-2-7" id="h9-2-7" class="d">-    glVertexAttribPointer(position_attr_loc, 2, GL_BYTE, GL_FALSE, 0, NULL);
+</a><a href="#h9-2-8" id="h9-2-8" class="d">-    glEnableVertexAttribArray(position_attr_loc);
+</a><a href="#h9-2-9" id="h9-2-9" class="i">+    csand_renderer.world_program = csandLoadShaderProgram(
+</a><a href="#h9-2-10" id="h9-2-10" class="i">+        &quot;world&quot;,
+</a><a href="#h9-2-11" id="h9-2-11" class="i">+        &quot;shader.vert&quot;, vertex_shader_src, VERTEX_SHADER_SRC_LENGTH,
+</a><a href="#h9-2-12" id="h9-2-12" class="i">+        &quot;shader.frag&quot;, fragment_shader_src, FRAGMENT_SHADER_SRC_LENGTH
+</a><a href="#h9-2-13" id="h9-2-13" class="i">+    );
+</a><a href="#h9-2-14" id="h9-2-14" class="i">+    glUseProgram(csand_renderer.world_program);
+</a> 
+     GLuint render_texture;
+     glGenTextures(1, &amp;render_texture);
+<a href="#h9-3" id="h9-3" class="h">@@ -65,7 +170,7 @@ void csandRendererInit(CsandVec2Us world_size, CsandVec2Us framebuffer_size, con
+</a>     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+ 
+<a href="#h9-3-3" id="h9-3-3" class="d">-    glUniform1i(glGetUniformLocation(csand_renderer.program, &quot;texture&quot;), 0);
+</a><a href="#h9-3-4" id="h9-3-4" class="i">+    glUniform1i(glGetUniformLocation(csand_renderer.world_program, &quot;texture&quot;), 0);
+</a> 
+     GLuint palette_texture;
+     glGenTextures(1, &amp;palette_texture);
+<a href="#h9-4" id="h9-4" class="h">@@ -77,15 +182,78 @@ void csandRendererInit(CsandVec2Us world_size, CsandVec2Us framebuffer_size, con
+</a>     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+<a href="#h9-4-3" id="h9-4-3" class="d">-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, colors_count, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, colors);
+</a> 
+<a href="#h9-4-5" id="h9-4-5" class="d">-    glUniform1i(glGetUniformLocation(csand_renderer.program, &quot;palette&quot;), 1);
+</a><a href="#h9-4-6" id="h9-4-6" class="d">-    glUniform1i(glGetUniformLocation(csand_renderer.program, &quot;palette_size&quot;), colors_count);
+</a><a href="#h9-4-7" id="h9-4-7" class="i">+    csandRendererSetPalette(colors, colors_count);
+</a> 
+<a href="#h9-4-9" id="h9-4-9" class="i">+    csandNuklearInit();
+</a>     csandUpdateWorldSize(world_size);
+     csandRendererUpdateViewport(framebuffer_size);
+ }
+ 
+<a href="#h9-4-14" id="h9-4-14" class="i">+void csandRendererSetPalette(const CsandRgba *colors, uint8_t colors_count) {
+</a><a href="#h9-4-15" id="h9-4-15" class="i">+    glActiveTexture(CSAND_PALETTE_TEXTURE);
+</a><a href="#h9-4-16" id="h9-4-16" class="i">+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, colors_count, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, colors);
+</a><a href="#h9-4-17" id="h9-4-17" class="i">+    glUseProgram(csand_renderer.world_program);
+</a><a href="#h9-4-18" id="h9-4-18" class="i">+    glUniform1i(glGetUniformLocation(csand_renderer.world_program, &quot;palette&quot;), 1);
+</a><a href="#h9-4-19" id="h9-4-19" class="i">+    glUniform1i(glGetUniformLocation(csand_renderer.world_program, &quot;palette_size&quot;), colors_count);
+</a><a href="#h9-4-20" id="h9-4-20" class="i">+}
+</a><a href="#h9-4-21" id="h9-4-21" class="i">+
+</a><a href="#h9-4-22" id="h9-4-22" class="i">+static void csandRendererRenderNuklear(void) {
+</a><a href="#h9-4-23" id="h9-4-23" class="i">+    nk_convert(
+</a><a href="#h9-4-24" id="h9-4-24" class="i">+        &amp;csand_renderer.nk_ctx,
+</a><a href="#h9-4-25" id="h9-4-25" class="i">+        &amp;csand_renderer.cmds,
+</a><a href="#h9-4-26" id="h9-4-26" class="i">+        &amp;csand_renderer.vertices,
+</a><a href="#h9-4-27" id="h9-4-27" class="i">+        &amp;csand_renderer.elements,
+</a><a href="#h9-4-28" id="h9-4-28" class="i">+        &amp;csand_renderer.nk_convert_config
+</a><a href="#h9-4-29" id="h9-4-29" class="i">+    );
+</a><a href="#h9-4-30" id="h9-4-30" class="i">+
+</a><a href="#h9-4-31" id="h9-4-31" class="i">+    glBindBuffer(GL_ARRAY_BUFFER, csand_renderer.nuklear_vbo);
+</a><a href="#h9-4-32" id="h9-4-32" class="i">+    glBufferSubData(GL_ARRAY_BUFFER, 0, csandUlMin(csand_renderer.vertices.size, CSAND_NUKLEAR_VERTEX_BUFFER_CAPACITY), nk_buffer_memory_const(&amp;csand_renderer.vertices));
+</a><a href="#h9-4-33" id="h9-4-33" class="i">+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, csandUlMin(csand_renderer.elements.size, CSAND_NUKLEAR_ELEMENT_BUFFER_CAPACITY), nk_buffer_memory_const(&amp;csand_renderer.elements));
+</a><a href="#h9-4-34" id="h9-4-34" class="i">+
+</a><a href="#h9-4-35" id="h9-4-35" class="i">+    GLint position_attr_loc = glGetAttribLocation(csand_renderer.nuklear_program, &quot;position&quot;);
+</a><a href="#h9-4-36" id="h9-4-36" class="i">+    glVertexAttribPointer(position_attr_loc, 2, GL_FLOAT, GL_FALSE, sizeof(CsandNuklearVertex), (void *)offsetof(CsandNuklearVertex, pos));
+</a><a href="#h9-4-37" id="h9-4-37" class="i">+    glEnableVertexAttribArray(position_attr_loc);
+</a><a href="#h9-4-38" id="h9-4-38" class="i">+
+</a><a href="#h9-4-39" id="h9-4-39" class="i">+    GLint uv_attr_loc = glGetAttribLocation(csand_renderer.nuklear_program, &quot;uv&quot;);
+</a><a href="#h9-4-40" id="h9-4-40" class="i">+    glVertexAttribPointer(uv_attr_loc, 2, GL_FLOAT, GL_FALSE, sizeof(CsandNuklearVertex), (void *)offsetof(CsandNuklearVertex, uv));
+</a><a href="#h9-4-41" id="h9-4-41" class="i">+    glEnableVertexAttribArray(uv_attr_loc);
+</a><a href="#h9-4-42" id="h9-4-42" class="i">+
+</a><a href="#h9-4-43" id="h9-4-43" class="i">+    GLint color_attr_loc = glGetAttribLocation(csand_renderer.nuklear_program, &quot;color&quot;);
+</a><a href="#h9-4-44" id="h9-4-44" class="i">+    glVertexAttribPointer(color_attr_loc, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(CsandNuklearVertex), (void *)offsetof(CsandNuklearVertex, color));
+</a><a href="#h9-4-45" id="h9-4-45" class="i">+    glEnableVertexAttribArray(color_attr_loc);
+</a><a href="#h9-4-46" id="h9-4-46" class="i">+
+</a><a href="#h9-4-47" id="h9-4-47" class="i">+    glUseProgram(csand_renderer.nuklear_program);
+</a><a href="#h9-4-48" id="h9-4-48" class="i">+    glActiveTexture(CSAND_FONT_TEXTURE);
+</a><a href="#h9-4-49" id="h9-4-49" class="i">+
+</a><a href="#h9-4-50" id="h9-4-50" class="i">+    glEnable(GL_BLEND);
+</a><a href="#h9-4-51" id="h9-4-51" class="i">+    glBlendEquation(GL_FUNC_ADD);
+</a><a href="#h9-4-52" id="h9-4-52" class="i">+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+</a><a href="#h9-4-53" id="h9-4-53" class="i">+    glEnable(GL_SCISSOR_TEST);
+</a><a href="#h9-4-54" id="h9-4-54" class="i">+
+</a><a href="#h9-4-55" id="h9-4-55" class="i">+    glViewport(0, 0, csand_renderer.framebuffer_size.x, csand_renderer.framebuffer_size.y);
+</a><a href="#h9-4-56" id="h9-4-56" class="i">+    glUniform2f(glGetUniformLocation(csand_renderer.nuklear_program, &quot;framebuffer_size&quot;), csand_renderer.framebuffer_size.x, csand_renderer.framebuffer_size.y);
+</a><a href="#h9-4-57" id="h9-4-57" class="i">+
+</a><a href="#h9-4-58" id="h9-4-58" class="i">+    const struct nk_draw_command *cmd = NULL;
+</a><a href="#h9-4-59" id="h9-4-59" class="i">+    unsigned int drawn_elements = 0;
+</a><a href="#h9-4-60" id="h9-4-60" class="i">+    nk_draw_foreach(cmd, &amp;csand_renderer.nk_ctx, &amp;csand_renderer.cmds) {
+</a><a href="#h9-4-61" id="h9-4-61" class="i">+        if (cmd-&gt;elem_count == 0) {
+</a><a href="#h9-4-62" id="h9-4-62" class="i">+            continue;
+</a><a href="#h9-4-63" id="h9-4-63" class="i">+        }
+</a><a href="#h9-4-64" id="h9-4-64" class="i">+
+</a><a href="#h9-4-65" id="h9-4-65" class="i">+        glScissor(cmd-&gt;clip_rect.x, csand_renderer.framebuffer_size.y - 1 - cmd-&gt;clip_rect.y - cmd-&gt;clip_rect.h, cmd-&gt;clip_rect.w, cmd-&gt;clip_rect.h);
+</a><a href="#h9-4-66" id="h9-4-66" class="i">+        glDrawElements(GL_TRIANGLES, cmd-&gt;elem_count, GL_UNSIGNED_SHORT, (const void *)(drawn_elements * sizeof(nk_draw_index)));
+</a><a href="#h9-4-67" id="h9-4-67" class="i">+        drawn_elements += cmd-&gt;elem_count;
+</a><a href="#h9-4-68" id="h9-4-68" class="i">+    }
+</a><a href="#h9-4-69" id="h9-4-69" class="i">+
+</a><a href="#h9-4-70" id="h9-4-70" class="i">+    glDisable(GL_SCISSOR_TEST);
+</a><a href="#h9-4-71" id="h9-4-71" class="i">+    glDisable(GL_BLEND);
+</a><a href="#h9-4-72" id="h9-4-72" class="i">+
+</a><a href="#h9-4-73" id="h9-4-73" class="i">+    nk_buffer_clear(&amp;csand_renderer.elements);
+</a><a href="#h9-4-74" id="h9-4-74" class="i">+    nk_buffer_clear(&amp;csand_renderer.vertices);
+</a><a href="#h9-4-75" id="h9-4-75" class="i">+    nk_buffer_clear(&amp;csand_renderer.cmds);
+</a><a href="#h9-4-76" id="h9-4-76" class="i">+}
+</a><a href="#h9-4-77" id="h9-4-77" class="i">+
+</a> void csandRendererRender(unsigned char *data, unsigned short width, unsigned short height) {
+     glClearColor(0.06, 0.12, 0.17, 1.0);
+     glClear(GL_COLOR_BUFFER_BIT);
+<a href="#h9-5" id="h9-5" class="h">@@ -94,13 +262,34 @@ void csandRendererRender(unsigned char *data, unsigned short width, unsigned sho
+</a>         csandUpdateWorldSize((CsandVec2Us){width, height});
+     }
+ 
+<a href="#h9-5-3" id="h9-5-3" class="i">+    glBindBuffer(GL_ARRAY_BUFFER, csand_renderer.world_vbo);
+</a><a href="#h9-5-4" id="h9-5-4" class="i">+    GLint position_attr_loc = glGetAttribLocation(csand_renderer.world_program, &quot;position&quot;);
+</a><a href="#h9-5-5" id="h9-5-5" class="i">+    glVertexAttribPointer(position_attr_loc, 2, GL_BYTE, GL_FALSE, 0, NULL);
+</a><a href="#h9-5-6" id="h9-5-6" class="i">+    glEnableVertexAttribArray(position_attr_loc);
+</a><a href="#h9-5-7" id="h9-5-7" class="i">+
+</a>     glActiveTexture(CSAND_RENDER_TEXTURE);
+     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_LUMINANCE, GL_UNSIGNED_BYTE, data);
+ 
+<a href="#h9-5-11" id="h9-5-11" class="i">+    glUseProgram(csand_renderer.world_program);
+</a><a href="#h9-5-12" id="h9-5-12" class="i">+
+</a><a href="#h9-5-13" id="h9-5-13" class="i">+    glViewport(
+</a><a href="#h9-5-14" id="h9-5-14" class="i">+        csand_renderer.viewport_offset.x,
+</a><a href="#h9-5-15" id="h9-5-15" class="i">+        csand_renderer.viewport_offset.y,
+</a><a href="#h9-5-16" id="h9-5-16" class="i">+        csand_renderer.viewport_size.x,
+</a><a href="#h9-5-17" id="h9-5-17" class="i">+        csand_renderer.viewport_size.y
+</a><a href="#h9-5-18" id="h9-5-18" class="i">+    );
+</a><a href="#h9-5-19" id="h9-5-19" class="i">+
+</a><a href="#h9-5-20" id="h9-5-20" class="i">+    glEnable(GL_CULL_FACE);
+</a><a href="#h9-5-21" id="h9-5-21" class="i">+
+</a>     glDrawArrays(GL_TRIANGLES, 0, 3);
+<a href="#h9-5-23" id="h9-5-23" class="i">+
+</a><a href="#h9-5-24" id="h9-5-24" class="i">+    glDisable(GL_CULL_FACE);
+</a><a href="#h9-5-25" id="h9-5-25" class="i">+
+</a><a href="#h9-5-26" id="h9-5-26" class="i">+    csandRendererRenderNuklear();
+</a> }
+ 
+ void csandRendererUpdateViewport(CsandVec2Us framebuffer_size) {
+<a href="#h9-5-30" id="h9-5-30" class="i">+    csand_renderer.framebuffer_size = framebuffer_size;
+</a>     float scale_x = framebuffer_size.x / (float)csand_renderer.world_size.x;
+     float scale_y = framebuffer_size.y / (float)csand_renderer.world_size.y;
+ 
+<a href="#h9-6" id="h9-6" class="h">@@ -114,13 +303,6 @@ void csandRendererUpdateViewport(CsandVec2Us framebuffer_size) {
+</a>         csandVec2UsDivScalar(framebuffer_size, 2),
+         csandVec2UsDivScalar(csand_renderer.viewport_size, 2)
+     );
+<a href="#h9-6-3" id="h9-6-3" class="d">-
+</a><a href="#h9-6-4" id="h9-6-4" class="d">-    glViewport(
+</a><a href="#h9-6-5" id="h9-6-5" class="d">-        csand_renderer.viewport_offset.x,
+</a><a href="#h9-6-6" id="h9-6-6" class="d">-        csand_renderer.viewport_offset.y,
+</a><a href="#h9-6-7" id="h9-6-7" class="d">-        csand_renderer.viewport_size.x,
+</a><a href="#h9-6-8" id="h9-6-8" class="d">-        csand_renderer.viewport_size.y
+</a><a href="#h9-6-9" id="h9-6-9" class="d">-    );
+</a> }
+ 
+ CsandVec2Us csandRendererScreenSpaceToWorldSpace(CsandVec2Us vec) {
+<a href="#h9-7" id="h9-7" class="h">@@ -145,9 +327,17 @@ CsandVec2Us csandRendererScreenSpaceToWorldSpace(CsandVec2Us vec) {
+</a>     return CSAND_VEC2_CONVERT(CsandVec2Us, result);
+ }
+ 
+<a href="#h9-7-3" id="h9-7-3" class="d">-static GLuint csandLoadShaderProgram(void) {
+</a><a href="#h9-7-4" id="h9-7-4" class="d">-    GLuint vertex_shader = csandLoadShader(&quot;shader.vert&quot;, vertex_shader_src, VERTEX_SHADER_SRC_LENGTH, GL_VERTEX_SHADER);
+</a><a href="#h9-7-5" id="h9-7-5" class="d">-    GLuint fragment_shader = csandLoadShader(&quot;shader.frag&quot;, fragment_shader_src, FRAGMENT_SHADER_SRC_LENGTH, GL_FRAGMENT_SHADER);
+</a><a href="#h9-7-6" id="h9-7-6" class="i">+struct nk_context *csandRendererNuklearContext(void) {
+</a><a href="#h9-7-7" id="h9-7-7" class="i">+    return &amp;csand_renderer.nk_ctx;
+</a><a href="#h9-7-8" id="h9-7-8" class="i">+}
+</a><a href="#h9-7-9" id="h9-7-9" class="i">+
+</a><a href="#h9-7-10" id="h9-7-10" class="i">+static GLuint csandLoadShaderProgram(
+</a><a href="#h9-7-11" id="h9-7-11" class="i">+    const char *program_name,
+</a><a href="#h9-7-12" id="h9-7-12" class="i">+    const char *vertex_shader_name, const char *vertex_shader_src, size_t vertex_shader_length,
+</a><a href="#h9-7-13" id="h9-7-13" class="i">+    const char *fragment_shader_name, const char *fragment_shader_src, size_t fragment_shader_length
+</a><a href="#h9-7-14" id="h9-7-14" class="i">+) {
+</a><a href="#h9-7-15" id="h9-7-15" class="i">+    GLuint vertex_shader = csandLoadShader(vertex_shader_name, vertex_shader_src, vertex_shader_length, GL_VERTEX_SHADER);
+</a><a href="#h9-7-16" id="h9-7-16" class="i">+    GLuint fragment_shader = csandLoadShader(fragment_shader_name, fragment_shader_src, fragment_shader_length, GL_FRAGMENT_SHADER);
+</a>     GLuint program = glCreateProgram();
+     glAttachShader(program, vertex_shader);
+     glAttachShader(program, fragment_shader);
+<a href="#h9-8" id="h9-8" class="h">@@ -159,7 +349,9 @@ static GLuint csandLoadShaderProgram(void) {
+</a>     if (status != GL_TRUE) {
+         char info_log[1024];
+         glGetProgramInfoLog(program, sizeof(info_log), NULL, info_log);
+<a href="#h9-8-3" id="h9-8-3" class="d">-        csandPlatformPrintErr(&quot;failed to link shader program: &quot;);
+</a><a href="#h9-8-4" id="h9-8-4" class="i">+        csandPlatformPrintErr(&quot;failed to link shader program &#39;&quot;);
+</a><a href="#h9-8-5" id="h9-8-5" class="i">+        csandPlatformPrintErr(program_name);
+</a><a href="#h9-8-6" id="h9-8-6" class="i">+        csandPlatformPrintErr(&quot;&#39;: &quot;);
+</a>         csandPlatformPrintErr(info_log);
+         csandPlatformPrintErr(&quot;\n&quot;);
+         glDeleteProgram(program);
+<b>diff --git a/<a id="h10" href="../file/renderer.h.html">renderer.h</a> b/<a href="../file/renderer.h.html">renderer.h</a></b>
+<a href="#h10-0" id="h10-0" class="h">@@ -1,13 +1,16 @@
+</a> #ifndef CSAND_RENDERER_H
+ #define CSAND_RENDERER_H
+ 
+<a href="#h10-0-3" id="h10-0-3" class="i">+#include &quot;nuklear_config.h&quot;
+</a> #include &quot;rgba.h&quot;
+ #include &quot;vec2.h&quot;
+ #include &lt;stdint.h&gt;
+ 
+ void csandRendererInit(CsandVec2Us world_size, CsandVec2Us framebuffer_size, const CsandRgba *colors, uint8_t colors_count);
+<a href="#h10-0-9" id="h10-0-9" class="i">+void csandRendererSetPalette(const CsandRgba *colors, uint8_t colors_count);
+</a> void csandRendererRender(unsigned char *data, unsigned short width, unsigned short height);
+ void csandRendererUpdateViewport(CsandVec2Us framebuffer_size);
+ CsandVec2Us csandRendererScreenSpaceToWorldSpace(CsandVec2Us vec);
+<a href="#h10-0-13" id="h10-0-13" class="i">+struct nk_context *csandRendererNuklearContext(void);
+</a> 
+ #endif
+</pre>
+</div>
+</body>
+</html>

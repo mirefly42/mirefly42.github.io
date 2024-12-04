@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Prevent space from scrolling the page - csand - Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</title>
+<link rel="icon" type="image/png" href="../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed" href="../atom.xml" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed (tags)" href="../tags.xml" />
+<link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../"><img src="../logo.png" alt="" width="32" height="32" /></a></td><td><h1>csand</h1><span class="desc">Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</span></td></tr><tr><td></td><td>
+<a href="../log.html">Log</a> | <a href="../files.html">Files</a> | <a href="../refs.html">Refs</a> | <a href="../file/LICENSE.html">LICENSE</a></td></tr></table>
+<hr/>
+<div id="content">
+<pre><b>commit</b> <a href="../commit/6e1d7535e26a871dfab83a995002097dfc4b4701.html">6e1d7535e26a871dfab83a995002097dfc4b4701</a>
+<b>parent</b> <a href="../commit/436a094403ecf98ad35dc02f2e09d1f54a926126.html">436a094403ecf98ad35dc02f2e09d1f54a926126</a>
+<b>Author:</b> mirefly &lt;<a href="mailto:"></a>&gt;
+<b>Date:</b>   Fri, 14 Feb 2025 10:30:31 +0700
+
+Prevent space from scrolling the page
+
+<b>Diffstat:</b>
+<table><tr><td class="M">M</td><td><a href="#h0">index.js</a></td><td> | </td><td class="num">1</td><td><span class="i">+</span><span class="d"></span></td></tr>
+</table></pre><pre>1 file changed, 1 insertion(+), 0 deletions(-)
+<hr/><b>diff --git a/<a id="h0" href="../file/index.js.html">index.js</a> b/<a href="../file/index.js.html">index.js</a></b>
+<a href="#h0-0" id="h0-0" class="h">@@ -63,6 +63,7 @@ async function main() {
+</a>                     } else if (c === &quot;Digit9&quot;) {
+                         input_callback(9);
+                     } else if (c === &quot;Space&quot;) {
+<a href="#h0-0-3" id="h0-0-3" class="i">+                        event.preventDefault();
+</a>                         input_callback(10);
+                     } else if (c === &quot;Equal&quot;) {
+                         input_callback(11);
+</pre>
+</div>
+</body>
+</html>

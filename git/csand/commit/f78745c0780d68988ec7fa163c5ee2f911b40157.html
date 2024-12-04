@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Make the window resize properly - csand - Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</title>
+<link rel="icon" type="image/png" href="../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed" href="../atom.xml" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed (tags)" href="../tags.xml" />
+<link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../"><img src="../logo.png" alt="" width="32" height="32" /></a></td><td><h1>csand</h1><span class="desc">Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</span></td></tr><tr><td></td><td>
+<a href="../log.html">Log</a> | <a href="../files.html">Files</a> | <a href="../refs.html">Refs</a> | <a href="../file/LICENSE.html">LICENSE</a></td></tr></table>
+<hr/>
+<div id="content">
+<pre><b>commit</b> <a href="../commit/f78745c0780d68988ec7fa163c5ee2f911b40157.html">f78745c0780d68988ec7fa163c5ee2f911b40157</a>
+<b>parent</b> <a href="../commit/6e1d7535e26a871dfab83a995002097dfc4b4701.html">6e1d7535e26a871dfab83a995002097dfc4b4701</a>
+<b>Author:</b> mirefly &lt;<a href="mailto:"></a>&gt;
+<b>Date:</b>   Fri, 14 Feb 2025 11:00:44 +0700
+
+Make the window resize properly
+
+<b>Diffstat:</b>
+<table><tr><td class="M">M</td><td><a href="#h0">Makefile</a></td><td> | </td><td class="num">2</td><td><span class="i">+</span><span class="d">-</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h1">csand.c</a></td><td> | </td><td class="num">13</td><td><span class="i">+++</span><span class="d">----------</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h2">gles2.js</a></td><td> | </td><td class="num">4</td><td><span class="i">++++</span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h3">index.html</a></td><td> | </td><td class="num">5</td><td><span class="i">+++++</span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h4">index.js</a></td><td> | </td><td class="num">37</td><td><span class="i">++++++++++++++++++++++++++++++++</span><span class="d">-----</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h5">math.h</a></td><td> | </td><td class="num">6</td><td><span class="i">+++</span><span class="d">---</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h6">platform.h</a></td><td> | </td><td class="num">3</td><td><span class="i">+++</span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h7">platform_glfw.c</a></td><td> | </td><td class="num">28</td><td><span class="i">+++++++++++++++++++++++++++</span><span class="d">-</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h8">renderer.c</a></td><td> | </td><td class="num">72</td><td><span class="i">+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span><span class="d">-----------</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h9">renderer.h</a></td><td> | </td><td class="num">5</td><td><span class="i">++++</span><span class="d">-</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h10">vec2.h</a></td><td> | </td><td class="num">34</td><td><span class="i">+++++++++++++++++++++++++++++++</span><span class="d">---</span></td></tr>
+<tr><td class="A">A</td><td><a href="#h11">x_macros.h</a></td><td> | </td><td class="num">20</td><td><span class="i">++++++++++++++++++++</span><span class="d"></span></td></tr>
+</table></pre><pre>12 files changed, 194 insertions(+), 35 deletions(-)
+<hr/><b>diff --git a/<a id="h0" href="../file/Makefile.html">Makefile</a> b/<a href="../file/Makefile.html">Makefile</a></b>
+<a href="#h0-0" id="h0-0" class="h">@@ -2,7 +2,7 @@
+</a> 
+ SRC = csand.c platform_glfw.c renderer.c
+ EMBED_HDR = shader.vert.embed.h shader.frag.embed.h
+<a href="#h0-0-3" id="h0-0-3" class="d">-HDR = math.h platform.h random.h renderer.h rgba.h vec2.h ${EMBED_HDR}
+</a><a href="#h0-0-4" id="h0-0-4" class="i">+HDR = math.h platform.h random.h renderer.h rgba.h vec2.h x_macros.h ${EMBED_HDR}
+</a> OBJ = ${SRC:.c=.o}
+ LIBS = -lglfw -lGLESv2
+ 
+<b>diff --git a/<a id="h1" href="../file/csand.c.html">csand.c</a> b/<a href="../file/csand.c.html">csand.c</a></b>
+<a href="#h1-0" id="h1-0" class="h">@@ -100,9 +100,10 @@ static void tryIgnite(CsandRenderBuffer buf, unsigned int x, unsigned int y);
+</a> 
+ int main(void) {
+     csandPlatformInit();
+<a href="#h1-0-3" id="h1-0-3" class="d">-    csandRendererInit(palette, MATERIALS_COUNT);
+</a><a href="#h1-0-4" id="h1-0-4" class="i">+    csandRendererInit((CsandVec2Us){WIDTH, HEIGHT}, csandPlatformGetFramebufferSize(), palette, MATERIALS_COUNT);
+</a>     csandPlatformSetInputCallback(csandInputCallback);
+     csandPlatformSetRenderCallback(csandRenderCallback);
+<a href="#h1-0-7" id="h1-0-7" class="i">+    csandPlatformSetFramebufferSizeCallback(csandRendererUpdateViewport);
+</a>     csandPlatformRun();
+ }
+ 
+<a href="#h1-1" id="h1-1" class="h">@@ -158,17 +159,9 @@ static void csandInputCallback(CsandInput input) {
+</a>     }
+ }
+ 
+<a href="#h1-1-3" id="h1-1-3" class="d">-static CsandVec2Us csandScreenSpaceToWorldSpace(CsandVec2Us pos, CsandVec2Us window_size) {
+</a><a href="#h1-1-4" id="h1-1-4" class="d">-    return (CsandVec2Us){
+</a><a href="#h1-1-5" id="h1-1-5" class="d">-        csandUsMin(pos.x * WIDTH / window_size.x, WIDTH - 1),
+</a><a href="#h1-1-6" id="h1-1-6" class="d">-        HEIGHT - 1 - csandUsMin(pos.y * HEIGHT / window_size.y, HEIGHT - 1),
+</a><a href="#h1-1-7" id="h1-1-7" class="d">-    };
+</a><a href="#h1-1-8" id="h1-1-8" class="d">-}
+</a><a href="#h1-1-9" id="h1-1-9" class="d">-
+</a> static void csandRenderCallback(void) {
+     bool draw = csandPlatformIsMouseButtonPressed(CSAND_MOUSE_BUTTON_LEFT);
+<a href="#h1-1-12" id="h1-1-12" class="d">-    CsandVec2Us window_size = csandPlatformGetWindowSize();
+</a><a href="#h1-1-13" id="h1-1-13" class="d">-    CsandVec2Us cur_pos = csandScreenSpaceToWorldSpace(csandPlatformGetCursorPos(), window_size);
+</a><a href="#h1-1-14" id="h1-1-14" class="i">+    CsandVec2Us cur_pos = csandRendererScreenSpaceToWorldSpace(csandPlatformGetCursorPos());
+</a> 
+     if (!pause || input_next_frame) {
+         input_next_frame = false;
+<b>diff --git a/<a id="h2" href="../file/gles2.js.html">gles2.js</a> b/<a href="../file/gles2.js.html">gles2.js</a></b>
+<a href="#h2-0" id="h2-0" class="h">@@ -32,6 +32,10 @@ export class GLES2Context {
+</a>             this.gl.enable(cap);
+         },
+ 
+<a href="#h2-0-3" id="h2-0-3" class="i">+        glViewport(x, y, width, height) {
+</a><a href="#h2-0-4" id="h2-0-4" class="i">+            this.gl.viewport(x, y, width, height);
+</a><a href="#h2-0-5" id="h2-0-5" class="i">+        },
+</a><a href="#h2-0-6" id="h2-0-6" class="i">+
+</a>         glClearColor(r, g, b, a) {
+             this.gl.clearColor(r, g, b, a);
+         },
+<b>diff --git a/<a id="h3" href="../file/index.html.html">index.html</a> b/<a href="../file/index.html.html">index.html</a></b>
+<a href="#h3-0" id="h3-0" class="h">@@ -2,6 +2,11 @@
+</a> &lt;html&gt;
+ &lt;head&gt;
+ &lt;style&gt;
+<a href="#h3-0-3" id="h3-0-3" class="i">+* {
+</a><a href="#h3-0-4" id="h3-0-4" class="i">+    margin: 0;
+</a><a href="#h3-0-5" id="h3-0-5" class="i">+    padding: 0;
+</a><a href="#h3-0-6" id="h3-0-6" class="i">+}
+</a><a href="#h3-0-7" id="h3-0-7" class="i">+
+</a> #game {
+     position: relative;
+ }
+<b>diff --git a/<a id="h4" href="../file/index.js.html">index.js</a> b/<a href="../file/index.js.html">index.js</a></b>
+<a href="#h4-0" id="h4-0" class="h">@@ -4,12 +4,14 @@ import { getNullTerminatedString, Uint16LeArray } from &quot;./memutils.js&quot;;
+</a> let function_table = null;
+ let input_callback = null;
+ let render_callback = null;
+<a href="#h4-0-3" id="h4-0-3" class="i">+let framebuffer_size_callback = null;
+</a> let canvas = null;
+ let gl = null;
+ let obj = null;
+ let mouse_down = false;
+ let mouse_x = 0;
+ let mouse_y = 0;
+<a href="#h4-0-10" id="h4-0-10" class="i">+let scratch_buf_ptr = 0;
+</a> const gles2_context = new GLES2Context(null, null);
+ 
+ async function main() {
+<a href="#h4-1" id="h4-1" class="h">@@ -77,6 +79,9 @@ async function main() {
+</a>             csandPlatformSetRenderCallback: (callback_index) =&gt; {
+                 render_callback = function_table.get(callback_index);
+             },
+<a href="#h4-1-3" id="h4-1-3" class="i">+            csandPlatformSetFramebufferSizeCallback: (callback_index) =&gt; {
+</a><a href="#h4-1-4" id="h4-1-4" class="i">+                framebuffer_size_callback = function_table.get(callback_index);
+</a><a href="#h4-1-5" id="h4-1-5" class="i">+            },
+</a>             csandPlatformRun: csandPlatformRun,
+             csandPlatformIsMouseButtonPressed: () =&gt; {return mouse_down;},
+             csandPlatformGetCursorPos: (vec_ptr) =&gt; {
+<a href="#h4-2" id="h4-2" class="h">@@ -84,11 +89,8 @@ async function main() {
+</a>                 vec.set(0, mouse_x);
+                 vec.set(1, mouse_y);
+             },
+<a href="#h4-2-3" id="h4-2-3" class="d">-            csandPlatformGetWindowSize: (vec_ptr) =&gt; {
+</a><a href="#h4-2-4" id="h4-2-4" class="d">-                const vec = new Uint16LeArray(obj.instance.exports.memory.buffer, vec_ptr, 2);
+</a><a href="#h4-2-5" id="h4-2-5" class="d">-                vec.set(0, canvas.width);
+</a><a href="#h4-2-6" id="h4-2-6" class="d">-                vec.set(1, canvas.height);
+</a><a href="#h4-2-7" id="h4-2-7" class="d">-            },
+</a><a href="#h4-2-8" id="h4-2-8" class="i">+            csandPlatformGetWindowSize: csandPlatformGetWindowSize,
+</a><a href="#h4-2-9" id="h4-2-9" class="i">+            csandPlatformGetFramebufferSize: csandPlatformGetWindowSize,
+</a>             csandPlatformPrintErr: (str_ptr) =&gt; {
+                 console.error(getNullTerminatedString(obj.instance.exports.memory.buffer, str_ptr));
+             },
+<a href="#h4-3" id="h4-3" class="h">@@ -100,11 +102,25 @@ async function main() {
+</a>     gles2_context.memory = obj.instance.exports.memory;
+ 
+     function_table = obj.instance.exports.__indirect_function_table;
+<a href="#h4-3-3" id="h4-3-3" class="i">+    const wasm_page_size = 64 * 1024;
+</a><a href="#h4-3-4" id="h4-3-4" class="i">+    scratch_buf_ptr = obj.instance.exports.memory.grow(1) * wasm_page_size;
+</a>     obj.instance.exports.main();
+ }
+ 
+<a href="#h4-3-8" id="h4-3-8" class="i">+function resizeCanvas(width, height) {
+</a><a href="#h4-3-9" id="h4-3-9" class="i">+    canvas.width = width;
+</a><a href="#h4-3-10" id="h4-3-10" class="i">+    canvas.height = height;
+</a><a href="#h4-3-11" id="h4-3-11" class="i">+
+</a><a href="#h4-3-12" id="h4-3-12" class="i">+    if (framebuffer_size_callback != null) {
+</a><a href="#h4-3-13" id="h4-3-13" class="i">+        csandPlatformGetWindowSize(scratch_buf_ptr);
+</a><a href="#h4-3-14" id="h4-3-14" class="i">+        framebuffer_size_callback(scratch_buf_ptr);
+</a><a href="#h4-3-15" id="h4-3-15" class="i">+    }
+</a><a href="#h4-3-16" id="h4-3-16" class="i">+}
+</a><a href="#h4-3-17" id="h4-3-17" class="i">+
+</a> function csandPlatformInit() {
+     canvas = document.getElementById(&quot;canvas&quot;);
+<a href="#h4-3-20" id="h4-3-20" class="i">+    resizeCanvas(window.innerWidth, window.innerHeight);
+</a><a href="#h4-3-21" id="h4-3-21" class="i">+
+</a>     gl = canvas.getContext(&quot;webgl&quot;);
+     gles2_context.gl = gl;
+ 
+<a href="#h4-4" id="h4-4" class="h">@@ -120,6 +136,10 @@ function csandPlatformInit() {
+</a>         mouse_x = event.offsetX;
+         mouse_y = event.offsetY;
+     });
+<a href="#h4-4-3" id="h4-4-3" class="i">+
+</a><a href="#h4-4-4" id="h4-4-4" class="i">+    window.addEventListener(&quot;resize&quot;, (event) =&gt; {
+</a><a href="#h4-4-5" id="h4-4-5" class="i">+        resizeCanvas(window.innerWidth, window.innerHeight);
+</a><a href="#h4-4-6" id="h4-4-6" class="i">+    });
+</a> }
+ 
+ function csandPlatformRun() {
+<a href="#h4-5" id="h4-5" class="h">@@ -130,4 +150,11 @@ function csandPlatformRun() {
+</a>     requestAnimationFrame(csandPlatformRun);
+ }
+ 
+<a href="#h4-5-3" id="h4-5-3" class="i">+function csandPlatformGetWindowSize(vec_ptr) {
+</a><a href="#h4-5-4" id="h4-5-4" class="i">+    const vec = new Uint16LeArray(obj.instance.exports.memory.buffer, vec_ptr, 2);
+</a><a href="#h4-5-5" id="h4-5-5" class="i">+
+</a><a href="#h4-5-6" id="h4-5-6" class="i">+    vec.set(0, canvas.width);
+</a><a href="#h4-5-7" id="h4-5-7" class="i">+    vec.set(1, canvas.height);
+</a><a href="#h4-5-8" id="h4-5-8" class="i">+}
+</a><a href="#h4-5-9" id="h4-5-9" class="i">+
+</a> main();
+<b>diff --git a/<a id="h5" href="../file/math.h.html">math.h</a> b/<a href="../file/math.h.html">math.h</a></b>
+<a href="#h5-0" id="h5-0" class="h">@@ -1,6 +1,8 @@
+</a> #ifndef CSAND_MATH_H
+ #define CSAND_MATH_H
+ 
+<a href="#h5-0-3" id="h5-0-3" class="i">+#include &quot;x_macros.h&quot;
+</a><a href="#h5-0-4" id="h5-0-4" class="i">+
+</a> #define CSAND_GEN_CLAMP(type, name) \
+     static inline type csand##name##Clamp(type x, type min, type max) { \
+         if (x &lt;= min) { \
+<a href="#h5-1" id="h5-1" class="h">@@ -21,8 +23,6 @@
+</a>     CSAND_GEN_CLAMP(type, name) \
+     CSAND_GEN_MIN(type, name)
+ 
+<a href="#h5-1-3" id="h5-1-3" class="d">-CSAND_GEN_MATH(double, D)
+</a><a href="#h5-1-4" id="h5-1-4" class="d">-CSAND_GEN_MATH(unsigned short, Us)
+</a><a href="#h5-1-5" id="h5-1-5" class="d">-CSAND_GEN_MATH(unsigned int, Ui)
+</a><a href="#h5-1-6" id="h5-1-6" class="i">+CSAND_X_TYPES(CSAND_GEN_MATH)
+</a> 
+ #endif
+<b>diff --git a/<a id="h6" href="../file/platform.h.html">platform.h</a> b/<a href="../file/platform.h.html">platform.h</a></b>
+<a href="#h6-0" id="h6-0" class="h">@@ -28,13 +28,16 @@ typedef enum {
+</a> 
+ typedef void (*CsandRenderCallback)(void);
+ typedef void (*CsandInputCallback)(CsandInput input);
+<a href="#h6-0-3" id="h6-0-3" class="i">+typedef void (*CsandFramebufferSizeCallback)(CsandVec2Us size);
+</a> 
+ void csandPlatformInit(void);
+ void csandPlatformSetRenderCallback(CsandRenderCallback callback);
+ void csandPlatformSetInputCallback(CsandInputCallback callback);
+<a href="#h6-0-8" id="h6-0-8" class="i">+void csandPlatformSetFramebufferSizeCallback(CsandFramebufferSizeCallback callback);
+</a> unsigned int csandPlatformIsMouseButtonPressed(CsandMouseButton button);
+ CsandVec2Us csandPlatformGetCursorPos(void);
+ CsandVec2Us csandPlatformGetWindowSize(void);
+<a href="#h6-0-12" id="h6-0-12" class="i">+CsandVec2Us csandPlatformGetFramebufferSize(void);
+</a> void csandPlatformRun(void);
+ void csandPlatformPrintErr(const char *str);
+ 
+<b>diff --git a/<a id="h7" href="../file/platform_glfw.c.html">platform_glfw.c</a> b/<a href="../file/platform_glfw.c.html">platform_glfw.c</a></b>
+<a href="#h7-0" id="h7-0" class="h">@@ -10,6 +10,7 @@ typedef struct CsandPlatform {
+</a>     GLFWwindow *window;
+     CsandRenderCallback render_callback;
+     CsandInputCallback input_callback;
+<a href="#h7-0-3" id="h7-0-3" class="i">+    CsandFramebufferSizeCallback framebuffer_size_callback;
+</a> } CsandPlatform;
+ 
+ static CsandPlatform platform = {0};
+<a href="#h7-1" id="h7-1" class="h">@@ -50,6 +51,17 @@ static void csandGlfwKeyCallback(GLFWwindow *window, int key, int scancode, int 
+</a>     }
+ }
+ 
+<a href="#h7-1-3" id="h7-1-3" class="i">+static void csandGlfwFramebufferSizeCallback(GLFWwindow *window, int width, int height) {
+</a><a href="#h7-1-4" id="h7-1-4" class="i">+    (void)window;
+</a><a href="#h7-1-5" id="h7-1-5" class="i">+
+</a><a href="#h7-1-6" id="h7-1-6" class="i">+    if (platform.framebuffer_size_callback) {
+</a><a href="#h7-1-7" id="h7-1-7" class="i">+        platform.framebuffer_size_callback((CsandVec2Us){
+</a><a href="#h7-1-8" id="h7-1-8" class="i">+            csandUiMin(width, USHRT_MAX),
+</a><a href="#h7-1-9" id="h7-1-9" class="i">+            csandUiMin(height, USHRT_MAX),
+</a><a href="#h7-1-10" id="h7-1-10" class="i">+        });
+</a><a href="#h7-1-11" id="h7-1-11" class="i">+    }
+</a><a href="#h7-1-12" id="h7-1-12" class="i">+}
+</a><a href="#h7-1-13" id="h7-1-13" class="i">+
+</a> void csandPlatformInit(void) {
+     glfwSetErrorCallback(csandGlfwErrorCallback);
+ 
+<a href="#h7-2" id="h7-2" class="h">@@ -58,13 +70,13 @@ void csandPlatformInit(void) {
+</a>     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+<a href="#h7-2-3" id="h7-2-3" class="d">-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+</a> 
+     platform.window = glfwCreateWindow(1024, 512, &quot;csand&quot;, NULL, NULL);
+ 
+     glfwMakeContextCurrent(platform.window);
+ 
+     glfwSetKeyCallback(platform.window, csandGlfwKeyCallback);
+<a href="#h7-2-10" id="h7-2-10" class="i">+    glfwSetFramebufferSizeCallback(platform.window, csandGlfwFramebufferSizeCallback);
+</a> }
+ 
+ void csandPlatformSetRenderCallback(CsandRenderCallback callback) {
+<a href="#h7-3" id="h7-3" class="h">@@ -75,6 +87,10 @@ void csandPlatformSetInputCallback(CsandInputCallback callback) {
+</a>     platform.input_callback = callback;
+ }
+ 
+<a href="#h7-3-3" id="h7-3-3" class="i">+void csandPlatformSetFramebufferSizeCallback(CsandFramebufferSizeCallback callback) {
+</a><a href="#h7-3-4" id="h7-3-4" class="i">+    platform.framebuffer_size_callback = callback;
+</a><a href="#h7-3-5" id="h7-3-5" class="i">+}
+</a><a href="#h7-3-6" id="h7-3-6" class="i">+
+</a> unsigned int csandPlatformIsMouseButtonPressed(CsandMouseButton button) {
+     int glfw_button;
+     switch (button) {
+<a href="#h7-4" id="h7-4" class="h">@@ -111,6 +127,16 @@ CsandVec2Us csandPlatformGetWindowSize(void) {
+</a>     };
+ }
+ 
+<a href="#h7-4-3" id="h7-4-3" class="i">+CsandVec2Us csandPlatformGetFramebufferSize(void) {
+</a><a href="#h7-4-4" id="h7-4-4" class="i">+    int width, height;
+</a><a href="#h7-4-5" id="h7-4-5" class="i">+    glfwGetFramebufferSize(platform.window, &amp;width, &amp;height);
+</a><a href="#h7-4-6" id="h7-4-6" class="i">+
+</a><a href="#h7-4-7" id="h7-4-7" class="i">+    return (CsandVec2Us){
+</a><a href="#h7-4-8" id="h7-4-8" class="i">+        csandUiMin(width, USHRT_MAX),
+</a><a href="#h7-4-9" id="h7-4-9" class="i">+        csandUiMin(height, USHRT_MAX),
+</a><a href="#h7-4-10" id="h7-4-10" class="i">+    };
+</a><a href="#h7-4-11" id="h7-4-11" class="i">+}
+</a><a href="#h7-4-12" id="h7-4-12" class="i">+
+</a> void csandPlatformRun(void) {
+     while (!glfwWindowShouldClose(platform.window)) {
+         glfwPollEvents();
+<b>diff --git a/<a id="h8" href="../file/renderer.c.html">renderer.c</a> b/<a href="../file/renderer.c.html">renderer.c</a></b>
+<a href="#h8-0" id="h8-0" class="h">@@ -1,11 +1,14 @@
+</a> #include &quot;renderer.h&quot;
+<a href="#h8-0-1" id="h8-0-1" class="i">+#include &quot;vec2.h&quot;
+</a><a href="#h8-0-2" id="h8-0-2" class="i">+#include &quot;math.h&quot;
+</a> #include &quot;platform.h&quot;
+ #include &lt;GLES2/gl2.h&gt;
+ #include &lt;stddef.h&gt;
+ 
+ typedef struct CsandRenderer {
+<a href="#h8-0-8" id="h8-0-8" class="d">-    unsigned short width;
+</a><a href="#h8-0-9" id="h8-0-9" class="d">-    unsigned short height;
+</a><a href="#h8-0-10" id="h8-0-10" class="i">+    CsandVec2Us world_size;
+</a><a href="#h8-0-11" id="h8-0-11" class="i">+    CsandVec2Us viewport_offset;
+</a><a href="#h8-0-12" id="h8-0-12" class="i">+    CsandVec2Us viewport_size;
+</a>     GLuint program;
+ } CsandRenderer;
+ 
+<a href="#h8-1" id="h8-1" class="h">@@ -24,12 +27,12 @@ static const char fragment_shader_src[] = {
+</a> 
+ static GLuint csandLoadShaderProgram(void);
+ static GLuint csandLoadShader(const char *name, const char *src, size_t size, GLenum type);
+<a href="#h8-1-3" id="h8-1-3" class="d">-static void csandSetRenderTextureSize(unsigned short width, unsigned short height);
+</a><a href="#h8-1-4" id="h8-1-4" class="i">+static void csandUpdateWorldSize(CsandVec2Us world_size);
+</a> 
+ #define CSAND_RENDER_TEXTURE GL_TEXTURE0
+ #define CSAND_PALETTE_TEXTURE GL_TEXTURE1
+ 
+<a href="#h8-1-9" id="h8-1-9" class="d">-void csandRendererInit(const CsandRgba *colors, uint8_t colors_count) {
+</a><a href="#h8-1-10" id="h8-1-10" class="i">+void csandRendererInit(CsandVec2Us world_size, CsandVec2Us framebuffer_size, const CsandRgba *colors, uint8_t colors_count) {
+</a>     csand_renderer = (CsandRenderer){0};
+ 
+     glEnable(GL_CULL_FACE);
+<a href="#h8-2" id="h8-2" class="h">@@ -78,14 +81,17 @@ void csandRendererInit(const CsandRgba *colors, uint8_t colors_count) {
+</a> 
+     glUniform1i(glGetUniformLocation(csand_renderer.program, &quot;palette&quot;), 1);
+     glUniform1i(glGetUniformLocation(csand_renderer.program, &quot;palette_size&quot;), colors_count);
+<a href="#h8-2-3" id="h8-2-3" class="i">+
+</a><a href="#h8-2-4" id="h8-2-4" class="i">+    csandUpdateWorldSize(world_size);
+</a><a href="#h8-2-5" id="h8-2-5" class="i">+    csandRendererUpdateViewport(framebuffer_size);
+</a> }
+ 
+ void csandRendererRender(unsigned char *data, unsigned short width, unsigned short height) {
+<a href="#h8-2-9" id="h8-2-9" class="d">-    glClearColor(0.0, 0.0, 0.0, 1.0);
+</a><a href="#h8-2-10" id="h8-2-10" class="i">+    glClearColor(0.06, 0.12, 0.17, 1.0);
+</a>     glClear(GL_COLOR_BUFFER_BIT);
+ 
+<a href="#h8-2-13" id="h8-2-13" class="d">-    if (width != csand_renderer.width || height != csand_renderer.height) {
+</a><a href="#h8-2-14" id="h8-2-14" class="d">-        csandSetRenderTextureSize(width, height);
+</a><a href="#h8-2-15" id="h8-2-15" class="i">+    if (width != csand_renderer.world_size.x || height != csand_renderer.world_size.y) {
+</a><a href="#h8-2-16" id="h8-2-16" class="i">+        csandUpdateWorldSize((CsandVec2Us){width, height});
+</a>     }
+ 
+     glActiveTexture(CSAND_RENDER_TEXTURE);
+<a href="#h8-3" id="h8-3" class="h">@@ -94,6 +100,51 @@ void csandRendererRender(unsigned char *data, unsigned short width, unsigned sho
+</a>     glDrawArrays(GL_TRIANGLES, 0, 3);
+ }
+ 
+<a href="#h8-3-3" id="h8-3-3" class="i">+void csandRendererUpdateViewport(CsandVec2Us framebuffer_size) {
+</a><a href="#h8-3-4" id="h8-3-4" class="i">+    float scale_x = framebuffer_size.x / (float)csand_renderer.world_size.x;
+</a><a href="#h8-3-5" id="h8-3-5" class="i">+    float scale_y = framebuffer_size.y / (float)csand_renderer.world_size.y;
+</a><a href="#h8-3-6" id="h8-3-6" class="i">+
+</a><a href="#h8-3-7" id="h8-3-7" class="i">+    CsandVec2F viewport_size_float = csandVec2FMulScalar(
+</a><a href="#h8-3-8" id="h8-3-8" class="i">+        CSAND_VEC2_CONVERT(CsandVec2F, csand_renderer.world_size),
+</a><a href="#h8-3-9" id="h8-3-9" class="i">+        csandFMin(scale_x, scale_y)
+</a><a href="#h8-3-10" id="h8-3-10" class="i">+    );
+</a><a href="#h8-3-11" id="h8-3-11" class="i">+
+</a><a href="#h8-3-12" id="h8-3-12" class="i">+    csand_renderer.viewport_size = CSAND_VEC2_CONVERT(CsandVec2Us, viewport_size_float);
+</a><a href="#h8-3-13" id="h8-3-13" class="i">+    csand_renderer.viewport_offset = csandVec2UsSub(
+</a><a href="#h8-3-14" id="h8-3-14" class="i">+        csandVec2UsDivScalar(framebuffer_size, 2),
+</a><a href="#h8-3-15" id="h8-3-15" class="i">+        csandVec2UsDivScalar(csand_renderer.viewport_size, 2)
+</a><a href="#h8-3-16" id="h8-3-16" class="i">+    );
+</a><a href="#h8-3-17" id="h8-3-17" class="i">+
+</a><a href="#h8-3-18" id="h8-3-18" class="i">+    glViewport(
+</a><a href="#h8-3-19" id="h8-3-19" class="i">+        csand_renderer.viewport_offset.x,
+</a><a href="#h8-3-20" id="h8-3-20" class="i">+        csand_renderer.viewport_offset.y,
+</a><a href="#h8-3-21" id="h8-3-21" class="i">+        csand_renderer.viewport_size.x,
+</a><a href="#h8-3-22" id="h8-3-22" class="i">+        csand_renderer.viewport_size.y
+</a><a href="#h8-3-23" id="h8-3-23" class="i">+    );
+</a><a href="#h8-3-24" id="h8-3-24" class="i">+}
+</a><a href="#h8-3-25" id="h8-3-25" class="i">+
+</a><a href="#h8-3-26" id="h8-3-26" class="i">+CsandVec2Us csandRendererScreenSpaceToWorldSpace(CsandVec2Us vec) {
+</a><a href="#h8-3-27" id="h8-3-27" class="i">+    CsandVec2L result = csandVec2LClamp(
+</a><a href="#h8-3-28" id="h8-3-28" class="i">+        csandVec2LDiv(
+</a><a href="#h8-3-29" id="h8-3-29" class="i">+            csandVec2LMul(
+</a><a href="#h8-3-30" id="h8-3-30" class="i">+                csandVec2LSub(
+</a><a href="#h8-3-31" id="h8-3-31" class="i">+                    (CsandVec2L){
+</a><a href="#h8-3-32" id="h8-3-32" class="i">+                        vec.x,
+</a><a href="#h8-3-33" id="h8-3-33" class="i">+                        csandPlatformGetWindowSize().y - 1 - vec.y,
+</a><a href="#h8-3-34" id="h8-3-34" class="i">+                    },
+</a><a href="#h8-3-35" id="h8-3-35" class="i">+                    CSAND_VEC2_CONVERT(CsandVec2L, csand_renderer.viewport_offset)
+</a><a href="#h8-3-36" id="h8-3-36" class="i">+                ),
+</a><a href="#h8-3-37" id="h8-3-37" class="i">+                CSAND_VEC2_CONVERT(CsandVec2L, csand_renderer.world_size)
+</a><a href="#h8-3-38" id="h8-3-38" class="i">+            ),
+</a><a href="#h8-3-39" id="h8-3-39" class="i">+            CSAND_VEC2_CONVERT(CsandVec2L, csand_renderer.viewport_size)
+</a><a href="#h8-3-40" id="h8-3-40" class="i">+        ),
+</a><a href="#h8-3-41" id="h8-3-41" class="i">+        (CsandVec2L){0},
+</a><a href="#h8-3-42" id="h8-3-42" class="i">+        csandVec2LSubScalar(CSAND_VEC2_CONVERT(CsandVec2L, csand_renderer.world_size), 1)
+</a><a href="#h8-3-43" id="h8-3-43" class="i">+    );
+</a><a href="#h8-3-44" id="h8-3-44" class="i">+
+</a><a href="#h8-3-45" id="h8-3-45" class="i">+    return CSAND_VEC2_CONVERT(CsandVec2Us, result);
+</a><a href="#h8-3-46" id="h8-3-46" class="i">+}
+</a><a href="#h8-3-47" id="h8-3-47" class="i">+
+</a> static GLuint csandLoadShaderProgram(void) {
+     GLuint vertex_shader = csandLoadShader(&quot;shader.vert&quot;, vertex_shader_src, VERTEX_SHADER_SRC_LENGTH, GL_VERTEX_SHADER);
+     GLuint fragment_shader = csandLoadShader(&quot;shader.frag&quot;, fragment_shader_src, FRAGMENT_SHADER_SRC_LENGTH, GL_FRAGMENT_SHADER);
+<a href="#h8-4" id="h8-4" class="h">@@ -148,10 +199,9 @@ static GLuint csandLoadShader(const char *name, const char *src, size_t size, GL
+</a>     return shader;
+ }
+ 
+<a href="#h8-4-3" id="h8-4-3" class="d">-static void csandSetRenderTextureSize(unsigned short width, unsigned short height) {
+</a><a href="#h8-4-4" id="h8-4-4" class="i">+static void csandUpdateWorldSize(CsandVec2Us world_size) {
+</a>     glActiveTexture(CSAND_RENDER_TEXTURE);
+ 
+<a href="#h8-4-7" id="h8-4-7" class="d">-    csand_renderer.width = width;
+</a><a href="#h8-4-8" id="h8-4-8" class="d">-    csand_renderer.height = height;
+</a><a href="#h8-4-9" id="h8-4-9" class="d">-    glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, csand_renderer.width, csand_renderer.height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, NULL);
+</a><a href="#h8-4-10" id="h8-4-10" class="i">+    csand_renderer.world_size = world_size;
+</a><a href="#h8-4-11" id="h8-4-11" class="i">+    glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, world_size.x, world_size.y, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, NULL);
+</a> }
+<b>diff --git a/<a id="h9" href="../file/renderer.h.html">renderer.h</a> b/<a href="../file/renderer.h.html">renderer.h</a></b>
+<a href="#h9-0" id="h9-0" class="h">@@ -2,9 +2,12 @@
+</a> #define CSAND_RENDERER_H
+ 
+ #include &quot;rgba.h&quot;
+<a href="#h9-0-3" id="h9-0-3" class="i">+#include &quot;vec2.h&quot;
+</a> #include &lt;stdint.h&gt;
+ 
+<a href="#h9-0-6" id="h9-0-6" class="d">-void csandRendererInit(const CsandRgba *colors, uint8_t colors_count);
+</a><a href="#h9-0-7" id="h9-0-7" class="i">+void csandRendererInit(CsandVec2Us world_size, CsandVec2Us framebuffer_size, const CsandRgba *colors, uint8_t colors_count);
+</a> void csandRendererRender(unsigned char *data, unsigned short width, unsigned short height);
+<a href="#h9-0-9" id="h9-0-9" class="i">+void csandRendererUpdateViewport(CsandVec2Us framebuffer_size);
+</a><a href="#h9-0-10" id="h9-0-10" class="i">+CsandVec2Us csandRendererScreenSpaceToWorldSpace(CsandVec2Us vec);
+</a> 
+ #endif
+<b>diff --git a/<a id="h10" href="../file/vec2.h.html">vec2.h</a> b/<a href="../file/vec2.h.html">vec2.h</a></b>
+<a href="#h10-0" id="h10-0" class="h">@@ -1,8 +1,36 @@
+</a> #ifndef CSAND_VEC2_H
+ #define CSAND_VEC2_H
+ 
+<a href="#h10-0-3" id="h10-0-3" class="d">-typedef struct CsandVec2Us {
+</a><a href="#h10-0-4" id="h10-0-4" class="d">-    unsigned short x, y;
+</a><a href="#h10-0-5" id="h10-0-5" class="d">-} CsandVec2Us;
+</a><a href="#h10-0-6" id="h10-0-6" class="i">+#include &quot;math.h&quot;
+</a><a href="#h10-0-7" id="h10-0-7" class="i">+#include &quot;x_macros.h&quot;
+</a><a href="#h10-0-8" id="h10-0-8" class="i">+
+</a><a href="#h10-0-9" id="h10-0-9" class="i">+/* WARNING: evaluates the argument twice */
+</a><a href="#h10-0-10" id="h10-0-10" class="i">+#define CSAND_VEC2_CONVERT(type, vec) \
+</a><a href="#h10-0-11" id="h10-0-11" class="i">+    ((type){(vec).x, (vec).y})
+</a><a href="#h10-0-12" id="h10-0-12" class="i">+
+</a><a href="#h10-0-13" id="h10-0-13" class="i">+#define CSAND_VEC2_GEN_OP(name, op, type_name) \
+</a><a href="#h10-0-14" id="h10-0-14" class="i">+    static inline CsandVec2##type_name csandVec2##type_name##name(CsandVec2##type_name lhs, CsandVec2##type_name rhs) { \
+</a><a href="#h10-0-15" id="h10-0-15" class="i">+        return (CsandVec2##type_name){lhs.x op rhs.x, lhs.y op rhs.y}; \
+</a><a href="#h10-0-16" id="h10-0-16" class="i">+    }
+</a><a href="#h10-0-17" id="h10-0-17" class="i">+
+</a><a href="#h10-0-18" id="h10-0-18" class="i">+#define CSAND_VEC2_GEN_OP_SCALAR(name, op, type_name, type) \
+</a><a href="#h10-0-19" id="h10-0-19" class="i">+    static inline CsandVec2##type_name csandVec2##type_name##name##Scalar(CsandVec2##type_name lhs, type rhs) { \
+</a><a href="#h10-0-20" id="h10-0-20" class="i">+        return (CsandVec2##type_name){lhs.x op rhs, lhs.y op rhs}; \
+</a><a href="#h10-0-21" id="h10-0-21" class="i">+    }
+</a><a href="#h10-0-22" id="h10-0-22" class="i">+
+</a><a href="#h10-0-23" id="h10-0-23" class="i">+#define CSAND_VEC2_GEN(type, name) \
+</a><a href="#h10-0-24" id="h10-0-24" class="i">+    typedef struct CsandVec2##name { \
+</a><a href="#h10-0-25" id="h10-0-25" class="i">+        type x; \
+</a><a href="#h10-0-26" id="h10-0-26" class="i">+        type y; \
+</a><a href="#h10-0-27" id="h10-0-27" class="i">+    } CsandVec2##name; \
+</a><a href="#h10-0-28" id="h10-0-28" class="i">+    \
+</a><a href="#h10-0-29" id="h10-0-29" class="i">+    static inline CsandVec2##name csandVec2##name##Clamp(CsandVec2##name a, CsandVec2##name min, CsandVec2##name max) { \
+</a><a href="#h10-0-30" id="h10-0-30" class="i">+        return (CsandVec2##name){csand##name##Clamp(a.x, min.x, max.x), csand##name##Clamp(a.y, min.y, max.y)}; \
+</a><a href="#h10-0-31" id="h10-0-31" class="i">+    } \
+</a><a href="#h10-0-32" id="h10-0-32" class="i">+    \
+</a><a href="#h10-0-33" id="h10-0-33" class="i">+    CSAND_X_OPERATORS(CSAND_VEC2_GEN_OP, name) \
+</a><a href="#h10-0-34" id="h10-0-34" class="i">+    CSAND_X_OPERATORS(CSAND_VEC2_GEN_OP_SCALAR, name, type) \
+</a><a href="#h10-0-35" id="h10-0-35" class="i">+
+</a><a href="#h10-0-36" id="h10-0-36" class="i">+CSAND_X_TYPES(CSAND_VEC2_GEN)
+</a> 
+ #endif
+<b>diff --git a/<a id="h11" href="../file/x_macros.h.html">x_macros.h</a> b/<a href="../file/x_macros.h.html">x_macros.h</a></b>
+<a href="#h11-0" id="h11-0" class="h">@@ -0,0 +1,20 @@
+</a><a href="#h11-0-0" id="h11-0-0" class="i">+#ifndef CSAND_X_MACROS_H
+</a><a href="#h11-0-1" id="h11-0-1" class="i">+#define CSAND_X_MACROS_H
+</a><a href="#h11-0-2" id="h11-0-2" class="i">+
+</a><a href="#h11-0-3" id="h11-0-3" class="i">+#define CSAND_X_TYPES(x) \
+</a><a href="#h11-0-4" id="h11-0-4" class="i">+    x(float, F) \
+</a><a href="#h11-0-5" id="h11-0-5" class="i">+    x(double, D) \
+</a><a href="#h11-0-6" id="h11-0-6" class="i">+    x(short, S) \
+</a><a href="#h11-0-7" id="h11-0-7" class="i">+    x(unsigned short, Us) \
+</a><a href="#h11-0-8" id="h11-0-8" class="i">+    x(int, I) \
+</a><a href="#h11-0-9" id="h11-0-9" class="i">+    x(unsigned int, Ui) \
+</a><a href="#h11-0-10" id="h11-0-10" class="i">+    x(long, L) \
+</a><a href="#h11-0-11" id="h11-0-11" class="i">+    x(unsigned long, Ul)
+</a><a href="#h11-0-12" id="h11-0-12" class="i">+
+</a><a href="#h11-0-13" id="h11-0-13" class="i">+#define CSAND_X_OPERATORS(x, ...) \
+</a><a href="#h11-0-14" id="h11-0-14" class="i">+    x(Add, +, __VA_ARGS__) \
+</a><a href="#h11-0-15" id="h11-0-15" class="i">+    x(Sub, -, __VA_ARGS__) \
+</a><a href="#h11-0-16" id="h11-0-16" class="i">+    x(Mul, *, __VA_ARGS__) \
+</a><a href="#h11-0-17" id="h11-0-17" class="i">+    x(Div, /, __VA_ARGS__)
+</a><a href="#h11-0-18" id="h11-0-18" class="i">+
+</a><a href="#h11-0-19" id="h11-0-19" class="i">+#endif
+</a></pre>
+</div>
+</body>
+</html>

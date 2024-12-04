@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Return the buttons - csand - Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</title>
+<link rel="icon" type="image/png" href="../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed" href="../atom.xml" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed (tags)" href="../tags.xml" />
+<link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../"><img src="../logo.png" alt="" width="32" height="32" /></a></td><td><h1>csand</h1><span class="desc">Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</span></td></tr><tr><td></td><td>
+<a href="../log.html">Log</a> | <a href="../files.html">Files</a> | <a href="../refs.html">Refs</a> | <a href="../file/LICENSE.html">LICENSE</a></td></tr></table>
+<hr/>
+<div id="content">
+<pre><b>commit</b> <a href="../commit/7c940cf3b55c48b4174ba4e27d242e09f5b806dc.html">7c940cf3b55c48b4174ba4e27d242e09f5b806dc</a>
+<b>parent</b> <a href="../commit/a62e73866e6db0b597e254fbfd26674bccfbde3a.html">a62e73866e6db0b597e254fbfd26674bccfbde3a</a>
+<b>Author:</b> mirefly &lt;<a href="mailto:"></a>&gt;
+<b>Date:</b>   Mon, 30 Jun 2025 16:17:31 +0700
+
+Return the buttons
+
+<b>Diffstat:</b>
+<table><tr><td class="M">M</td><td><a href="#h0">csand.c</a></td><td> | </td><td class="num">106</td><td><span class="i">+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span><span class="d">------</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h1">nuklear_config.h</a></td><td> | </td><td class="num">1</td><td><span class="i">+</span><span class="d"></span></td></tr>
+</table></pre><pre>2 files changed, 99 insertions(+), 8 deletions(-)
+<hr/><b>diff --git a/<a id="h0" href="../file/csand.c.html">csand.c</a> b/<a href="../file/csand.c.html">csand.c</a></b>
+<a href="#h0-0" id="h0-0" class="h">@@ -43,6 +43,8 @@ static bool input_next_frame = false;
+</a> static bool any_nuklear_item_active = false;
+ static bool developer_menu_enabled = false;
+ static struct nk_rect developer_menu_bounds = {10, 10, 730, 540};
+<a href="#h0-0-3" id="h0-0-3" class="i">+static float buttons_row_width = 0;
+</a><a href="#h0-0-4" id="h0-0-4" class="i">+static bool buttons_shown = true;
+</a> 
+ typedef struct CsandRenderBuffer {
+     unsigned char *data;
+<a href="#h0-1" id="h0-1" class="h">@@ -100,6 +102,21 @@ static CsandRgba palette[MATERIALS_COUNT] = {
+</a>     [MAT_HYDROGEN_LIQUID] = {0x57, 0x8F, 0xC8, 0xFF},
+ };
+ 
+<a href="#h0-1-3" id="h0-1-3" class="i">+static const unsigned char selectable_materials[] = {
+</a><a href="#h0-1-4" id="h0-1-4" class="i">+    MAT_AIR,
+</a><a href="#h0-1-5" id="h0-1-5" class="i">+    MAT_WALL,
+</a><a href="#h0-1-6" id="h0-1-6" class="i">+    MAT_SAND,
+</a><a href="#h0-1-7" id="h0-1-7" class="i">+    MAT_WATER,
+</a><a href="#h0-1-8" id="h0-1-8" class="i">+    MAT_FIRE_GAS,
+</a><a href="#h0-1-9" id="h0-1-9" class="i">+    MAT_WOOD,
+</a><a href="#h0-1-10" id="h0-1-10" class="i">+    MAT_COAL,
+</a><a href="#h0-1-11" id="h0-1-11" class="i">+    MAT_OIL,
+</a><a href="#h0-1-12" id="h0-1-12" class="i">+    MAT_HYDROGEN_GAS,
+</a><a href="#h0-1-13" id="h0-1-13" class="i">+    MAT_HYDROGEN_LIQUID,
+</a><a href="#h0-1-14" id="h0-1-14" class="i">+};
+</a><a href="#h0-1-15" id="h0-1-15" class="i">+
+</a><a href="#h0-1-16" id="h0-1-16" class="i">+#define CSAND_STATIC_ARRAY_LENGTH(array) (sizeof(array) / sizeof((array)[0]))
+</a><a href="#h0-1-17" id="h0-1-17" class="i">+
+</a> static bool csandKeyCallback(CsandKey key, CsandAction action, CsandModSet mods);
+ static void csandCharCallback(uint32_t codepoint);
+ static void csandMouseButtonCallback(CsandMouseButton button, unsigned int pressed) {
+<a href="#h0-2" id="h0-2" class="h">@@ -130,6 +147,23 @@ static bool csandInBounds(CsandRenderBuffer buf, int x, int y);
+</a> static inline bool csandMatIsFire(unsigned char mat);
+ static void tryIgnite(CsandRenderBuffer buf, unsigned int x, unsigned int y);
+ 
+<a href="#h0-2-3" id="h0-2-3" class="i">+static void csandDoubleSimulationSpeed(void) {
+</a><a href="#h0-2-4" id="h0-2-4" class="i">+    if (speed &lt; SPEED_LIMIT) {
+</a><a href="#h0-2-5" id="h0-2-5" class="i">+        speed *= 2;
+</a><a href="#h0-2-6" id="h0-2-6" class="i">+    }
+</a><a href="#h0-2-7" id="h0-2-7" class="i">+}
+</a><a href="#h0-2-8" id="h0-2-8" class="i">+
+</a><a href="#h0-2-9" id="h0-2-9" class="i">+static void csandHalveSimulationSpeed(void) {
+</a><a href="#h0-2-10" id="h0-2-10" class="i">+    if (speed &gt; 1) {
+</a><a href="#h0-2-11" id="h0-2-11" class="i">+        speed /= 2;
+</a><a href="#h0-2-12" id="h0-2-12" class="i">+    }
+</a><a href="#h0-2-13" id="h0-2-13" class="i">+}
+</a><a href="#h0-2-14" id="h0-2-14" class="i">+
+</a><a href="#h0-2-15" id="h0-2-15" class="i">+static void csandSimulateSingleFrame(void) {
+</a><a href="#h0-2-16" id="h0-2-16" class="i">+    input_next_frame = true;
+</a><a href="#h0-2-17" id="h0-2-17" class="i">+    pause = true;
+</a><a href="#h0-2-18" id="h0-2-18" class="i">+}
+</a><a href="#h0-2-19" id="h0-2-19" class="i">+
+</a> int main(void) {
+     csandPlatformInit();
+     csandRendererInit((CsandVec2Us){WIDTH, HEIGHT}, csandPlatformGetFramebufferSize(), palette, MATERIALS_COUNT);
+<a href="#h0-3" id="h0-3" class="h">@@ -279,18 +313,13 @@ static bool csandKeyCallback(CsandKey key, CsandAction action, CsandModSet mods)
+</a>             pause = !pause;
+             return true;
+         case CSAND_KEY_EQUAL:
+<a href="#h0-3-3" id="h0-3-3" class="d">-            if (speed &lt; SPEED_LIMIT) {
+</a><a href="#h0-3-4" id="h0-3-4" class="d">-                speed *= 2;
+</a><a href="#h0-3-5" id="h0-3-5" class="d">-            }
+</a><a href="#h0-3-6" id="h0-3-6" class="i">+            csandDoubleSimulationSpeed();
+</a>             return true;
+         case CSAND_KEY_MINUS:
+<a href="#h0-3-9" id="h0-3-9" class="d">-            if (speed &gt; 1) {
+</a><a href="#h0-3-10" id="h0-3-10" class="d">-                speed /= 2;
+</a><a href="#h0-3-11" id="h0-3-11" class="d">-            }
+</a><a href="#h0-3-12" id="h0-3-12" class="i">+            csandHalveSimulationSpeed();
+</a>             return true;
+         case CSAND_KEY_PERIOD:
+<a href="#h0-3-15" id="h0-3-15" class="d">-            input_next_frame = true;
+</a><a href="#h0-3-16" id="h0-3-16" class="d">-            pause = true;
+</a><a href="#h0-3-17" id="h0-3-17" class="i">+            csandSimulateSingleFrame();
+</a>             return true;
+         case CSAND_KEY_F:
+             csandPlatformToggleFullscreen();
+<a href="#h0-4" id="h0-4" class="h">@@ -399,10 +428,71 @@ static void csandDrawDeveloperMenu(void) {
+</a>     nk_end(nk_ctx);
+ }
+ 
+<a href="#h0-4-3" id="h0-4-3" class="i">+static bool csandRowTemplateAutoSizedButton(struct nk_context *nk_ctx, const char *text) {
+</a><a href="#h0-4-4" id="h0-4-4" class="i">+    const struct nk_user_font *font = nk_ctx-&gt;style.font;
+</a><a href="#h0-4-5" id="h0-4-5" class="i">+    float width = font-&gt;width(font-&gt;userdata, font-&gt;height, text, nk_strlen(text)) + 18;
+</a><a href="#h0-4-6" id="h0-4-6" class="i">+    nk_layout_row_template_push_static(nk_ctx, width);
+</a><a href="#h0-4-7" id="h0-4-7" class="i">+    return nk_button_label(nk_ctx, text);
+</a><a href="#h0-4-8" id="h0-4-8" class="i">+}
+</a><a href="#h0-4-9" id="h0-4-9" class="i">+
+</a><a href="#h0-4-10" id="h0-4-10" class="i">+static void csandDrawButtons(void) {
+</a><a href="#h0-4-11" id="h0-4-11" class="i">+    struct nk_context *nk_ctx = csandRendererNuklearContext();
+</a><a href="#h0-4-12" id="h0-4-12" class="i">+
+</a><a href="#h0-4-13" id="h0-4-13" class="i">+    float row_height = 40;
+</a><a href="#h0-4-14" id="h0-4-14" class="i">+    nk_style_push_style_item(nk_ctx, &amp;nk_ctx-&gt;style.window.fixed_background, nk_style_item_color(nk_rgba(0, 0, 0, 0)));
+</a><a href="#h0-4-15" id="h0-4-15" class="i">+    if (nk_begin(nk_ctx, &quot;Buttons&quot;, nk_rect(0, 0, csandFMin(buttons_row_width, csandPlatformGetFramebufferSize().x) + 14, row_height + 18), NK_WINDOW_BACKGROUND)) {
+</a><a href="#h0-4-16" id="h0-4-16" class="i">+        nk_layout_row_template_begin(nk_ctx, row_height);
+</a><a href="#h0-4-17" id="h0-4-17" class="i">+
+</a><a href="#h0-4-18" id="h0-4-18" class="i">+        if (csandRowTemplateAutoSizedButton(nk_ctx, buttons_shown ? &quot;&lt;&quot; : &quot;&gt;&quot;)) {
+</a><a href="#h0-4-19" id="h0-4-19" class="i">+            buttons_shown = !buttons_shown;
+</a><a href="#h0-4-20" id="h0-4-20" class="i">+        }
+</a><a href="#h0-4-21" id="h0-4-21" class="i">+
+</a><a href="#h0-4-22" id="h0-4-22" class="i">+        if (buttons_shown) {
+</a><a href="#h0-4-23" id="h0-4-23" class="i">+            for (size_t i = 0; i &lt; CSAND_STATIC_ARRAY_LENGTH(selectable_materials); i++) {
+</a><a href="#h0-4-24" id="h0-4-24" class="i">+                unsigned char mat = selectable_materials[i];
+</a><a href="#h0-4-25" id="h0-4-25" class="i">+                if (csandRowTemplateAutoSizedButton(nk_ctx, materials[mat].name)) {
+</a><a href="#h0-4-26" id="h0-4-26" class="i">+                    draw_mat = mat;
+</a><a href="#h0-4-27" id="h0-4-27" class="i">+                }
+</a><a href="#h0-4-28" id="h0-4-28" class="i">+            }
+</a><a href="#h0-4-29" id="h0-4-29" class="i">+
+</a><a href="#h0-4-30" id="h0-4-30" class="i">+            if (csandRowTemplateAutoSizedButton(nk_ctx, &quot;fullscreen&quot;)) {
+</a><a href="#h0-4-31" id="h0-4-31" class="i">+                csandPlatformToggleFullscreen();
+</a><a href="#h0-4-32" id="h0-4-32" class="i">+            }
+</a><a href="#h0-4-33" id="h0-4-33" class="i">+
+</a><a href="#h0-4-34" id="h0-4-34" class="i">+            if (csandRowTemplateAutoSizedButton(nk_ctx, &quot;pause&quot;)) {
+</a><a href="#h0-4-35" id="h0-4-35" class="i">+                pause = !pause;
+</a><a href="#h0-4-36" id="h0-4-36" class="i">+            }
+</a><a href="#h0-4-37" id="h0-4-37" class="i">+
+</a><a href="#h0-4-38" id="h0-4-38" class="i">+            if (csandRowTemplateAutoSizedButton(nk_ctx, &quot;speed+&quot;)) {
+</a><a href="#h0-4-39" id="h0-4-39" class="i">+                csandDoubleSimulationSpeed();
+</a><a href="#h0-4-40" id="h0-4-40" class="i">+            }
+</a><a href="#h0-4-41" id="h0-4-41" class="i">+
+</a><a href="#h0-4-42" id="h0-4-42" class="i">+            if (csandRowTemplateAutoSizedButton(nk_ctx, &quot;speed-&quot;)) {
+</a><a href="#h0-4-43" id="h0-4-43" class="i">+                csandHalveSimulationSpeed();
+</a><a href="#h0-4-44" id="h0-4-44" class="i">+            }
+</a><a href="#h0-4-45" id="h0-4-45" class="i">+
+</a><a href="#h0-4-46" id="h0-4-46" class="i">+            if (csandRowTemplateAutoSizedButton(nk_ctx, &quot;next frame&quot;)) {
+</a><a href="#h0-4-47" id="h0-4-47" class="i">+                csandSimulateSingleFrame();
+</a><a href="#h0-4-48" id="h0-4-48" class="i">+            }
+</a><a href="#h0-4-49" id="h0-4-49" class="i">+
+</a><a href="#h0-4-50" id="h0-4-50" class="i">+            if (csandRowTemplateAutoSizedButton(nk_ctx, &quot;dev menu&quot;)) {
+</a><a href="#h0-4-51" id="h0-4-51" class="i">+                developer_menu_enabled = !developer_menu_enabled;
+</a><a href="#h0-4-52" id="h0-4-52" class="i">+            }
+</a><a href="#h0-4-53" id="h0-4-53" class="i">+        }
+</a><a href="#h0-4-54" id="h0-4-54" class="i">+        struct nk_panel *panel = nk_window_get_panel(nk_ctx);
+</a><a href="#h0-4-55" id="h0-4-55" class="i">+        buttons_row_width = panel-&gt;max_x;
+</a><a href="#h0-4-56" id="h0-4-56" class="i">+        nk_layout_row_template_end(nk_ctx);
+</a><a href="#h0-4-57" id="h0-4-57" class="i">+    }
+</a><a href="#h0-4-58" id="h0-4-58" class="i">+    nk_end(nk_ctx);
+</a><a href="#h0-4-59" id="h0-4-59" class="i">+    nk_style_pop_style_item(nk_ctx);
+</a><a href="#h0-4-60" id="h0-4-60" class="i">+}
+</a><a href="#h0-4-61" id="h0-4-61" class="i">+
+</a> static void csandRenderCallback(double time) {
+     struct nk_context *nk_ctx = csandRendererNuklearContext();
+     nk_input_end(nk_ctx);
+ 
+<a href="#h0-4-66" id="h0-4-66" class="i">+    csandDrawButtons();
+</a><a href="#h0-4-67" id="h0-4-67" class="i">+
+</a>     if (developer_menu_enabled) {
+         csandDrawDeveloperMenu();
+     }
+<b>diff --git a/<a id="h1" href="../file/nuklear_config.h.html">nuklear_config.h</a> b/<a href="../file/nuklear_config.h.html">nuklear_config.h</a></b>
+<a href="#h1-0" id="h1-0" class="h">@@ -4,6 +4,7 @@
+</a> #define NK_ASSERT(x)
+ #define NK_INCLUDE_STANDARD_VARARGS
+ #define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
+<a href="#h1-0-3" id="h1-0-3" class="i">+#define NK_MAX_LAYOUT_ROW_TEMPLATE_COLUMNS 32
+</a> #include &quot;nuklear.h&quot;
+ 
+ #endif
+</pre>
+</div>
+</body>
+</html>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>khrplatform.h - csand - Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</title>
+<link rel="icon" type="image/png" href="../../../../../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed" href="../../../../../atom.xml" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed (tags)" href="../../../../../tags.xml" />
+<link rel="stylesheet" type="text/css" href="../../../../../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../../../../../"><img src="../../../../../logo.png" alt="" width="32" height="32" /></a></td><td><h1>csand</h1><span class="desc">Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</span></td></tr><tr><td></td><td>
+<a href="../../../../../log.html">Log</a> | <a href="../../../../../files.html">Files</a> | <a href="../../../../../refs.html">Refs</a> | <a href="../../../../../file/LICENSE.html">LICENSE</a></td></tr></table>
+<hr/>
+<div id="content">
+<p> khrplatform.h (11131B)</p><hr/><pre id="blob">
+<a href="#l1" class="line" id="l1">      1</a> #ifndef __khrplatform_h_
+<a href="#l2" class="line" id="l2">      2</a> #define __khrplatform_h_
+<a href="#l3" class="line" id="l3">      3</a> 
+<a href="#l4" class="line" id="l4">      4</a> /*
+<a href="#l5" class="line" id="l5">      5</a> ** Copyright (c) 2008-2018 The Khronos Group Inc.
+<a href="#l6" class="line" id="l6">      6</a> **
+<a href="#l7" class="line" id="l7">      7</a> ** Permission is hereby granted, free of charge, to any person obtaining a
+<a href="#l8" class="line" id="l8">      8</a> ** copy of this software and/or associated documentation files (the
+<a href="#l9" class="line" id="l9">      9</a> ** &quot;Materials&quot;), to deal in the Materials without restriction, including
+<a href="#l10" class="line" id="l10">     10</a> ** without limitation the rights to use, copy, modify, merge, publish,
+<a href="#l11" class="line" id="l11">     11</a> ** distribute, sublicense, and/or sell copies of the Materials, and to
+<a href="#l12" class="line" id="l12">     12</a> ** permit persons to whom the Materials are furnished to do so, subject to
+<a href="#l13" class="line" id="l13">     13</a> ** the following conditions:
+<a href="#l14" class="line" id="l14">     14</a> **
+<a href="#l15" class="line" id="l15">     15</a> ** The above copyright notice and this permission notice shall be included
+<a href="#l16" class="line" id="l16">     16</a> ** in all copies or substantial portions of the Materials.
+<a href="#l17" class="line" id="l17">     17</a> **
+<a href="#l18" class="line" id="l18">     18</a> ** THE MATERIALS ARE PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+<a href="#l19" class="line" id="l19">     19</a> ** EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+<a href="#l20" class="line" id="l20">     20</a> ** MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+<a href="#l21" class="line" id="l21">     21</a> ** IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+<a href="#l22" class="line" id="l22">     22</a> ** CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+<a href="#l23" class="line" id="l23">     23</a> ** TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+<a href="#l24" class="line" id="l24">     24</a> ** MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
+<a href="#l25" class="line" id="l25">     25</a> */
+<a href="#l26" class="line" id="l26">     26</a> 
+<a href="#l27" class="line" id="l27">     27</a> /* Khronos platform-specific types and definitions.
+<a href="#l28" class="line" id="l28">     28</a>  *
+<a href="#l29" class="line" id="l29">     29</a>  * The master copy of khrplatform.h is maintained in the Khronos EGL
+<a href="#l30" class="line" id="l30">     30</a>  * Registry repository at https://github.com/KhronosGroup/EGL-Registry
+<a href="#l31" class="line" id="l31">     31</a>  * The last semantic modification to khrplatform.h was at commit ID:
+<a href="#l32" class="line" id="l32">     32</a>  *      67a3e0864c2d75ea5287b9f3d2eb74a745936692
+<a href="#l33" class="line" id="l33">     33</a>  *
+<a href="#l34" class="line" id="l34">     34</a>  * Adopters may modify this file to suit their platform. Adopters are
+<a href="#l35" class="line" id="l35">     35</a>  * encouraged to submit platform specific modifications to the Khronos
+<a href="#l36" class="line" id="l36">     36</a>  * group so that they can be included in future versions of this file.
+<a href="#l37" class="line" id="l37">     37</a>  * Please submit changes by filing pull requests or issues on
+<a href="#l38" class="line" id="l38">     38</a>  * the EGL Registry repository linked above.
+<a href="#l39" class="line" id="l39">     39</a>  *
+<a href="#l40" class="line" id="l40">     40</a>  *
+<a href="#l41" class="line" id="l41">     41</a>  * See the Implementer&#39;s Guidelines for information about where this file
+<a href="#l42" class="line" id="l42">     42</a>  * should be located on your system and for more details of its use:
+<a href="#l43" class="line" id="l43">     43</a>  *    http://www.khronos.org/registry/implementers_guide.pdf
+<a href="#l44" class="line" id="l44">     44</a>  *
+<a href="#l45" class="line" id="l45">     45</a>  * This file should be included as
+<a href="#l46" class="line" id="l46">     46</a>  *        #include &lt;KHR/khrplatform.h&gt;
+<a href="#l47" class="line" id="l47">     47</a>  * by Khronos client API header files that use its types and defines.
+<a href="#l48" class="line" id="l48">     48</a>  *
+<a href="#l49" class="line" id="l49">     49</a>  * The types in khrplatform.h should only be used to define API-specific types.
+<a href="#l50" class="line" id="l50">     50</a>  *
+<a href="#l51" class="line" id="l51">     51</a>  * Types defined in khrplatform.h:
+<a href="#l52" class="line" id="l52">     52</a>  *    khronos_int8_t              signed   8  bit
+<a href="#l53" class="line" id="l53">     53</a>  *    khronos_uint8_t             unsigned 8  bit
+<a href="#l54" class="line" id="l54">     54</a>  *    khronos_int16_t             signed   16 bit
+<a href="#l55" class="line" id="l55">     55</a>  *    khronos_uint16_t            unsigned 16 bit
+<a href="#l56" class="line" id="l56">     56</a>  *    khronos_int32_t             signed   32 bit
+<a href="#l57" class="line" id="l57">     57</a>  *    khronos_uint32_t            unsigned 32 bit
+<a href="#l58" class="line" id="l58">     58</a>  *    khronos_int64_t             signed   64 bit
+<a href="#l59" class="line" id="l59">     59</a>  *    khronos_uint64_t            unsigned 64 bit
+<a href="#l60" class="line" id="l60">     60</a>  *    khronos_intptr_t            signed   same number of bits as a pointer
+<a href="#l61" class="line" id="l61">     61</a>  *    khronos_uintptr_t           unsigned same number of bits as a pointer
+<a href="#l62" class="line" id="l62">     62</a>  *    khronos_ssize_t             signed   size
+<a href="#l63" class="line" id="l63">     63</a>  *    khronos_usize_t             unsigned size
+<a href="#l64" class="line" id="l64">     64</a>  *    khronos_float_t             signed   32 bit floating point
+<a href="#l65" class="line" id="l65">     65</a>  *    khronos_time_ns_t           unsigned 64 bit time in nanoseconds
+<a href="#l66" class="line" id="l66">     66</a>  *    khronos_utime_nanoseconds_t unsigned time interval or absolute time in
+<a href="#l67" class="line" id="l67">     67</a>  *                                         nanoseconds
+<a href="#l68" class="line" id="l68">     68</a>  *    khronos_stime_nanoseconds_t signed time interval in nanoseconds
+<a href="#l69" class="line" id="l69">     69</a>  *    khronos_boolean_enum_t      enumerated boolean type. This should
+<a href="#l70" class="line" id="l70">     70</a>  *      only be used as a base type when a client API&#39;s boolean type is
+<a href="#l71" class="line" id="l71">     71</a>  *      an enum. Client APIs which use an integer or other type for
+<a href="#l72" class="line" id="l72">     72</a>  *      booleans cannot use this as the base type for their boolean.
+<a href="#l73" class="line" id="l73">     73</a>  *
+<a href="#l74" class="line" id="l74">     74</a>  * Tokens defined in khrplatform.h:
+<a href="#l75" class="line" id="l75">     75</a>  *
+<a href="#l76" class="line" id="l76">     76</a>  *    KHRONOS_FALSE, KHRONOS_TRUE Enumerated boolean false/true values.
+<a href="#l77" class="line" id="l77">     77</a>  *
+<a href="#l78" class="line" id="l78">     78</a>  *    KHRONOS_SUPPORT_INT64 is 1 if 64 bit integers are supported; otherwise 0.
+<a href="#l79" class="line" id="l79">     79</a>  *    KHRONOS_SUPPORT_FLOAT is 1 if floats are supported; otherwise 0.
+<a href="#l80" class="line" id="l80">     80</a>  *
+<a href="#l81" class="line" id="l81">     81</a>  * Calling convention macros defined in this file:
+<a href="#l82" class="line" id="l82">     82</a>  *    KHRONOS_APICALL
+<a href="#l83" class="line" id="l83">     83</a>  *    KHRONOS_APIENTRY
+<a href="#l84" class="line" id="l84">     84</a>  *    KHRONOS_APIATTRIBUTES
+<a href="#l85" class="line" id="l85">     85</a>  *
+<a href="#l86" class="line" id="l86">     86</a>  * These may be used in function prototypes as:
+<a href="#l87" class="line" id="l87">     87</a>  *
+<a href="#l88" class="line" id="l88">     88</a>  *      KHRONOS_APICALL void KHRONOS_APIENTRY funcname(
+<a href="#l89" class="line" id="l89">     89</a>  *                                  int arg1,
+<a href="#l90" class="line" id="l90">     90</a>  *                                  int arg2) KHRONOS_APIATTRIBUTES;
+<a href="#l91" class="line" id="l91">     91</a>  */
+<a href="#l92" class="line" id="l92">     92</a> 
+<a href="#l93" class="line" id="l93">     93</a> #if defined(__SCITECH_SNAP__) &amp;&amp; !defined(KHRONOS_STATIC)
+<a href="#l94" class="line" id="l94">     94</a> #   define KHRONOS_STATIC 1
+<a href="#l95" class="line" id="l95">     95</a> #endif
+<a href="#l96" class="line" id="l96">     96</a> 
+<a href="#l97" class="line" id="l97">     97</a> /*-------------------------------------------------------------------------
+<a href="#l98" class="line" id="l98">     98</a>  * Definition of KHRONOS_APICALL
+<a href="#l99" class="line" id="l99">     99</a>  *-------------------------------------------------------------------------
+<a href="#l100" class="line" id="l100">    100</a>  * This precedes the return type of the function in the function prototype.
+<a href="#l101" class="line" id="l101">    101</a>  */
+<a href="#l102" class="line" id="l102">    102</a> #if defined(KHRONOS_STATIC)
+<a href="#l103" class="line" id="l103">    103</a>     /* If the preprocessor constant KHRONOS_STATIC is defined, make the
+<a href="#l104" class="line" id="l104">    104</a>      * header compatible with static linking. */
+<a href="#l105" class="line" id="l105">    105</a> #   define KHRONOS_APICALL
+<a href="#l106" class="line" id="l106">    106</a> #elif defined(_WIN32)
+<a href="#l107" class="line" id="l107">    107</a> #   define KHRONOS_APICALL __declspec(dllimport)
+<a href="#l108" class="line" id="l108">    108</a> #elif defined (__SYMBIAN32__)
+<a href="#l109" class="line" id="l109">    109</a> #   define KHRONOS_APICALL IMPORT_C
+<a href="#l110" class="line" id="l110">    110</a> #elif defined(__ANDROID__)
+<a href="#l111" class="line" id="l111">    111</a> #   define KHRONOS_APICALL __attribute__((visibility(&quot;default&quot;)))
+<a href="#l112" class="line" id="l112">    112</a> #else
+<a href="#l113" class="line" id="l113">    113</a> #   define KHRONOS_APICALL
+<a href="#l114" class="line" id="l114">    114</a> #endif
+<a href="#l115" class="line" id="l115">    115</a> 
+<a href="#l116" class="line" id="l116">    116</a> /*-------------------------------------------------------------------------
+<a href="#l117" class="line" id="l117">    117</a>  * Definition of KHRONOS_APIENTRY
+<a href="#l118" class="line" id="l118">    118</a>  *-------------------------------------------------------------------------
+<a href="#l119" class="line" id="l119">    119</a>  * This follows the return type of the function  and precedes the function
+<a href="#l120" class="line" id="l120">    120</a>  * name in the function prototype.
+<a href="#l121" class="line" id="l121">    121</a>  */
+<a href="#l122" class="line" id="l122">    122</a> #if defined(_WIN32) &amp;&amp; !defined(_WIN32_WCE) &amp;&amp; !defined(__SCITECH_SNAP__)
+<a href="#l123" class="line" id="l123">    123</a>     /* Win32 but not WinCE */
+<a href="#l124" class="line" id="l124">    124</a> #   define KHRONOS_APIENTRY __stdcall
+<a href="#l125" class="line" id="l125">    125</a> #else
+<a href="#l126" class="line" id="l126">    126</a> #   define KHRONOS_APIENTRY
+<a href="#l127" class="line" id="l127">    127</a> #endif
+<a href="#l128" class="line" id="l128">    128</a> 
+<a href="#l129" class="line" id="l129">    129</a> /*-------------------------------------------------------------------------
+<a href="#l130" class="line" id="l130">    130</a>  * Definition of KHRONOS_APIATTRIBUTES
+<a href="#l131" class="line" id="l131">    131</a>  *-------------------------------------------------------------------------
+<a href="#l132" class="line" id="l132">    132</a>  * This follows the closing parenthesis of the function prototype arguments.
+<a href="#l133" class="line" id="l133">    133</a>  */
+<a href="#l134" class="line" id="l134">    134</a> #if defined (__ARMCC_2__)
+<a href="#l135" class="line" id="l135">    135</a> #define KHRONOS_APIATTRIBUTES __softfp
+<a href="#l136" class="line" id="l136">    136</a> #else
+<a href="#l137" class="line" id="l137">    137</a> #define KHRONOS_APIATTRIBUTES
+<a href="#l138" class="line" id="l138">    138</a> #endif
+<a href="#l139" class="line" id="l139">    139</a> 
+<a href="#l140" class="line" id="l140">    140</a> /*-------------------------------------------------------------------------
+<a href="#l141" class="line" id="l141">    141</a>  * basic type definitions
+<a href="#l142" class="line" id="l142">    142</a>  *-----------------------------------------------------------------------*/
+<a href="#l143" class="line" id="l143">    143</a> #if (defined(__STDC_VERSION__) &amp;&amp; __STDC_VERSION__ &gt;= 199901L) || defined(__GNUC__) || defined(__SCO__) || defined(__USLC__)
+<a href="#l144" class="line" id="l144">    144</a> 
+<a href="#l145" class="line" id="l145">    145</a> 
+<a href="#l146" class="line" id="l146">    146</a> /*
+<a href="#l147" class="line" id="l147">    147</a>  * Using &lt;stdint.h&gt;
+<a href="#l148" class="line" id="l148">    148</a>  */
+<a href="#l149" class="line" id="l149">    149</a> #include &lt;stdint.h&gt;
+<a href="#l150" class="line" id="l150">    150</a> typedef int32_t                 khronos_int32_t;
+<a href="#l151" class="line" id="l151">    151</a> typedef uint32_t                khronos_uint32_t;
+<a href="#l152" class="line" id="l152">    152</a> typedef int64_t                 khronos_int64_t;
+<a href="#l153" class="line" id="l153">    153</a> typedef uint64_t                khronos_uint64_t;
+<a href="#l154" class="line" id="l154">    154</a> #define KHRONOS_SUPPORT_INT64   1
+<a href="#l155" class="line" id="l155">    155</a> #define KHRONOS_SUPPORT_FLOAT   1
+<a href="#l156" class="line" id="l156">    156</a> /*
+<a href="#l157" class="line" id="l157">    157</a>  * To support platform where unsigned long cannot be used interchangeably with
+<a href="#l158" class="line" id="l158">    158</a>  * inptr_t (e.g. CHERI-extended ISAs), we can use the stdint.h intptr_t.
+<a href="#l159" class="line" id="l159">    159</a>  * Ideally, we could just use (u)intptr_t everywhere, but this could result in
+<a href="#l160" class="line" id="l160">    160</a>  * ABI breakage if khronos_uintptr_t is changed from unsigned long to
+<a href="#l161" class="line" id="l161">    161</a>  * unsigned long long or similar (this results in different C++ name mangling).
+<a href="#l162" class="line" id="l162">    162</a>  * To avoid changes for existing platforms, we restrict usage of intptr_t to
+<a href="#l163" class="line" id="l163">    163</a>  * platforms where the size of a pointer is larger than the size of long.
+<a href="#l164" class="line" id="l164">    164</a>  */
+<a href="#l165" class="line" id="l165">    165</a> #if defined(__SIZEOF_LONG__) &amp;&amp; defined(__SIZEOF_POINTER__)
+<a href="#l166" class="line" id="l166">    166</a> #if __SIZEOF_POINTER__ &gt; __SIZEOF_LONG__
+<a href="#l167" class="line" id="l167">    167</a> #define KHRONOS_USE_INTPTR_T
+<a href="#l168" class="line" id="l168">    168</a> #endif
+<a href="#l169" class="line" id="l169">    169</a> #endif
+<a href="#l170" class="line" id="l170">    170</a> 
+<a href="#l171" class="line" id="l171">    171</a> #elif defined(__VMS ) || defined(__sgi)
+<a href="#l172" class="line" id="l172">    172</a> 
+<a href="#l173" class="line" id="l173">    173</a> /*
+<a href="#l174" class="line" id="l174">    174</a>  * Using &lt;inttypes.h&gt;
+<a href="#l175" class="line" id="l175">    175</a>  */
+<a href="#l176" class="line" id="l176">    176</a> #include &lt;inttypes.h&gt;
+<a href="#l177" class="line" id="l177">    177</a> typedef int32_t                 khronos_int32_t;
+<a href="#l178" class="line" id="l178">    178</a> typedef uint32_t                khronos_uint32_t;
+<a href="#l179" class="line" id="l179">    179</a> typedef int64_t                 khronos_int64_t;
+<a href="#l180" class="line" id="l180">    180</a> typedef uint64_t                khronos_uint64_t;
+<a href="#l181" class="line" id="l181">    181</a> #define KHRONOS_SUPPORT_INT64   1
+<a href="#l182" class="line" id="l182">    182</a> #define KHRONOS_SUPPORT_FLOAT   1
+<a href="#l183" class="line" id="l183">    183</a> 
+<a href="#l184" class="line" id="l184">    184</a> #elif defined(_WIN32) &amp;&amp; !defined(__SCITECH_SNAP__)
+<a href="#l185" class="line" id="l185">    185</a> 
+<a href="#l186" class="line" id="l186">    186</a> /*
+<a href="#l187" class="line" id="l187">    187</a>  * Win32
+<a href="#l188" class="line" id="l188">    188</a>  */
+<a href="#l189" class="line" id="l189">    189</a> typedef __int32                 khronos_int32_t;
+<a href="#l190" class="line" id="l190">    190</a> typedef unsigned __int32        khronos_uint32_t;
+<a href="#l191" class="line" id="l191">    191</a> typedef __int64                 khronos_int64_t;
+<a href="#l192" class="line" id="l192">    192</a> typedef unsigned __int64        khronos_uint64_t;
+<a href="#l193" class="line" id="l193">    193</a> #define KHRONOS_SUPPORT_INT64   1
+<a href="#l194" class="line" id="l194">    194</a> #define KHRONOS_SUPPORT_FLOAT   1
+<a href="#l195" class="line" id="l195">    195</a> 
+<a href="#l196" class="line" id="l196">    196</a> #elif defined(__sun__) || defined(__digital__)
+<a href="#l197" class="line" id="l197">    197</a> 
+<a href="#l198" class="line" id="l198">    198</a> /*
+<a href="#l199" class="line" id="l199">    199</a>  * Sun or Digital
+<a href="#l200" class="line" id="l200">    200</a>  */
+<a href="#l201" class="line" id="l201">    201</a> typedef int                     khronos_int32_t;
+<a href="#l202" class="line" id="l202">    202</a> typedef unsigned int            khronos_uint32_t;
+<a href="#l203" class="line" id="l203">    203</a> #if defined(__arch64__) || defined(_LP64)
+<a href="#l204" class="line" id="l204">    204</a> typedef long int                khronos_int64_t;
+<a href="#l205" class="line" id="l205">    205</a> typedef unsigned long int       khronos_uint64_t;
+<a href="#l206" class="line" id="l206">    206</a> #else
+<a href="#l207" class="line" id="l207">    207</a> typedef long long int           khronos_int64_t;
+<a href="#l208" class="line" id="l208">    208</a> typedef unsigned long long int  khronos_uint64_t;
+<a href="#l209" class="line" id="l209">    209</a> #endif /* __arch64__ */
+<a href="#l210" class="line" id="l210">    210</a> #define KHRONOS_SUPPORT_INT64   1
+<a href="#l211" class="line" id="l211">    211</a> #define KHRONOS_SUPPORT_FLOAT   1
+<a href="#l212" class="line" id="l212">    212</a> 
+<a href="#l213" class="line" id="l213">    213</a> #elif 0
+<a href="#l214" class="line" id="l214">    214</a> 
+<a href="#l215" class="line" id="l215">    215</a> /*
+<a href="#l216" class="line" id="l216">    216</a>  * Hypothetical platform with no float or int64 support
+<a href="#l217" class="line" id="l217">    217</a>  */
+<a href="#l218" class="line" id="l218">    218</a> typedef int                     khronos_int32_t;
+<a href="#l219" class="line" id="l219">    219</a> typedef unsigned int            khronos_uint32_t;
+<a href="#l220" class="line" id="l220">    220</a> #define KHRONOS_SUPPORT_INT64   0
+<a href="#l221" class="line" id="l221">    221</a> #define KHRONOS_SUPPORT_FLOAT   0
+<a href="#l222" class="line" id="l222">    222</a> 
+<a href="#l223" class="line" id="l223">    223</a> #else
+<a href="#l224" class="line" id="l224">    224</a> 
+<a href="#l225" class="line" id="l225">    225</a> /*
+<a href="#l226" class="line" id="l226">    226</a>  * Generic fallback
+<a href="#l227" class="line" id="l227">    227</a>  */
+<a href="#l228" class="line" id="l228">    228</a> #include &lt;stdint.h&gt;
+<a href="#l229" class="line" id="l229">    229</a> typedef int32_t                 khronos_int32_t;
+<a href="#l230" class="line" id="l230">    230</a> typedef uint32_t                khronos_uint32_t;
+<a href="#l231" class="line" id="l231">    231</a> typedef int64_t                 khronos_int64_t;
+<a href="#l232" class="line" id="l232">    232</a> typedef uint64_t                khronos_uint64_t;
+<a href="#l233" class="line" id="l233">    233</a> #define KHRONOS_SUPPORT_INT64   1
+<a href="#l234" class="line" id="l234">    234</a> #define KHRONOS_SUPPORT_FLOAT   1
+<a href="#l235" class="line" id="l235">    235</a> 
+<a href="#l236" class="line" id="l236">    236</a> #endif
+<a href="#l237" class="line" id="l237">    237</a> 
+<a href="#l238" class="line" id="l238">    238</a> 
+<a href="#l239" class="line" id="l239">    239</a> /*
+<a href="#l240" class="line" id="l240">    240</a>  * Types that are (so far) the same on all platforms
+<a href="#l241" class="line" id="l241">    241</a>  */
+<a href="#l242" class="line" id="l242">    242</a> typedef signed   char          khronos_int8_t;
+<a href="#l243" class="line" id="l243">    243</a> typedef unsigned char          khronos_uint8_t;
+<a href="#l244" class="line" id="l244">    244</a> typedef signed   short int     khronos_int16_t;
+<a href="#l245" class="line" id="l245">    245</a> typedef unsigned short int     khronos_uint16_t;
+<a href="#l246" class="line" id="l246">    246</a> 
+<a href="#l247" class="line" id="l247">    247</a> /*
+<a href="#l248" class="line" id="l248">    248</a>  * Types that differ between LLP64 and LP64 architectures - in LLP64,
+<a href="#l249" class="line" id="l249">    249</a>  * pointers are 64 bits, but &#39;long&#39; is still 32 bits. Win64 appears
+<a href="#l250" class="line" id="l250">    250</a>  * to be the only LLP64 architecture in current use.
+<a href="#l251" class="line" id="l251">    251</a>  */
+<a href="#l252" class="line" id="l252">    252</a> #ifdef KHRONOS_USE_INTPTR_T
+<a href="#l253" class="line" id="l253">    253</a> typedef intptr_t               khronos_intptr_t;
+<a href="#l254" class="line" id="l254">    254</a> typedef uintptr_t              khronos_uintptr_t;
+<a href="#l255" class="line" id="l255">    255</a> #elif defined(_WIN64)
+<a href="#l256" class="line" id="l256">    256</a> typedef signed   long long int khronos_intptr_t;
+<a href="#l257" class="line" id="l257">    257</a> typedef unsigned long long int khronos_uintptr_t;
+<a href="#l258" class="line" id="l258">    258</a> #else
+<a href="#l259" class="line" id="l259">    259</a> typedef signed   long  int     khronos_intptr_t;
+<a href="#l260" class="line" id="l260">    260</a> typedef unsigned long  int     khronos_uintptr_t;
+<a href="#l261" class="line" id="l261">    261</a> #endif
+<a href="#l262" class="line" id="l262">    262</a> 
+<a href="#l263" class="line" id="l263">    263</a> #if defined(_WIN64)
+<a href="#l264" class="line" id="l264">    264</a> typedef signed   long long int khronos_ssize_t;
+<a href="#l265" class="line" id="l265">    265</a> typedef unsigned long long int khronos_usize_t;
+<a href="#l266" class="line" id="l266">    266</a> #else
+<a href="#l267" class="line" id="l267">    267</a> typedef signed   long  int     khronos_ssize_t;
+<a href="#l268" class="line" id="l268">    268</a> typedef unsigned long  int     khronos_usize_t;
+<a href="#l269" class="line" id="l269">    269</a> #endif
+<a href="#l270" class="line" id="l270">    270</a> 
+<a href="#l271" class="line" id="l271">    271</a> #if KHRONOS_SUPPORT_FLOAT
+<a href="#l272" class="line" id="l272">    272</a> /*
+<a href="#l273" class="line" id="l273">    273</a>  * Float type
+<a href="#l274" class="line" id="l274">    274</a>  */
+<a href="#l275" class="line" id="l275">    275</a> typedef          float         khronos_float_t;
+<a href="#l276" class="line" id="l276">    276</a> #endif
+<a href="#l277" class="line" id="l277">    277</a> 
+<a href="#l278" class="line" id="l278">    278</a> #if KHRONOS_SUPPORT_INT64
+<a href="#l279" class="line" id="l279">    279</a> /* Time types
+<a href="#l280" class="line" id="l280">    280</a>  *
+<a href="#l281" class="line" id="l281">    281</a>  * These types can be used to represent a time interval in nanoseconds or
+<a href="#l282" class="line" id="l282">    282</a>  * an absolute Unadjusted System Time.  Unadjusted System Time is the number
+<a href="#l283" class="line" id="l283">    283</a>  * of nanoseconds since some arbitrary system event (e.g. since the last
+<a href="#l284" class="line" id="l284">    284</a>  * time the system booted).  The Unadjusted System Time is an unsigned
+<a href="#l285" class="line" id="l285">    285</a>  * 64 bit value that wraps back to 0 every 584 years.  Time intervals
+<a href="#l286" class="line" id="l286">    286</a>  * may be either signed or unsigned.
+<a href="#l287" class="line" id="l287">    287</a>  */
+<a href="#l288" class="line" id="l288">    288</a> typedef khronos_uint64_t       khronos_utime_nanoseconds_t;
+<a href="#l289" class="line" id="l289">    289</a> typedef khronos_int64_t        khronos_stime_nanoseconds_t;
+<a href="#l290" class="line" id="l290">    290</a> #endif
+<a href="#l291" class="line" id="l291">    291</a> 
+<a href="#l292" class="line" id="l292">    292</a> /*
+<a href="#l293" class="line" id="l293">    293</a>  * Dummy value used to pad enum types to 32 bits.
+<a href="#l294" class="line" id="l294">    294</a>  */
+<a href="#l295" class="line" id="l295">    295</a> #ifndef KHRONOS_MAX_ENUM
+<a href="#l296" class="line" id="l296">    296</a> #define KHRONOS_MAX_ENUM 0x7FFFFFFF
+<a href="#l297" class="line" id="l297">    297</a> #endif
+<a href="#l298" class="line" id="l298">    298</a> 
+<a href="#l299" class="line" id="l299">    299</a> /*
+<a href="#l300" class="line" id="l300">    300</a>  * Enumerated boolean type
+<a href="#l301" class="line" id="l301">    301</a>  *
+<a href="#l302" class="line" id="l302">    302</a>  * Values other than zero should be considered to be true.  Therefore
+<a href="#l303" class="line" id="l303">    303</a>  * comparisons should not be made against KHRONOS_TRUE.
+<a href="#l304" class="line" id="l304">    304</a>  */
+<a href="#l305" class="line" id="l305">    305</a> typedef enum {
+<a href="#l306" class="line" id="l306">    306</a>     KHRONOS_FALSE = 0,
+<a href="#l307" class="line" id="l307">    307</a>     KHRONOS_TRUE  = 1,
+<a href="#l308" class="line" id="l308">    308</a>     KHRONOS_BOOLEAN_ENUM_FORCE_SIZE = KHRONOS_MAX_ENUM
+<a href="#l309" class="line" id="l309">    309</a> } khronos_boolean_enum_t;
+<a href="#l310" class="line" id="l310">    310</a> 
+<a href="#l311" class="line" id="l311">    311</a> #endif /* __khrplatform_h_ */
+</pre>
+</div>
+</body>
+</html>

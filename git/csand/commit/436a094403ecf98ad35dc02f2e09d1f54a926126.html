@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Calculate the uv in the vertex shader - csand - Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</title>
+<link rel="icon" type="image/png" href="../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed" href="../atom.xml" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed (tags)" href="../tags.xml" />
+<link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../"><img src="../logo.png" alt="" width="32" height="32" /></a></td><td><h1>csand</h1><span class="desc">Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</span></td></tr><tr><td></td><td>
+<a href="../log.html">Log</a> | <a href="../files.html">Files</a> | <a href="../refs.html">Refs</a> | <a href="../file/LICENSE.html">LICENSE</a></td></tr></table>
+<hr/>
+<div id="content">
+<pre><b>commit</b> <a href="../commit/436a094403ecf98ad35dc02f2e09d1f54a926126.html">436a094403ecf98ad35dc02f2e09d1f54a926126</a>
+<b>parent</b> <a href="../commit/9f75b7ed855e9b0345074d9ee1596fb5c713e302.html">9f75b7ed855e9b0345074d9ee1596fb5c713e302</a>
+<b>Author:</b> mirefly &lt;<a href="mailto:"></a>&gt;
+<b>Date:</b>   Thu, 13 Feb 2025 11:22:06 +0700
+
+Calculate the uv in the vertex shader
+
+<b>Diffstat:</b>
+<table><tr><td class="M">M</td><td><a href="#h0">shader.frag</a></td><td> | </td><td class="num">3</td><td><span class="i">+</span><span class="d">--</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h1">shader.vert</a></td><td> | </td><td class="num">2</td><td><span class="i">++</span><span class="d"></span></td></tr>
+</table></pre><pre>2 files changed, 3 insertions(+), 2 deletions(-)
+<hr/><b>diff --git a/<a id="h0" href="../file/shader.frag.html">shader.frag</a> b/<a href="../file/shader.frag.html">shader.frag</a></b>
+<a href="#h0-0" id="h0-0" class="h">@@ -4,10 +4,9 @@ uniform sampler2D texture;
+</a> uniform sampler2D palette;
+ uniform int palette_size;
+ precision mediump float;
+<a href="#h0-0-3" id="h0-0-3" class="i">+varying vec2 uv;
+</a> 
+ void main(void) {
+<a href="#h0-0-6" id="h0-0-6" class="d">-    vec2 uv = gl_FragCoord.xy/vec2(1024.0, 512.0);
+</a><a href="#h0-0-7" id="h0-0-7" class="d">-
+</a>     int mat = int(texture2D(texture, uv).r * 255.0 + 0.5);
+ 
+     vec4 color = texture2D(palette, vec2((float(mat) + 0.5) / float(palette_size), 0.5));
+<b>diff --git a/<a id="h1" href="../file/shader.vert.html">shader.vert</a> b/<a href="../file/shader.vert.html">shader.vert</a></b>
+<a href="#h1-0" id="h1-0" class="h">@@ -1,7 +1,9 @@
+</a> #version 100
+ 
+ attribute vec2 position;
+<a href="#h1-0-3" id="h1-0-3" class="i">+varying vec2 uv;
+</a> 
+ void main(void) {
+<a href="#h1-0-6" id="h1-0-6" class="i">+    uv = position * 0.5 + 0.5;
+</a>     gl_Position = vec4(position, 0.0, 1.0);
+ }
+</pre>
+</div>
+</body>
+</html>

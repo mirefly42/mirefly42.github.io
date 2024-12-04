@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Add fire and flameable materials - csand - Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</title>
+<link rel="icon" type="image/png" href="../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed" href="../atom.xml" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed (tags)" href="../tags.xml" />
+<link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../"><img src="../logo.png" alt="" width="32" height="32" /></a></td><td><h1>csand</h1><span class="desc">Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</span></td></tr><tr><td></td><td>
+<a href="../log.html">Log</a> | <a href="../files.html">Files</a> | <a href="../refs.html">Refs</a> | <a href="../file/LICENSE.html">LICENSE</a></td></tr></table>
+<hr/>
+<div id="content">
+<pre><b>commit</b> <a href="../commit/ad2c032dcde34fd5a5d8f62535824da8e7696d45.html">ad2c032dcde34fd5a5d8f62535824da8e7696d45</a>
+<b>parent</b> <a href="../commit/9c62e8fb57f51e491c387307dce2f646d4797a2c.html">9c62e8fb57f51e491c387307dce2f646d4797a2c</a>
+<b>Author:</b> mirefly &lt;<a href="mailto:"></a>&gt;
+<b>Date:</b>   Thu,  5 Dec 2024 22:02:00 +0700
+
+Add fire and flameable materials
+
+<b>Diffstat:</b>
+<table><tr><td class="M">M</td><td><a href="#h0">csand.c</a></td><td> | </td><td class="num">114</td><td><span class="i">++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span><span class="d">-------</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h1">index.html</a></td><td> | </td><td class="num">6</td><td><span class="i">++++++</span><span class="d"></span></td></tr>
+</table></pre><pre>2 files changed, 110 insertions(+), 10 deletions(-)
+<hr/><b>diff --git a/<a id="h0" href="../file/csand.c.html">csand.c</a> b/<a href="../file/csand.c.html">csand.c</a></b>
+<a href="#h0-0" id="h0-0" class="h">@@ -10,6 +10,15 @@ enum {
+</a>     MAT_WALL,
+     MAT_SAND,
+     MAT_WATER,
+<a href="#h0-0-3" id="h0-0-3" class="i">+    MAT_FIRE_GAS,
+</a><a href="#h0-0-4" id="h0-0-4" class="i">+    MAT_FIRE_POWDER,
+</a><a href="#h0-0-5" id="h0-0-5" class="i">+    MAT_FIRE_LIQUID,
+</a><a href="#h0-0-6" id="h0-0-6" class="i">+    MAT_SMOKE,
+</a><a href="#h0-0-7" id="h0-0-7" class="i">+    MAT_WOOD,
+</a><a href="#h0-0-8" id="h0-0-8" class="i">+    MAT_COAL,
+</a><a href="#h0-0-9" id="h0-0-9" class="i">+    MAT_OIL,
+</a><a href="#h0-0-10" id="h0-0-10" class="i">+    MAT_HYDROGEN_GAS,
+</a><a href="#h0-0-11" id="h0-0-11" class="i">+    MAT_HYDROGEN_LIQUID,
+</a>     MATERIALS_COUNT,
+     MAT_UPDATED_BIT = 0x80
+ };
+<a href="#h0-1" id="h0-1" class="h">@@ -28,20 +37,44 @@ typedef struct CsandMaterialProperties {
+</a>     const char *name;
+     uint32_t density;
+     CsandMaterialKind kind;
+<a href="#h0-1-3" id="h0-1-3" class="i">+    uint16_t decay_prob;
+</a><a href="#h0-1-4" id="h0-1-4" class="i">+    uint16_t ignition_prob;
+</a><a href="#h0-1-5" id="h0-1-5" class="i">+    unsigned char decay_mat;
+</a> } CsandMaterialProperties;
+ 
+<a href="#h0-1-8" id="h0-1-8" class="i">+/* Maps probability from 0-1 float to 0-65535 uint16_t */
+</a><a href="#h0-1-9" id="h0-1-9" class="i">+#define NPROB(x) ((uint16_t)((x) * 0xFFFF))
+</a><a href="#h0-1-10" id="h0-1-10" class="i">+
+</a> static const CsandMaterialProperties materials[MATERIALS_COUNT] = {
+<a href="#h0-1-12" id="h0-1-12" class="d">-    [MAT_AIR] = {&quot;air&quot;, 1000, MAT_KIND_FLUID},
+</a><a href="#h0-1-13" id="h0-1-13" class="d">-    [MAT_WALL] = {&quot;wall&quot;, 2500000, MAT_KIND_SOLID},
+</a><a href="#h0-1-14" id="h0-1-14" class="d">-    [MAT_SAND] = {&quot;sand&quot;, 1500000, MAT_KIND_POWDER},
+</a><a href="#h0-1-15" id="h0-1-15" class="d">-    [MAT_WATER] = {&quot;water&quot;, 1000000, MAT_KIND_FLUID},
+</a><a href="#h0-1-16" id="h0-1-16" class="i">+    [MAT_AIR]             = {&quot;air&quot;,             1000,    MAT_KIND_FLUID,  NPROB(0),     NPROB(0),    MAT_AIR},
+</a><a href="#h0-1-17" id="h0-1-17" class="i">+    [MAT_WALL]            = {&quot;wall&quot;,            2500000, MAT_KIND_SOLID,  NPROB(0),     NPROB(0),    MAT_AIR},
+</a><a href="#h0-1-18" id="h0-1-18" class="i">+    [MAT_SAND]            = {&quot;sand&quot;,            1500000, MAT_KIND_POWDER, NPROB(0),     NPROB(0),    MAT_AIR},
+</a><a href="#h0-1-19" id="h0-1-19" class="i">+    [MAT_WATER]           = {&quot;water&quot;,           1000000, MAT_KIND_FLUID,  NPROB(0),     NPROB(0),    MAT_AIR},
+</a><a href="#h0-1-20" id="h0-1-20" class="i">+    [MAT_FIRE_GAS]        = {&quot;fire gas&quot;,        50,      MAT_KIND_FLUID,  NPROB(0.1),   NPROB(0),    MAT_AIR},
+</a><a href="#h0-1-21" id="h0-1-21" class="i">+    [MAT_FIRE_POWDER]     = {&quot;fire powder&quot;,     600000,  MAT_KIND_POWDER, NPROB(0.05),  NPROB(0),    MAT_SMOKE},
+</a><a href="#h0-1-22" id="h0-1-22" class="i">+    [MAT_FIRE_LIQUID]     = {&quot;fire liquid&quot;,     50000,   MAT_KIND_FLUID,  NPROB(0.06),  NPROB(0),    MAT_AIR},
+</a><a href="#h0-1-23" id="h0-1-23" class="i">+    [MAT_SMOKE]           = {&quot;smoke&quot;,           750,     MAT_KIND_FLUID,  NPROB(0.002), NPROB(0),    MAT_AIR},
+</a><a href="#h0-1-24" id="h0-1-24" class="i">+    [MAT_WOOD]            = {&quot;wood&quot;,            900000,  MAT_KIND_SOLID,  NPROB(0),     NPROB(0.50), MAT_AIR},
+</a><a href="#h0-1-25" id="h0-1-25" class="i">+    [MAT_COAL]            = {&quot;coal&quot;,            1500000, MAT_KIND_POWDER, NPROB(0),     NPROB(0.45), MAT_AIR},
+</a><a href="#h0-1-26" id="h0-1-26" class="i">+    [MAT_OIL]             = {&quot;oil&quot;,             750000,  MAT_KIND_FLUID,  NPROB(0),     NPROB(0.4),  MAT_AIR},
+</a><a href="#h0-1-27" id="h0-1-27" class="i">+    [MAT_HYDROGEN_GAS]    = {&quot;hydrogen gas&quot;,    100,     MAT_KIND_FLUID,  NPROB(0),     NPROB(1),    MAT_AIR},
+</a><a href="#h0-1-28" id="h0-1-28" class="i">+    [MAT_HYDROGEN_LIQUID] = {&quot;hydrogen liquid&quot;, 70800,   MAT_KIND_FLUID,  3,            NPROB(0.25), MAT_HYDROGEN_GAS},
+</a> };
+ 
+ static const CsandRgba palette[MATERIALS_COUNT] = {
+<a href="#h0-1-32" id="h0-1-32" class="d">-    [MAT_AIR] = {0x00, 0x00, 0x00, 0xFF},
+</a><a href="#h0-1-33" id="h0-1-33" class="d">-    [MAT_WALL] = {0xFF, 0x00, 0xFF, 0xFF},
+</a><a href="#h0-1-34" id="h0-1-34" class="d">-    [MAT_SAND] = {0xFF, 0xFF, 0x00, 0xFF},
+</a><a href="#h0-1-35" id="h0-1-35" class="d">-    [MAT_WATER] = {0x00, 0x00, 0xFF, 0xFF},
+</a><a href="#h0-1-36" id="h0-1-36" class="i">+    [MAT_AIR]             = {0x00, 0x00, 0x00, 0xFF},
+</a><a href="#h0-1-37" id="h0-1-37" class="i">+    [MAT_WALL]            = {0xFF, 0x00, 0xFF, 0xFF},
+</a><a href="#h0-1-38" id="h0-1-38" class="i">+    [MAT_SAND]            = {0xFF, 0xFF, 0x00, 0xFF},
+</a><a href="#h0-1-39" id="h0-1-39" class="i">+    [MAT_WATER]           = {0x00, 0x00, 0xFF, 0xFF},
+</a><a href="#h0-1-40" id="h0-1-40" class="i">+    [MAT_FIRE_GAS]        = {0xFF, 0x79, 0x00, 0xFF},
+</a><a href="#h0-1-41" id="h0-1-41" class="i">+    [MAT_FIRE_POWDER]     = {0xFF, 0x65, 0x00, 0xFF},
+</a><a href="#h0-1-42" id="h0-1-42" class="i">+    [MAT_FIRE_LIQUID]     = {0xFF, 0x70, 0x00, 0xFF},
+</a><a href="#h0-1-43" id="h0-1-43" class="i">+    [MAT_SMOKE]           = {0x4B, 0x4B, 0x4B, 0xFF},
+</a><a href="#h0-1-44" id="h0-1-44" class="i">+    [MAT_WOOD]            = {0xDC, 0xC8, 0x7D, 0xFF},
+</a><a href="#h0-1-45" id="h0-1-45" class="i">+    [MAT_COAL]            = {0x2D, 0x2D, 0x2D, 0xFF},
+</a><a href="#h0-1-46" id="h0-1-46" class="i">+    [MAT_OIL]             = {0x3B, 0x36, 0x1F, 0xFF},
+</a><a href="#h0-1-47" id="h0-1-47" class="i">+    [MAT_HYDROGEN_GAS]    = {0x4C, 0x78, 0xA5, 0xFF},
+</a><a href="#h0-1-48" id="h0-1-48" class="i">+    [MAT_HYDROGEN_LIQUID] = {0x57, 0x8F, 0xC8, 0xFF},
+</a> };
+ 
+ typedef struct CsandRenderBuffer {
+<a href="#h0-2" id="h0-2" class="h">@@ -56,6 +89,9 @@ static void csandSimulate(CsandRenderBuffer buf);
+</a> static inline unsigned char *csandGetMat(CsandRenderBuffer buf, unsigned int x, unsigned int y);
+ static uint32_t csandRand(void);
+ static bool csandInBounds(CsandRenderBuffer buf, int x, int y);
+<a href="#h0-2-3" id="h0-2-3" class="i">+static inline bool csandChance(uint16_t prob);
+</a><a href="#h0-2-4" id="h0-2-4" class="i">+static inline bool csandMatIsFire(unsigned char mat);
+</a><a href="#h0-2-5" id="h0-2-5" class="i">+static void tryIgnite(CsandRenderBuffer buf, unsigned int x, unsigned int y);
+</a> 
+ int main(void) {
+     csandPlatformInit();
+<a href="#h0-3" id="h0-3" class="h">@@ -80,11 +116,22 @@ static void csandInputCallback(CsandInput input) {
+</a>             draw_mat = MAT_WATER;
+             break;
+         case CSAND_INPUT_SELECT_MAT4:
+<a href="#h0-3-3" id="h0-3-3" class="i">+            draw_mat = MAT_FIRE_GAS;
+</a><a href="#h0-3-4" id="h0-3-4" class="i">+            break;
+</a>         case CSAND_INPUT_SELECT_MAT5:
+<a href="#h0-3-6" id="h0-3-6" class="i">+            draw_mat = MAT_WOOD;
+</a><a href="#h0-3-7" id="h0-3-7" class="i">+            break;
+</a>         case CSAND_INPUT_SELECT_MAT6:
+<a href="#h0-3-9" id="h0-3-9" class="i">+            draw_mat = MAT_COAL;
+</a><a href="#h0-3-10" id="h0-3-10" class="i">+            break;
+</a>         case CSAND_INPUT_SELECT_MAT7:
+<a href="#h0-3-12" id="h0-3-12" class="i">+            draw_mat = MAT_OIL;
+</a><a href="#h0-3-13" id="h0-3-13" class="i">+            break;
+</a>         case CSAND_INPUT_SELECT_MAT8:
+<a href="#h0-3-15" id="h0-3-15" class="i">+            draw_mat = MAT_HYDROGEN_GAS;
+</a><a href="#h0-3-16" id="h0-3-16" class="i">+            break;
+</a>         case CSAND_INPUT_SELECT_MAT9:
+<a href="#h0-3-18" id="h0-3-18" class="i">+            draw_mat = MAT_HYDROGEN_LIQUID;
+</a>             break;
+         case CSAND_INPUT_PAUSE_TOGGLE:
+             pause = !pause;
+<a href="#h0-4" id="h0-4" class="h">@@ -121,7 +168,8 @@ static void csandSimulate(CsandRenderBuffer buf) {
+</a>             }
+             CsandMaterialProperties mat_props = materials[mat];
+ 
+<a href="#h0-4-3" id="h0-4-3" class="d">-            if (mat_props.kind == MAT_KIND_SOLID) {
+</a><a href="#h0-4-4" id="h0-4-4" class="i">+            if (csandChance(mat_props.decay_prob)) {
+</a><a href="#h0-4-5" id="h0-4-5" class="i">+                *csandGetMat(buf, x, y) = mat_props.decay_mat | MAT_UPDATED_BIT;
+</a>                 continue;
+             }
+ 
+<a href="#h0-5" id="h0-5" class="h">@@ -141,7 +189,13 @@ static void csandSimulate(CsandRenderBuffer buf) {
+</a> 
+             CsandMaterialProperties swap_mat_props = materials[swap_mat];
+ 
+<a href="#h0-5-3" id="h0-5-3" class="d">-            if (swap_mat_props.kind != MAT_KIND_SOLID &amp;&amp; swap_mat_props.density &lt; mat_props.density) {
+</a><a href="#h0-5-4" id="h0-5-4" class="i">+            if (csandMatIsFire(mat)) {
+</a><a href="#h0-5-5" id="h0-5-5" class="i">+                tryIgnite(buf, sx, sy);
+</a><a href="#h0-5-6" id="h0-5-6" class="i">+            } else if (csandMatIsFire(swap_mat)) {
+</a><a href="#h0-5-7" id="h0-5-7" class="i">+                tryIgnite(buf, x, y);
+</a><a href="#h0-5-8" id="h0-5-8" class="i">+            }
+</a><a href="#h0-5-9" id="h0-5-9" class="i">+
+</a><a href="#h0-5-10" id="h0-5-10" class="i">+            if (mat_props.kind != MAT_KIND_SOLID &amp;&amp; swap_mat_props.kind != MAT_KIND_SOLID &amp;&amp; swap_mat_props.density &lt; mat_props.density) {
+</a>                 *csandGetMat(buf, x, y) = swap_mat;
+                 *csandGetMat(buf, sx, sy) = mat | MAT_UPDATED_BIT;
+             }
+<a href="#h0-6" id="h0-6" class="h">@@ -174,3 +228,43 @@ static bool csandInBounds(CsandRenderBuffer buf, int x, int y) {
+</a>     return x &gt;= 0 &amp;&amp; x &lt; buf.width &amp;&amp; y &gt;= 0 &amp;&amp; y &lt; buf.height;
+ }
+ 
+<a href="#h0-6-3" id="h0-6-3" class="i">+static inline bool csandChance(uint16_t prob) {
+</a><a href="#h0-6-4" id="h0-6-4" class="i">+    for (;;) {
+</a><a href="#h0-6-5" id="h0-6-5" class="i">+        uint16_t x = csandRand();
+</a><a href="#h0-6-6" id="h0-6-6" class="i">+        if (x &lt; 0xFFFF) {
+</a><a href="#h0-6-7" id="h0-6-7" class="i">+            return x &lt; prob;
+</a><a href="#h0-6-8" id="h0-6-8" class="i">+        }
+</a><a href="#h0-6-9" id="h0-6-9" class="i">+    }
+</a><a href="#h0-6-10" id="h0-6-10" class="i">+}
+</a><a href="#h0-6-11" id="h0-6-11" class="i">+
+</a><a href="#h0-6-12" id="h0-6-12" class="i">+static inline bool csandMatIsFire(unsigned char mat) {
+</a><a href="#h0-6-13" id="h0-6-13" class="i">+    return mat == MAT_FIRE_GAS || mat == MAT_FIRE_POWDER || mat == MAT_FIRE_LIQUID;
+</a><a href="#h0-6-14" id="h0-6-14" class="i">+}
+</a><a href="#h0-6-15" id="h0-6-15" class="i">+
+</a><a href="#h0-6-16" id="h0-6-16" class="i">+static void tryIgnite(CsandRenderBuffer buf, unsigned int x, unsigned int y) {
+</a><a href="#h0-6-17" id="h0-6-17" class="i">+    unsigned char mat = *csandGetMat(buf, x, y);
+</a><a href="#h0-6-18" id="h0-6-18" class="i">+    CsandMaterialProperties mat_props = materials[mat];
+</a><a href="#h0-6-19" id="h0-6-19" class="i">+
+</a><a href="#h0-6-20" id="h0-6-20" class="i">+    if (!csandChance(mat_props.ignition_prob)) {
+</a><a href="#h0-6-21" id="h0-6-21" class="i">+        return;
+</a><a href="#h0-6-22" id="h0-6-22" class="i">+    }
+</a><a href="#h0-6-23" id="h0-6-23" class="i">+
+</a><a href="#h0-6-24" id="h0-6-24" class="i">+    for (int dy = 2; dy &gt;= -2; dy--) {
+</a><a href="#h0-6-25" id="h0-6-25" class="i">+        for (int dx = -2; dx &lt;= 2; dx++) {
+</a><a href="#h0-6-26" id="h0-6-26" class="i">+            if (!(dx == 0 &amp;&amp; dy == 0) &amp;&amp; csandInBounds(buf, x + dx, y + dy) &amp;&amp; *csandGetMat(buf, x + dx, y + dy) == MAT_AIR) {
+</a><a href="#h0-6-27" id="h0-6-27" class="i">+                switch (mat_props.kind) {
+</a><a href="#h0-6-28" id="h0-6-28" class="i">+                    case MAT_KIND_SOLID:
+</a><a href="#h0-6-29" id="h0-6-29" class="i">+                    case MAT_KIND_POWDER:
+</a><a href="#h0-6-30" id="h0-6-30" class="i">+                        mat = csandRand() &amp; 1 ? MAT_FIRE_GAS : MAT_FIRE_POWDER;
+</a><a href="#h0-6-31" id="h0-6-31" class="i">+                        break;
+</a><a href="#h0-6-32" id="h0-6-32" class="i">+                    case MAT_KIND_FLUID:
+</a><a href="#h0-6-33" id="h0-6-33" class="i">+                        mat = csandRand() &amp; 1 ? MAT_FIRE_GAS : MAT_FIRE_LIQUID;
+</a><a href="#h0-6-34" id="h0-6-34" class="i">+                        break;
+</a><a href="#h0-6-35" id="h0-6-35" class="i">+                }
+</a><a href="#h0-6-36" id="h0-6-36" class="i">+
+</a><a href="#h0-6-37" id="h0-6-37" class="i">+                *csandGetMat(buf, x, y) = mat;
+</a><a href="#h0-6-38" id="h0-6-38" class="i">+                return;
+</a><a href="#h0-6-39" id="h0-6-39" class="i">+            }
+</a><a href="#h0-6-40" id="h0-6-40" class="i">+        }
+</a><a href="#h0-6-41" id="h0-6-41" class="i">+    }
+</a><a href="#h0-6-42" id="h0-6-42" class="i">+}
+</a><b>diff --git a/<a id="h1" href="../file/index.html.html">index.html</a> b/<a href="../file/index.html.html">index.html</a></b>
+<a href="#h1-0" id="h1-0" class="h">@@ -7,6 +7,12 @@ Controls:
+</a> 1     - Solid
+ 2     - Sand
+ 3     - Water
+<a href="#h1-0-3" id="h1-0-3" class="i">+4     - Fire
+</a><a href="#h1-0-4" id="h1-0-4" class="i">+5     - Wood
+</a><a href="#h1-0-5" id="h1-0-5" class="i">+6     - Coal
+</a><a href="#h1-0-6" id="h1-0-6" class="i">+7     - Oil
+</a><a href="#h1-0-7" id="h1-0-7" class="i">+8     - Hydrogen gas
+</a><a href="#h1-0-8" id="h1-0-8" class="i">+9     - Hydrogen liquid
+</a> 0     - Air
+ LMB   - Spawn particles
+ Space - Toggle pause
+</pre>
+</div>
+</body>
+</html>

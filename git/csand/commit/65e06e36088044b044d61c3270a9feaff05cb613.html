@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Refactor csandSimulate function - csand - Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</title>
+<link rel="icon" type="image/png" href="../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed" href="../atom.xml" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed (tags)" href="../tags.xml" />
+<link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../"><img src="../logo.png" alt="" width="32" height="32" /></a></td><td><h1>csand</h1><span class="desc">Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</span></td></tr><tr><td></td><td>
+<a href="../log.html">Log</a> | <a href="../files.html">Files</a> | <a href="../refs.html">Refs</a> | <a href="../file/LICENSE.html">LICENSE</a></td></tr></table>
+<hr/>
+<div id="content">
+<pre><b>commit</b> <a href="../commit/65e06e36088044b044d61c3270a9feaff05cb613.html">65e06e36088044b044d61c3270a9feaff05cb613</a>
+<b>parent</b> <a href="../commit/3b9d8d9f4436fd27a2bc6158a681245259d65824.html">3b9d8d9f4436fd27a2bc6158a681245259d65824</a>
+<b>Author:</b> mirefly &lt;<a href="mailto:"></a>&gt;
+<b>Date:</b>   Thu,  5 Dec 2024 00:25:56 +0700
+
+Refactor csandSimulate function
+
+<b>Diffstat:</b>
+<table><tr><td class="M">M</td><td><a href="#h0">csand.c</a></td><td> | </td><td class="num">60</td><td><span class="i">++++++++++++++++++++++++++</span><span class="d">----------------------------------</span></td></tr>
+</table></pre><pre>1 file changed, 26 insertions(+), 34 deletions(-)
+<hr/><b>diff --git a/<a id="h0" href="../file/csand.c.html">csand.c</a> b/<a href="../file/csand.c.html">csand.c</a></b>
+<a href="#h0-0" id="h0-0" class="h">@@ -109,42 +109,34 @@ static void csandSimulate(CsandRenderBuffer buf) {
+</a>         for (unsigned int x = 0; x &lt; buf.width; x++) {
+             unsigned char mat = *csandGetMat(buf, x, y);
+ 
+<a href="#h0-0-3" id="h0-0-3" class="d">-            if (mat &amp; MAT_UPDATED_BIT) continue;
+</a><a href="#h0-0-4" id="h0-0-4" class="i">+            if (mat &amp; MAT_UPDATED_BIT) {
+</a><a href="#h0-0-5" id="h0-0-5" class="i">+                continue;
+</a><a href="#h0-0-6" id="h0-0-6" class="i">+            }
+</a>             CsandMaterialProperties mat_props = materials[mat];
+ 
+<a href="#h0-0-9" id="h0-0-9" class="d">-            switch (mat_props.kind) {
+</a><a href="#h0-0-10" id="h0-0-10" class="d">-                case MAT_KIND_POWDER:
+</a><a href="#h0-0-11" id="h0-0-11" class="d">-                    if (y &lt;= 0) {
+</a><a href="#h0-0-12" id="h0-0-12" class="d">-                        continue;
+</a><a href="#h0-0-13" id="h0-0-13" class="d">-                    } else {
+</a><a href="#h0-0-14" id="h0-0-14" class="d">-                        int dx = csandRand() % 3 - 1;
+</a><a href="#h0-0-15" id="h0-0-15" class="d">-                        if (!csandInBounds(buf, x + dx, y - 1)) continue;
+</a><a href="#h0-0-16" id="h0-0-16" class="d">-                        unsigned char swap_mat = *csandGetMat(buf, x + dx, y - 1);
+</a><a href="#h0-0-17" id="h0-0-17" class="d">-                        if (swap_mat &amp; MAT_UPDATED_BIT) continue;
+</a><a href="#h0-0-18" id="h0-0-18" class="d">-                        CsandMaterialProperties swap_mat_props = materials[swap_mat];
+</a><a href="#h0-0-19" id="h0-0-19" class="d">-
+</a><a href="#h0-0-20" id="h0-0-20" class="d">-                        if (swap_mat_props.kind != MAT_KIND_SOLID &amp;&amp; swap_mat_props.density &lt; mat_props.density) {
+</a><a href="#h0-0-21" id="h0-0-21" class="d">-                            *csandGetMat(buf, x, y) = swap_mat;
+</a><a href="#h0-0-22" id="h0-0-22" class="d">-                            *csandGetMat(buf, x + dx, y - 1) = mat | MAT_UPDATED_BIT;
+</a><a href="#h0-0-23" id="h0-0-23" class="d">-                        }
+</a><a href="#h0-0-24" id="h0-0-24" class="d">-                    }
+</a><a href="#h0-0-25" id="h0-0-25" class="d">-                    break;
+</a><a href="#h0-0-26" id="h0-0-26" class="d">-                case MAT_KIND_FLUID: {
+</a><a href="#h0-0-27" id="h0-0-27" class="d">-                    int dx = csandRand() % 3 - 1;
+</a><a href="#h0-0-28" id="h0-0-28" class="d">-                    int dy = - (csandRand() % 2);
+</a><a href="#h0-0-29" id="h0-0-29" class="d">-                    if (!csandInBounds(buf, x + dx, y + dy)) continue;
+</a><a href="#h0-0-30" id="h0-0-30" class="d">-                    unsigned char swap_mat = *csandGetMat(buf, x + dx, y + dy);
+</a><a href="#h0-0-31" id="h0-0-31" class="d">-                    if (swap_mat &amp; MAT_UPDATED_BIT) continue;
+</a><a href="#h0-0-32" id="h0-0-32" class="d">-                    CsandMaterialProperties swap_mat_props = materials[swap_mat];
+</a><a href="#h0-0-33" id="h0-0-33" class="d">-
+</a><a href="#h0-0-34" id="h0-0-34" class="d">-                    if (swap_mat_props.kind != MAT_KIND_SOLID &amp;&amp; swap_mat_props.density &lt; mat_props.density) {
+</a><a href="#h0-0-35" id="h0-0-35" class="d">-                        *csandGetMat(buf, x, y) = swap_mat;
+</a><a href="#h0-0-36" id="h0-0-36" class="d">-                        *csandGetMat(buf, x + dx, y + dy) = mat | MAT_UPDATED_BIT;
+</a><a href="#h0-0-37" id="h0-0-37" class="d">-                    }
+</a><a href="#h0-0-38" id="h0-0-38" class="d">-                    break;
+</a><a href="#h0-0-39" id="h0-0-39" class="d">-                }
+</a><a href="#h0-0-40" id="h0-0-40" class="d">-                default:
+</a><a href="#h0-0-41" id="h0-0-41" class="d">-                    break;
+</a><a href="#h0-0-42" id="h0-0-42" class="i">+            if (mat_props.kind == MAT_KIND_SOLID) {
+</a><a href="#h0-0-43" id="h0-0-43" class="i">+                continue;
+</a><a href="#h0-0-44" id="h0-0-44" class="i">+            }
+</a><a href="#h0-0-45" id="h0-0-45" class="i">+
+</a><a href="#h0-0-46" id="h0-0-46" class="i">+            int dx = csandRand() % 3 - 1;
+</a><a href="#h0-0-47" id="h0-0-47" class="i">+            int dy = mat_props.kind == MAT_KIND_POWDER ? -1 : -(csandRand() &amp; 1);
+</a><a href="#h0-0-48" id="h0-0-48" class="i">+
+</a><a href="#h0-0-49" id="h0-0-49" class="i">+            if (!csandInBounds(buf, x + dx, y + dy)) {
+</a><a href="#h0-0-50" id="h0-0-50" class="i">+                continue;
+</a><a href="#h0-0-51" id="h0-0-51" class="i">+            }
+</a><a href="#h0-0-52" id="h0-0-52" class="i">+
+</a><a href="#h0-0-53" id="h0-0-53" class="i">+            unsigned int sx = x + dx;
+</a><a href="#h0-0-54" id="h0-0-54" class="i">+            unsigned int sy = y + dy;
+</a><a href="#h0-0-55" id="h0-0-55" class="i">+            unsigned char swap_mat = *csandGetMat(buf, sx, sy);
+</a><a href="#h0-0-56" id="h0-0-56" class="i">+            if (swap_mat &amp; MAT_UPDATED_BIT) {
+</a><a href="#h0-0-57" id="h0-0-57" class="i">+                continue;
+</a><a href="#h0-0-58" id="h0-0-58" class="i">+            }
+</a><a href="#h0-0-59" id="h0-0-59" class="i">+
+</a><a href="#h0-0-60" id="h0-0-60" class="i">+            CsandMaterialProperties swap_mat_props = materials[swap_mat];
+</a><a href="#h0-0-61" id="h0-0-61" class="i">+
+</a><a href="#h0-0-62" id="h0-0-62" class="i">+            if (swap_mat_props.kind != MAT_KIND_SOLID &amp;&amp; swap_mat_props.density &lt; mat_props.density) {
+</a><a href="#h0-0-63" id="h0-0-63" class="i">+                *csandGetMat(buf, x, y) = swap_mat;
+</a><a href="#h0-0-64" id="h0-0-64" class="i">+                *csandGetMat(buf, sx, sy) = mat | MAT_UPDATED_BIT;
+</a>             }
+         }
+     }
+</pre>
+</div>
+</body>
+</html>

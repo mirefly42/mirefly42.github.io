@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Add fullscreen mode - csand - Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</title>
+<link rel="icon" type="image/png" href="../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed" href="../atom.xml" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed (tags)" href="../tags.xml" />
+<link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../"><img src="../logo.png" alt="" width="32" height="32" /></a></td><td><h1>csand</h1><span class="desc">Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</span></td></tr><tr><td></td><td>
+<a href="../log.html">Log</a> | <a href="../files.html">Files</a> | <a href="../refs.html">Refs</a> | <a href="../file/LICENSE.html">LICENSE</a></td></tr></table>
+<hr/>
+<div id="content">
+<pre><b>commit</b> <a href="../commit/3a7a18d09f8c28bf4b849786009beee37cda867b.html">3a7a18d09f8c28bf4b849786009beee37cda867b</a>
+<b>parent</b> <a href="../commit/1ea4b35129f53f4d4976d8fbdd2978f2d9f7e6da.html">1ea4b35129f53f4d4976d8fbdd2978f2d9f7e6da</a>
+<b>Author:</b> mirefly &lt;<a href="mailto:"></a>&gt;
+<b>Date:</b>   Fri, 14 Feb 2025 13:40:34 +0700
+
+Add fullscreen mode
+
+<b>Diffstat:</b>
+<table><tr><td class="M">M</td><td><a href="#h0">index.html</a></td><td> | </td><td class="num">2</td><td><span class="i">++</span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h1">index.js</a></td><td> | </td><td class="num">13</td><td><span class="i">+++++++++++++</span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h2">platform_glfw.c</a></td><td> | </td><td class="num">49</td><td><span class="i">++++++++++++++++++++++++++++++++++++++++++++++++</span><span class="d">-</span></td></tr>
+</table></pre><pre>3 files changed, 63 insertions(+), 1 deletion(-)
+<hr/><b>diff --git a/<a id="h0" href="../file/index.html.html">index.html</a> b/<a href="../file/index.html.html">index.html</a></b>
+<a href="#h0-0" id="h0-0" class="h">@@ -21,6 +21,7 @@
+</a> &lt;body&gt;
+ &lt;div id=&quot;game&quot;&gt;
+     &lt;div id=buttons&gt;
+<a href="#h0-0-3" id="h0-0-3" class="i">+        &lt;button id=&quot;button_fullscreen&quot;&gt;Fullscreen&lt;/button&gt;
+</a>         &lt;button id=&quot;button_air&quot;&gt;Air&lt;/button&gt;
+         &lt;button id=&quot;button_wall&quot;&gt;Wall&lt;/button&gt;
+         &lt;button id=&quot;button_sand&quot;&gt;Sand&lt;/button&gt;
+<a href="#h0-1" id="h0-1" class="h">@@ -57,6 +58,7 @@ Space - Toggle pause
+</a> Minus - Decrease simulation speed
+ Plus  - Increase simulation speed
+ &amp;gt;     - Simulate a single frame (speed dependent)
+<a href="#h0-1-3" id="h0-1-3" class="i">+F     - Enter fullscreen
+</a> &lt;/pre&gt;
+ &lt;script src=&quot;index.js&quot; type=&quot;module&quot;&gt;&lt;/script&gt;
+ &lt;/body&gt;
+<b>diff --git a/<a id="h1" href="../file/index.js.html">index.js</a> b/<a href="../file/index.js.html">index.js</a></b>
+<a href="#h1-0" id="h1-0" class="h">@@ -28,6 +28,9 @@ async function main() {
+</a>                 function setButtonInput(id, input) {
+                     document.getElementById(id).addEventListener(&quot;pointerdown&quot;, () =&gt; {input_callback(input);});
+                 }
+<a href="#h1-0-3" id="h1-0-3" class="i">+                document.getElementById(&quot;button_fullscreen&quot;).addEventListener(&quot;click&quot;, () =&gt; {
+</a><a href="#h1-0-4" id="h1-0-4" class="i">+                    toggleFullscreen();
+</a><a href="#h1-0-5" id="h1-0-5" class="i">+                });
+</a>                 setButtonInput(&quot;button_air&quot;, 0);
+                 setButtonInput(&quot;button_wall&quot;, 1);
+                 setButtonInput(&quot;button_sand&quot;, 2);
+<a href="#h1-1" id="h1-1" class="h">@@ -73,6 +76,8 @@ async function main() {
+</a>                         input_callback(12);
+                     } else if (c === &quot;Period&quot;) {
+                         input_callback(13);
+<a href="#h1-1-3" id="h1-1-3" class="i">+                    } else if (c === &quot;KeyF&quot;) {
+</a><a href="#h1-1-4" id="h1-1-4" class="i">+                        toggleFullscreen();
+</a>                     }
+                 });
+             },
+<a href="#h1-2" id="h1-2" class="h">@@ -142,6 +147,14 @@ function csandPlatformInit() {
+</a>     });
+ }
+ 
+<a href="#h1-2-3" id="h1-2-3" class="i">+function toggleFullscreen() {
+</a><a href="#h1-2-4" id="h1-2-4" class="i">+    if (!document.fullscreenElement) {
+</a><a href="#h1-2-5" id="h1-2-5" class="i">+        game.requestFullscreen();
+</a><a href="#h1-2-6" id="h1-2-6" class="i">+    } else {
+</a><a href="#h1-2-7" id="h1-2-7" class="i">+        document.exitFullscreen();
+</a><a href="#h1-2-8" id="h1-2-8" class="i">+    }
+</a><a href="#h1-2-9" id="h1-2-9" class="i">+}
+</a><a href="#h1-2-10" id="h1-2-10" class="i">+
+</a> function csandPlatformRun() {
+     if (render_callback != null) {
+         render_callback();
+<b>diff --git a/<a id="h2" href="../file/platform_glfw.c.html">platform_glfw.c</a> b/<a href="../file/platform_glfw.c.html">platform_glfw.c</a></b>
+<a href="#h2-0" id="h2-0" class="h">@@ -11,6 +11,8 @@ typedef struct CsandPlatform {
+</a>     CsandRenderCallback render_callback;
+     CsandInputCallback input_callback;
+     CsandFramebufferSizeCallback framebuffer_size_callback;
+<a href="#h2-0-3" id="h2-0-3" class="i">+    CsandVec2I windowed_mode_pos;
+</a><a href="#h2-0-4" id="h2-0-4" class="i">+    CsandVec2I windowed_mode_size;
+</a> } CsandPlatform;
+ 
+ static CsandPlatform platform = {0};
+<a href="#h2-1" id="h2-1" class="h">@@ -19,6 +21,42 @@ static void csandGlfwErrorCallback(int code, const char *msg) {
+</a>     fprintf(stderr, &quot;glfw error %d: %s\n&quot;, code, msg);
+ }
+ 
+<a href="#h2-1-3" id="h2-1-3" class="i">+static void csandToggleFullscreen(void) {
+</a><a href="#h2-1-4" id="h2-1-4" class="i">+    if (glfwGetWindowMonitor(platform.window)) {
+</a><a href="#h2-1-5" id="h2-1-5" class="i">+        glfwSetWindowMonitor(
+</a><a href="#h2-1-6" id="h2-1-6" class="i">+            platform.window,
+</a><a href="#h2-1-7" id="h2-1-7" class="i">+            NULL,
+</a><a href="#h2-1-8" id="h2-1-8" class="i">+            platform.windowed_mode_pos.x,
+</a><a href="#h2-1-9" id="h2-1-9" class="i">+            platform.windowed_mode_pos.y,
+</a><a href="#h2-1-10" id="h2-1-10" class="i">+            platform.windowed_mode_size.x,
+</a><a href="#h2-1-11" id="h2-1-11" class="i">+            platform.windowed_mode_size.y,
+</a><a href="#h2-1-12" id="h2-1-12" class="i">+            GLFW_DONT_CARE
+</a><a href="#h2-1-13" id="h2-1-13" class="i">+        );
+</a><a href="#h2-1-14" id="h2-1-14" class="i">+    } else {
+</a><a href="#h2-1-15" id="h2-1-15" class="i">+        glfwGetWindowPos(
+</a><a href="#h2-1-16" id="h2-1-16" class="i">+            platform.window,
+</a><a href="#h2-1-17" id="h2-1-17" class="i">+            &amp;platform.windowed_mode_pos.x,
+</a><a href="#h2-1-18" id="h2-1-18" class="i">+            &amp;platform.windowed_mode_pos.y
+</a><a href="#h2-1-19" id="h2-1-19" class="i">+        );
+</a><a href="#h2-1-20" id="h2-1-20" class="i">+
+</a><a href="#h2-1-21" id="h2-1-21" class="i">+        glfwGetWindowSize(
+</a><a href="#h2-1-22" id="h2-1-22" class="i">+            platform.window,
+</a><a href="#h2-1-23" id="h2-1-23" class="i">+            &amp;platform.windowed_mode_size.x,
+</a><a href="#h2-1-24" id="h2-1-24" class="i">+            &amp;platform.windowed_mode_size.y
+</a><a href="#h2-1-25" id="h2-1-25" class="i">+        );
+</a><a href="#h2-1-26" id="h2-1-26" class="i">+
+</a><a href="#h2-1-27" id="h2-1-27" class="i">+        GLFWmonitor *mon = glfwGetPrimaryMonitor();
+</a><a href="#h2-1-28" id="h2-1-28" class="i">+        const GLFWvidmode *mode = glfwGetVideoMode(mon);
+</a><a href="#h2-1-29" id="h2-1-29" class="i">+        glfwSetWindowMonitor(
+</a><a href="#h2-1-30" id="h2-1-30" class="i">+            platform.window,
+</a><a href="#h2-1-31" id="h2-1-31" class="i">+            mon,
+</a><a href="#h2-1-32" id="h2-1-32" class="i">+            0, 0,
+</a><a href="#h2-1-33" id="h2-1-33" class="i">+            mode-&gt;width, mode-&gt;height,
+</a><a href="#h2-1-34" id="h2-1-34" class="i">+            GLFW_DONT_CARE
+</a><a href="#h2-1-35" id="h2-1-35" class="i">+        );
+</a><a href="#h2-1-36" id="h2-1-36" class="i">+    }
+</a><a href="#h2-1-37" id="h2-1-37" class="i">+}
+</a><a href="#h2-1-38" id="h2-1-38" class="i">+
+</a> static void csandGlfwKeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+     (void)window;
+     (void)scancode;
+<a href="#h2-2" id="h2-2" class="h">@@ -42,6 +80,9 @@ static void csandGlfwKeyCallback(GLFWwindow *window, int key, int scancode, int 
+</a>             case GLFW_KEY_PERIOD:
+                 platform.input_callback(CSAND_INPUT_NEXT_FRAME);
+                 break;
+<a href="#h2-2-3" id="h2-2-3" class="i">+            case GLFW_KEY_F:
+</a><a href="#h2-2-4" id="h2-2-4" class="i">+                csandToggleFullscreen();
+</a><a href="#h2-2-5" id="h2-2-5" class="i">+                break;
+</a>             default:
+                 if (key &gt;= GLFW_KEY_0 &amp;&amp; key &lt;= GLFW_KEY_9) {
+                     platform.input_callback(key - GLFW_KEY_0 + CSAND_INPUT_SELECT_MAT0);
+<a href="#h2-3" id="h2-3" class="h">@@ -71,7 +112,13 @@ void csandPlatformInit(void) {
+</a>     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+ 
+<a href="#h2-3-3" id="h2-3-3" class="d">-    platform.window = glfwCreateWindow(1024, 512, &quot;csand&quot;, NULL, NULL);
+</a><a href="#h2-3-4" id="h2-3-4" class="i">+    platform.windowed_mode_size = (CsandVec2I){1024, 512};
+</a><a href="#h2-3-5" id="h2-3-5" class="i">+    platform.window = glfwCreateWindow(
+</a><a href="#h2-3-6" id="h2-3-6" class="i">+        platform.windowed_mode_size.x, platform.windowed_mode_size.y,
+</a><a href="#h2-3-7" id="h2-3-7" class="i">+        &quot;csand&quot;,
+</a><a href="#h2-3-8" id="h2-3-8" class="i">+        NULL,
+</a><a href="#h2-3-9" id="h2-3-9" class="i">+        NULL
+</a><a href="#h2-3-10" id="h2-3-10" class="i">+    );
+</a> 
+     glfwMakeContextCurrent(platform.window);
+ 
+</pre>
+</div>
+</body>
+</html>

@@ -1,0 +1,955 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+<title>csand, branch HEAD</title>
+<subtitle>Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</subtitle>
+<entry>
+<id>b4ac27e69789fcbd1e2d2cc5d2c1c98d7fa47ba4</id>
+<published>2026-01-19T11:14:27Z</published>
+<updated>2026-01-19T11:14:27Z</updated>
+<title type="text">Reduce risk of integer wrapping in csandDraw function</title>
+<link rel="alternate" type="text/html" href="commit/b4ac27e69789fcbd1e2d2cc5d2c1c98d7fa47ba4.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit b4ac27e69789fcbd1e2d2cc5d2c1c98d7fa47ba4
+parent 9a12f29c4d77f71444b6139021e59fc50d5bb04b
+Author: mirefly &lt;&gt;
+Date:   Mon, 19 Jan 2026 18:14:27 +0700
+
+Reduce risk of integer wrapping in csandDraw function
+
+</content>
+</entry>
+<entry>
+<id>9a12f29c4d77f71444b6139021e59fc50d5bb04b</id>
+<published>2026-01-19T10:37:55Z</published>
+<updated>2026-01-19T10:37:55Z</updated>
+<title type="text">Allow changing brush size</title>
+<link rel="alternate" type="text/html" href="commit/9a12f29c4d77f71444b6139021e59fc50d5bb04b.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 9a12f29c4d77f71444b6139021e59fc50d5bb04b
+parent 723c728541eefb573a11d4b234a23d4579a05f7c
+Author: mirefly &lt;&gt;
+Date:   Mon, 19 Jan 2026 17:37:55 +0700
+
+Allow changing brush size
+
+</content>
+</entry>
+<entry>
+<id>723c728541eefb573a11d4b234a23d4579a05f7c</id>
+<published>2026-01-13T17:04:24Z</published>
+<updated>2026-01-13T17:04:24Z</updated>
+<title type="text">Update nuklear.h to version 4.12.8</title>
+<link rel="alternate" type="text/html" href="commit/723c728541eefb573a11d4b234a23d4579a05f7c.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 723c728541eefb573a11d4b234a23d4579a05f7c
+parent f99db612e0adae4651be63b7c41d6ac360412ab6
+Author: mirefly &lt;&gt;
+Date:   Wed, 14 Jan 2026 00:04:24 +0700
+
+Update nuklear.h to version 4.12.8
+
+</content>
+</entry>
+<entry>
+<id>f99db612e0adae4651be63b7c41d6ac360412ab6</id>
+<published>2025-11-18T08:18:23Z</published>
+<updated>2025-11-18T08:18:23Z</updated>
+<title type="text">Add glow effect</title>
+<link rel="alternate" type="text/html" href="commit/f99db612e0adae4651be63b7c41d6ac360412ab6.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit f99db612e0adae4651be63b7c41d6ac360412ab6
+parent 72da7fc2a8aa1a2d5fda8bf4318d8f23dc16725c
+Author: mirefly &lt;&gt;
+Date:   Tue, 18 Nov 2025 15:18:23 +0700
+
+Add glow effect
+
+</content>
+</entry>
+<entry>
+<id>72da7fc2a8aa1a2d5fda8bf4318d8f23dc16725c</id>
+<published>2025-11-17T15:18:15Z</published>
+<updated>2025-11-17T15:18:15Z</updated>
+<title type="text">Use an enum to keep track of used OpenGL texture units</title>
+<link rel="alternate" type="text/html" href="commit/72da7fc2a8aa1a2d5fda8bf4318d8f23dc16725c.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 72da7fc2a8aa1a2d5fda8bf4318d8f23dc16725c
+parent 98ebfcd413d60fdb9bad9cc72829711c859fc152
+Author: mirefly &lt;&gt;
+Date:   Mon, 17 Nov 2025 22:18:15 +0700
+
+Use an enum to keep track of used OpenGL texture units
+
+</content>
+</entry>
+<entry>
+<id>98ebfcd413d60fdb9bad9cc72829711c859fc152</id>
+<published>2025-07-04T07:30:23Z</published>
+<updated>2025-07-04T07:30:23Z</updated>
+<title type="text">Add a LICENSE</title>
+<link rel="alternate" type="text/html" href="commit/98ebfcd413d60fdb9bad9cc72829711c859fc152.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 98ebfcd413d60fdb9bad9cc72829711c859fc152
+parent 7c940cf3b55c48b4174ba4e27d242e09f5b806dc
+Author: mirefly &lt;&gt;
+Date:   Fri,  4 Jul 2025 14:30:23 +0700
+
+Add a LICENSE
+
+</content>
+</entry>
+<entry>
+<id>7c940cf3b55c48b4174ba4e27d242e09f5b806dc</id>
+<published>2025-06-30T09:17:31Z</published>
+<updated>2025-06-30T09:17:31Z</updated>
+<title type="text">Return the buttons</title>
+<link rel="alternate" type="text/html" href="commit/7c940cf3b55c48b4174ba4e27d242e09f5b806dc.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 7c940cf3b55c48b4174ba4e27d242e09f5b806dc
+parent a62e73866e6db0b597e254fbfd26674bccfbde3a
+Author: mirefly &lt;&gt;
+Date:   Mon, 30 Jun 2025 16:17:31 +0700
+
+Return the buttons
+
+</content>
+</entry>
+<entry>
+<id>a62e73866e6db0b597e254fbfd26674bccfbde3a</id>
+<published>2025-06-30T05:24:20Z</published>
+<updated>2025-06-30T05:24:20Z</updated>
+<title type="text">Make web version work again</title>
+<link rel="alternate" type="text/html" href="commit/a62e73866e6db0b597e254fbfd26674bccfbde3a.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit a62e73866e6db0b597e254fbfd26674bccfbde3a
+parent 9816878bc561a30feaf89c15e348edadfe9fb668
+Author: mirefly &lt;&gt;
+Date:   Mon, 30 Jun 2025 12:24:20 +0700
+
+Make web version work again
+
+</content>
+</entry>
+<entry>
+<id>9816878bc561a30feaf89c15e348edadfe9fb668</id>
+<published>2025-06-26T08:13:32Z</published>
+<updated>2025-06-26T08:13:32Z</updated>
+<title type="text">Vendor font8x8_basic.h</title>
+<link rel="alternate" type="text/html" href="commit/9816878bc561a30feaf89c15e348edadfe9fb668.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 9816878bc561a30feaf89c15e348edadfe9fb668
+parent bee9a5034a10298dc9a1fc225646b0b69d5c5177
+Author: mirefly &lt;&gt;
+Date:   Thu, 26 Jun 2025 15:13:32 +0700
+
+Vendor font8x8_basic.h
+
+</content>
+</entry>
+<entry>
+<id>bee9a5034a10298dc9a1fc225646b0b69d5c5177</id>
+<published>2025-06-24T00:10:50Z</published>
+<updated>2025-06-24T00:10:50Z</updated>
+<title type="text">Add developer menu</title>
+<link rel="alternate" type="text/html" href="commit/bee9a5034a10298dc9a1fc225646b0b69d5c5177.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit bee9a5034a10298dc9a1fc225646b0b69d5c5177
+parent a6347118d6a6e45e1f61f9fb3c017e5f336d3305
+Author: mirefly &lt;&gt;
+Date:   Tue, 24 Jun 2025 07:10:50 +0700
+
+Add developer menu
+
+</content>
+</entry>
+<entry>
+<id>a6347118d6a6e45e1f61f9fb3c017e5f336d3305</id>
+<published>2025-06-23T23:42:15Z</published>
+<updated>2025-06-23T23:42:15Z</updated>
+<title type="text">Vendor nuklear.h</title>
+<link rel="alternate" type="text/html" href="commit/a6347118d6a6e45e1f61f9fb3c017e5f336d3305.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit a6347118d6a6e45e1f61f9fb3c017e5f336d3305
+parent f0dd0324911bc2f1363e5fa745771756a249f85f
+Author: mirefly &lt;&gt;
+Date:   Tue, 24 Jun 2025 06:42:15 +0700
+
+Vendor nuklear.h
+
+</content>
+</entry>
+<entry>
+<id>f0dd0324911bc2f1363e5fa745771756a249f85f</id>
+<published>2025-02-18T19:51:53Z</published>
+<updated>2025-02-18T19:51:53Z</updated>
+<title type="text">Fix the data array not initialized</title>
+<link rel="alternate" type="text/html" href="commit/f0dd0324911bc2f1363e5fa745771756a249f85f.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit f0dd0324911bc2f1363e5fa745771756a249f85f
+parent 122bfc1b6cb7e6cdf339fd393baea10496f4ef77
+Author: mirefly &lt;&gt;
+Date:   Wed, 19 Feb 2025 02:51:53 +0700
+
+Fix the data array not initialized
+
+</content>
+</entry>
+<entry>
+<id>122bfc1b6cb7e6cdf339fd393baea10496f4ef77</id>
+<published>2025-02-17T15:28:35Z</published>
+<updated>2025-02-17T15:28:35Z</updated>
+<title type="text">Change &quot;Enter fullscreen&quot; to &quot;Toggle fullscreen&quot;</title>
+<link rel="alternate" type="text/html" href="commit/122bfc1b6cb7e6cdf339fd393baea10496f4ef77.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 122bfc1b6cb7e6cdf339fd393baea10496f4ef77
+parent c4c0417b614f6b70bfd2f183ec4e17369271a882
+Author: mirefly &lt;&gt;
+Date:   Mon, 17 Feb 2025 22:28:35 +0700
+
+Change &quot;Enter fullscreen&quot; to &quot;Toggle fullscreen&quot;
+
+</content>
+</entry>
+<entry>
+<id>c4c0417b614f6b70bfd2f183ec4e17369271a882</id>
+<published>2025-02-17T14:36:51Z</published>
+<updated>2025-02-17T14:36:51Z</updated>
+<title type="text">Use touch-action: pinch-zoom to prevent pointercancel</title>
+<link rel="alternate" type="text/html" href="commit/c4c0417b614f6b70bfd2f183ec4e17369271a882.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit c4c0417b614f6b70bfd2f183ec4e17369271a882
+parent e24123cc3ad028d969dd53e144374b5eaa8f64af
+Author: mirefly &lt;&gt;
+Date:   Mon, 17 Feb 2025 21:36:51 +0700
+
+Use touch-action: pinch-zoom to prevent pointercancel
+
+</content>
+</entry>
+<entry>
+<id>e24123cc3ad028d969dd53e144374b5eaa8f64af</id>
+<published>2025-02-17T10:35:43Z</published>
+<updated>2025-02-17T10:35:43Z</updated>
+<title type="text">Update TODO</title>
+<link rel="alternate" type="text/html" href="commit/e24123cc3ad028d969dd53e144374b5eaa8f64af.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit e24123cc3ad028d969dd53e144374b5eaa8f64af
+parent a212a98e05cb0c5de9cde44077a87e4963f2403b
+Author: mirefly &lt;&gt;
+Date:   Mon, 17 Feb 2025 17:35:43 +0700
+
+Update TODO
+
+</content>
+</entry>
+<entry>
+<id>a212a98e05cb0c5de9cde44077a87e4963f2403b</id>
+<published>2025-02-17T10:09:35Z</published>
+<updated>2025-02-17T10:09:35Z</updated>
+<title type="text">Limit tick rate to 60</title>
+<link rel="alternate" type="text/html" href="commit/a212a98e05cb0c5de9cde44077a87e4963f2403b.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit a212a98e05cb0c5de9cde44077a87e4963f2403b
+parent 9c0e32981a9971797d7e0d5885984a2fbac2fdf7
+Author: mirefly &lt;&gt;
+Date:   Mon, 17 Feb 2025 17:09:35 +0700
+
+Limit tick rate to 60
+
+</content>
+</entry>
+<entry>
+<id>9c0e32981a9971797d7e0d5885984a2fbac2fdf7</id>
+<published>2025-02-14T11:03:10Z</published>
+<updated>2025-02-14T11:05:18Z</updated>
+<title type="text">Make the buttons react on release</title>
+<link rel="alternate" type="text/html" href="commit/9c0e32981a9971797d7e0d5885984a2fbac2fdf7.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 9c0e32981a9971797d7e0d5885984a2fbac2fdf7
+parent 1f3282e87e0c4d9f40f2950d26437d20561186eb
+Author: mirefly &lt;&gt;
+Date:   Fri, 14 Feb 2025 18:03:10 +0700
+
+Make the buttons react on release
+
+</content>
+</entry>
+<entry>
+<id>1f3282e87e0c4d9f40f2950d26437d20561186eb</id>
+<published>2025-02-14T11:00:00Z</published>
+<updated>2025-02-14T11:00:00Z</updated>
+<title type="text">Set the minimal size for the buttons</title>
+<link rel="alternate" type="text/html" href="commit/1f3282e87e0c4d9f40f2950d26437d20561186eb.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 1f3282e87e0c4d9f40f2950d26437d20561186eb
+parent 9fb07628a097ad821e4e692245a5b6fc3f1c9c20
+Author: mirefly &lt;&gt;
+Date:   Fri, 14 Feb 2025 18:00:00 +0700
+
+Set the minimal size for the buttons
+
+</content>
+</entry>
+<entry>
+<id>9fb07628a097ad821e4e692245a5b6fc3f1c9c20</id>
+<published>2025-02-14T10:21:34Z</published>
+<updated>2025-02-14T10:24:40Z</updated>
+<title type="text">Adjust the world size to 16:9 ratio</title>
+<link rel="alternate" type="text/html" href="commit/9fb07628a097ad821e4e692245a5b6fc3f1c9c20.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 9fb07628a097ad821e4e692245a5b6fc3f1c9c20
+parent bac2cdf6634d2c1536909aab23c690907c12c687
+Author: mirefly &lt;&gt;
+Date:   Fri, 14 Feb 2025 17:21:34 +0700
+
+Adjust the world size to 16:9 ratio
+
+</content>
+</entry>
+<entry>
+<id>bac2cdf6634d2c1536909aab23c690907c12c687</id>
+<published>2025-02-14T10:11:55Z</published>
+<updated>2025-02-14T10:21:00Z</updated>
+<title type="text">Improve pointer capture behavior in the web version</title>
+<link rel="alternate" type="text/html" href="commit/bac2cdf6634d2c1536909aab23c690907c12c687.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit bac2cdf6634d2c1536909aab23c690907c12c687
+parent 3a7a18d09f8c28bf4b849786009beee37cda867b
+Author: mirefly &lt;&gt;
+Date:   Fri, 14 Feb 2025 17:11:55 +0700
+
+Improve pointer capture behavior in the web version
+
+</content>
+</entry>
+<entry>
+<id>3a7a18d09f8c28bf4b849786009beee37cda867b</id>
+<published>2025-02-14T06:40:34Z</published>
+<updated>2025-02-14T06:40:34Z</updated>
+<title type="text">Add fullscreen mode</title>
+<link rel="alternate" type="text/html" href="commit/3a7a18d09f8c28bf4b849786009beee37cda867b.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 3a7a18d09f8c28bf4b849786009beee37cda867b
+parent 1ea4b35129f53f4d4976d8fbdd2978f2d9f7e6da
+Author: mirefly &lt;&gt;
+Date:   Fri, 14 Feb 2025 13:40:34 +0700
+
+Add fullscreen mode
+
+</content>
+</entry>
+<entry>
+<id>1ea4b35129f53f4d4976d8fbdd2978f2d9f7e6da</id>
+<published>2025-02-14T05:57:42Z</published>
+<updated>2025-02-14T05:57:42Z</updated>
+<title type="text">Update TODO</title>
+<link rel="alternate" type="text/html" href="commit/1ea4b35129f53f4d4976d8fbdd2978f2d9f7e6da.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 1ea4b35129f53f4d4976d8fbdd2978f2d9f7e6da
+parent f78745c0780d68988ec7fa163c5ee2f911b40157
+Author: mirefly &lt;&gt;
+Date:   Fri, 14 Feb 2025 12:57:42 +0700
+
+Update TODO
+
+</content>
+</entry>
+<entry>
+<id>f78745c0780d68988ec7fa163c5ee2f911b40157</id>
+<published>2025-02-14T04:00:44Z</published>
+<updated>2025-02-14T04:00:44Z</updated>
+<title type="text">Make the window resize properly</title>
+<link rel="alternate" type="text/html" href="commit/f78745c0780d68988ec7fa163c5ee2f911b40157.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit f78745c0780d68988ec7fa163c5ee2f911b40157
+parent 6e1d7535e26a871dfab83a995002097dfc4b4701
+Author: mirefly &lt;&gt;
+Date:   Fri, 14 Feb 2025 11:00:44 +0700
+
+Make the window resize properly
+
+</content>
+</entry>
+<entry>
+<id>6e1d7535e26a871dfab83a995002097dfc4b4701</id>
+<published>2025-02-14T03:30:31Z</published>
+<updated>2025-02-14T03:30:31Z</updated>
+<title type="text">Prevent space from scrolling the page</title>
+<link rel="alternate" type="text/html" href="commit/6e1d7535e26a871dfab83a995002097dfc4b4701.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 6e1d7535e26a871dfab83a995002097dfc4b4701
+parent 436a094403ecf98ad35dc02f2e09d1f54a926126
+Author: mirefly &lt;&gt;
+Date:   Fri, 14 Feb 2025 10:30:31 +0700
+
+Prevent space from scrolling the page
+
+</content>
+</entry>
+<entry>
+<id>436a094403ecf98ad35dc02f2e09d1f54a926126</id>
+<published>2025-02-13T04:22:06Z</published>
+<updated>2025-02-13T04:22:06Z</updated>
+<title type="text">Calculate the uv in the vertex shader</title>
+<link rel="alternate" type="text/html" href="commit/436a094403ecf98ad35dc02f2e09d1f54a926126.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 436a094403ecf98ad35dc02f2e09d1f54a926126
+parent 9f75b7ed855e9b0345074d9ee1596fb5c713e302
+Author: mirefly &lt;&gt;
+Date:   Thu, 13 Feb 2025 11:22:06 +0700
+
+Calculate the uv in the vertex shader
+
+</content>
+</entry>
+<entry>
+<id>9f75b7ed855e9b0345074d9ee1596fb5c713e302</id>
+<published>2025-02-13T04:08:12Z</published>
+<updated>2025-02-13T04:08:12Z</updated>
+<title type="text">Move random functions into a separate file</title>
+<link rel="alternate" type="text/html" href="commit/9f75b7ed855e9b0345074d9ee1596fb5c713e302.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 9f75b7ed855e9b0345074d9ee1596fb5c713e302
+parent 8889009e208f444c7eb0d92b58b4cc713508bf19
+Author: mirefly &lt;&gt;
+Date:   Thu, 13 Feb 2025 11:08:12 +0700
+
+Move random functions into a separate file
+
+</content>
+</entry>
+<entry>
+<id>8889009e208f444c7eb0d92b58b4cc713508bf19</id>
+<published>2025-02-13T03:28:04Z</published>
+<updated>2025-02-13T03:28:04Z</updated>
+<title type="text">Vendor the GLES2 headers for the web version</title>
+<link rel="alternate" type="text/html" href="commit/8889009e208f444c7eb0d92b58b4cc713508bf19.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 8889009e208f444c7eb0d92b58b4cc713508bf19
+parent cd67a61436f23d4fca4ec21f2128dfcaad763134
+Author: mirefly &lt;&gt;
+Date:   Thu, 13 Feb 2025 10:28:04 +0700
+
+Vendor the GLES2 headers for the web version
+
+</content>
+</entry>
+<entry>
+<id>cd67a61436f23d4fca4ec21f2128dfcaad763134</id>
+<published>2025-02-13T01:14:10Z</published>
+<updated>2025-02-13T01:14:10Z</updated>
+<title type="text">Update TODO</title>
+<link rel="alternate" type="text/html" href="commit/cd67a61436f23d4fca4ec21f2128dfcaad763134.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit cd67a61436f23d4fca4ec21f2128dfcaad763134
+parent 8dcf6e5f25ff245e6ccd00743d117863b5ae681f
+Author: mirefly &lt;&gt;
+Date:   Thu, 13 Feb 2025 08:14:10 +0700
+
+Update TODO
+
+</content>
+</entry>
+<entry>
+<id>8dcf6e5f25ff245e6ccd00743d117863b5ae681f</id>
+<published>2025-02-13T01:11:06Z</published>
+<updated>2025-02-13T01:11:06Z</updated>
+<title type="text">Refactor</title>
+<link rel="alternate" type="text/html" href="commit/8dcf6e5f25ff245e6ccd00743d117863b5ae681f.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 8dcf6e5f25ff245e6ccd00743d117863b5ae681f
+parent 12cb199d7559241a36118c97c9a9e17b1d0bfceb
+Author: mirefly &lt;&gt;
+Date:   Thu, 13 Feb 2025 08:11:06 +0700
+
+Refactor
+
+</content>
+</entry>
+<entry>
+<id>12cb199d7559241a36118c97c9a9e17b1d0bfceb</id>
+<published>2025-02-12T08:29:06Z</published>
+<updated>2025-02-12T08:31:24Z</updated>
+<title type="text">Make glfw window not resizable</title>
+<link rel="alternate" type="text/html" href="commit/12cb199d7559241a36118c97c9a9e17b1d0bfceb.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 12cb199d7559241a36118c97c9a9e17b1d0bfceb
+parent 27f45ae4ab5fdfa424f7640f9868e78e04b60201
+Author: mirefly &lt;&gt;
+Date:   Wed, 12 Feb 2025 15:29:06 +0700
+
+Make glfw window not resizable
+
+</content>
+</entry>
+<entry>
+<id>27f45ae4ab5fdfa424f7640f9868e78e04b60201</id>
+<published>2025-01-19T21:43:20Z</published>
+<updated>2025-01-19T21:43:20Z</updated>
+<title type="text">Enable back-face culling</title>
+<link rel="alternate" type="text/html" href="commit/27f45ae4ab5fdfa424f7640f9868e78e04b60201.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 27f45ae4ab5fdfa424f7640f9868e78e04b60201
+parent 9cb414c2388b5526891260fea720c9614bdc7e1b
+Author: mirefly &lt;&gt;
+Date:   Mon, 20 Jan 2025 04:43:20 +0700
+
+Enable back-face culling
+
+</content>
+</entry>
+<entry>
+<id>9cb414c2388b5526891260fea720c9614bdc7e1b</id>
+<published>2025-01-17T21:50:16Z</published>
+<updated>2025-01-17T21:50:16Z</updated>
+<title type="text">Implement a subset of GLES2 in WebGL and integrate it</title>
+<link rel="alternate" type="text/html" href="commit/9cb414c2388b5526891260fea720c9614bdc7e1b.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 9cb414c2388b5526891260fea720c9614bdc7e1b
+parent a1b1186090006f3ca467b64c6a8cfe97ac258856
+Author: mirefly &lt;&gt;
+Date:   Sat, 18 Jan 2025 04:50:16 +0700
+
+Implement a subset of GLES2 in WebGL and integrate it
+
+</content>
+</entry>
+<entry>
+<id>a1b1186090006f3ca467b64c6a8cfe97ac258856</id>
+<published>2025-01-03T21:34:23Z</published>
+<updated>2025-01-03T21:34:23Z</updated>
+<title type="text">Add buttons to the web version</title>
+<link rel="alternate" type="text/html" href="commit/a1b1186090006f3ca467b64c6a8cfe97ac258856.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit a1b1186090006f3ca467b64c6a8cfe97ac258856
+parent 4faa4e8e6ab09210991f7de849e6fe2422332ffd
+Author: mirefly &lt;&gt;
+Date:   Sat,  4 Jan 2025 04:34:23 +0700
+
+Add buttons to the web version
+
+</content>
+</entry>
+<entry>
+<id>4faa4e8e6ab09210991f7de849e6fe2422332ffd</id>
+<published>2025-01-03T20:05:14Z</published>
+<updated>2025-01-03T20:54:17Z</updated>
+<title type="text">Fix csandReadTextFile to not fail on empty files</title>
+<link rel="alternate" type="text/html" href="commit/4faa4e8e6ab09210991f7de849e6fe2422332ffd.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 4faa4e8e6ab09210991f7de849e6fe2422332ffd
+parent e5eec6e33c6dab93c90db66d4ac6026fe1f11724
+Author: mirefly &lt;&gt;
+Date:   Sat,  4 Jan 2025 03:05:14 +0700
+
+Fix csandReadTextFile to not fail on empty files
+
+</content>
+</entry>
+<entry>
+<id>e5eec6e33c6dab93c90db66d4ac6026fe1f11724</id>
+<published>2024-12-05T16:52:53Z</published>
+<updated>2024-12-05T17:01:42Z</updated>
+<title type="text">Add ability to simulate a single frame on pause</title>
+<link rel="alternate" type="text/html" href="commit/e5eec6e33c6dab93c90db66d4ac6026fe1f11724.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit e5eec6e33c6dab93c90db66d4ac6026fe1f11724
+parent 72aa2285c02872e38ca7f97ba154d4f3a90c3b91
+Author: mirefly &lt;&gt;
+Date:   Thu,  5 Dec 2024 23:52:53 +0700
+
+Add ability to simulate a single frame on pause
+
+</content>
+</entry>
+<entry>
+<id>72aa2285c02872e38ca7f97ba154d4f3a90c3b91</id>
+<published>2024-12-05T16:32:32Z</published>
+<updated>2024-12-05T16:32:32Z</updated>
+<title type="text">Tweak fire</title>
+<link rel="alternate" type="text/html" href="commit/72aa2285c02872e38ca7f97ba154d4f3a90c3b91.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 72aa2285c02872e38ca7f97ba154d4f3a90c3b91
+parent 09ecccae04d1f4e4ccce89654336f8849c7184c9
+Author: mirefly &lt;&gt;
+Date:   Thu,  5 Dec 2024 23:32:32 +0700
+
+Tweak fire
+
+</content>
+</entry>
+<entry>
+<id>09ecccae04d1f4e4ccce89654336f8849c7184c9</id>
+<published>2024-12-05T15:21:51Z</published>
+<updated>2024-12-05T15:21:51Z</updated>
+<title type="text">Rename solid to wall in web version</title>
+<link rel="alternate" type="text/html" href="commit/09ecccae04d1f4e4ccce89654336f8849c7184c9.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 09ecccae04d1f4e4ccce89654336f8849c7184c9
+parent e836d18d2fb05e9035ed8982f3ade6a1e93c79e4
+Author: mirefly &lt;&gt;
+Date:   Thu,  5 Dec 2024 22:21:51 +0700
+
+Rename solid to wall in web version
+
+</content>
+</entry>
+<entry>
+<id>e836d18d2fb05e9035ed8982f3ade6a1e93c79e4</id>
+<published>2024-12-05T15:19:45Z</published>
+<updated>2024-12-05T15:19:45Z</updated>
+<title type="text">Allow drawing on pause</title>
+<link rel="alternate" type="text/html" href="commit/e836d18d2fb05e9035ed8982f3ade6a1e93c79e4.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit e836d18d2fb05e9035ed8982f3ade6a1e93c79e4
+parent 57cf3e431922b371911debd41a21aece9a31e88e
+Author: mirefly &lt;&gt;
+Date:   Thu,  5 Dec 2024 22:19:45 +0700
+
+Allow drawing on pause
+
+</content>
+</entry>
+<entry>
+<id>57cf3e431922b371911debd41a21aece9a31e88e</id>
+<published>2024-12-05T15:05:07Z</published>
+<updated>2024-12-05T15:05:07Z</updated>
+<title type="text">Update TODO</title>
+<link rel="alternate" type="text/html" href="commit/57cf3e431922b371911debd41a21aece9a31e88e.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 57cf3e431922b371911debd41a21aece9a31e88e
+parent ad2c032dcde34fd5a5d8f62535824da8e7696d45
+Author: mirefly &lt;&gt;
+Date:   Thu,  5 Dec 2024 22:05:07 +0700
+
+Update TODO
+
+</content>
+</entry>
+<entry>
+<id>ad2c032dcde34fd5a5d8f62535824da8e7696d45</id>
+<published>2024-12-05T15:02:00Z</published>
+<updated>2024-12-05T15:02:00Z</updated>
+<title type="text">Add fire and flameable materials</title>
+<link rel="alternate" type="text/html" href="commit/ad2c032dcde34fd5a5d8f62535824da8e7696d45.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit ad2c032dcde34fd5a5d8f62535824da8e7696d45
+parent 9c62e8fb57f51e491c387307dce2f646d4797a2c
+Author: mirefly &lt;&gt;
+Date:   Thu,  5 Dec 2024 22:02:00 +0700
+
+Add fire and flameable materials
+
+</content>
+</entry>
+<entry>
+<id>9c62e8fb57f51e491c387307dce2f646d4797a2c</id>
+<published>2024-12-05T07:53:11Z</published>
+<updated>2024-12-05T07:53:11Z</updated>
+<title type="text">Add more material selection events for the future</title>
+<link rel="alternate" type="text/html" href="commit/9c62e8fb57f51e491c387307dce2f646d4797a2c.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 9c62e8fb57f51e491c387307dce2f646d4797a2c
+parent 65e06e36088044b044d61c3270a9feaff05cb613
+Author: mirefly &lt;&gt;
+Date:   Thu,  5 Dec 2024 14:53:11 +0700
+
+Add more material selection events for the future
+
+</content>
+</entry>
+<entry>
+<id>65e06e36088044b044d61c3270a9feaff05cb613</id>
+<published>2024-12-04T17:25:56Z</published>
+<updated>2024-12-04T17:33:46Z</updated>
+<title type="text">Refactor csandSimulate function</title>
+<link rel="alternate" type="text/html" href="commit/65e06e36088044b044d61c3270a9feaff05cb613.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 65e06e36088044b044d61c3270a9feaff05cb613
+parent 3b9d8d9f4436fd27a2bc6158a681245259d65824
+Author: mirefly &lt;&gt;
+Date:   Thu,  5 Dec 2024 00:25:56 +0700
+
+Refactor csandSimulate function
+
+</content>
+</entry>
+<entry>
+<id>3b9d8d9f4436fd27a2bc6158a681245259d65824</id>
+<published>2024-12-04T16:09:00Z</published>
+<updated>2024-12-04T16:09:00Z</updated>
+<title type="text">Fix incorrect color fetching from the palette</title>
+<link rel="alternate" type="text/html" href="commit/3b9d8d9f4436fd27a2bc6158a681245259d65824.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 3b9d8d9f4436fd27a2bc6158a681245259d65824
+parent d4df6af57f3077a66c9464152e049f28e7d1b5fd
+Author: mirefly &lt;&gt;
+Date:   Wed,  4 Dec 2024 23:09:00 +0700
+
+Fix incorrect color fetching from the palette
+
+</content>
+</entry>
+<entry>
+<id>d4df6af57f3077a66c9464152e049f28e7d1b5fd</id>
+<published>2024-12-04T16:01:17Z</published>
+<updated>2024-12-04T16:01:17Z</updated>
+<title type="text">Fix: textures with non-power-of-two dimensions must use GL_CLAMP_TO_EDGE</title>
+<link rel="alternate" type="text/html" href="commit/d4df6af57f3077a66c9464152e049f28e7d1b5fd.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit d4df6af57f3077a66c9464152e049f28e7d1b5fd
+parent 615654f3650e028c9f0b001ea60edcd5039e08de
+Author: mirefly &lt;&gt;
+Date:   Wed,  4 Dec 2024 23:01:17 +0700
+
+Fix: textures with non-power-of-two dimensions must use GL_CLAMP_TO_EDGE
+
+</content>
+</entry>
+<entry>
+<id>615654f3650e028c9f0b001ea60edcd5039e08de</id>
+<published>2024-12-04T14:58:56Z</published>
+<updated>2024-12-04T14:58:56Z</updated>
+<title type="text">Add compile_flags.txt</title>
+<link rel="alternate" type="text/html" href="commit/615654f3650e028c9f0b001ea60edcd5039e08de.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 615654f3650e028c9f0b001ea60edcd5039e08de
+parent cdd445d66a53e0bbf796fa1e4e0cea63d3cf7a98
+Author: mirefly &lt;&gt;
+Date:   Wed,  4 Dec 2024 21:58:56 +0700
+
+Add compile_flags.txt
+
+</content>
+</entry>
+<entry>
+<id>cdd445d66a53e0bbf796fa1e4e0cea63d3cf7a98</id>
+<published>2024-12-04T14:52:48Z</published>
+<updated>2024-12-04T14:52:48Z</updated>
+<title type="text">Make it easier to add new materials</title>
+<link rel="alternate" type="text/html" href="commit/cdd445d66a53e0bbf796fa1e4e0cea63d3cf7a98.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit cdd445d66a53e0bbf796fa1e4e0cea63d3cf7a98
+parent ab5c54d9024b7ffc6f4de559c7e8bb96e5aee70d
+Author: mirefly &lt;&gt;
+Date:   Wed,  4 Dec 2024 21:52:48 +0700
+
+Make it easier to add new materials
+
+</content>
+</entry>
+<entry>
+<id>ab5c54d9024b7ffc6f4de559c7e8bb96e5aee70d</id>
+<published>2024-12-03T17:11:53Z</published>
+<updated>2024-12-03T18:10:06Z</updated>
+<title type="text">Update TODO</title>
+<link rel="alternate" type="text/html" href="commit/ab5c54d9024b7ffc6f4de559c7e8bb96e5aee70d.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit ab5c54d9024b7ffc6f4de559c7e8bb96e5aee70d
+parent c933430cfbed54493f297ed069a3306e5e5c88d9
+Author: mirefly &lt;&gt;
+Date:   Wed,  4 Dec 2024 00:11:53 +0700
+
+Update TODO
+
+</content>
+</entry>
+<entry>
+<id>c933430cfbed54493f297ed069a3306e5e5c88d9</id>
+<published>2024-12-03T16:57:09Z</published>
+<updated>2024-12-03T16:57:09Z</updated>
+<title type="text">Port to web</title>
+<link rel="alternate" type="text/html" href="commit/c933430cfbed54493f297ed069a3306e5e5c88d9.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit c933430cfbed54493f297ed069a3306e5e5c88d9
+parent 83f5240a40c4d047957d71b2ad42051eafbe9cd5
+Author: mirefly &lt;&gt;
+Date:   Tue,  3 Dec 2024 23:57:09 +0700
+
+Port to web
+
+</content>
+</entry>
+<entry>
+<id>83f5240a40c4d047957d71b2ad42051eafbe9cd5</id>
+<published>2024-11-29T08:06:27Z</published>
+<updated>2024-11-29T08:29:21Z</updated>
+<title type="text">Separate platform-specific code</title>
+<link rel="alternate" type="text/html" href="commit/83f5240a40c4d047957d71b2ad42051eafbe9cd5.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 83f5240a40c4d047957d71b2ad42051eafbe9cd5
+parent 11222cf63926cf319a5af481155caa1e83c9ae72
+Author: mirefly &lt;&gt;
+Date:   Fri, 29 Nov 2024 15:06:27 +0700
+
+Separate platform-specific code
+
+</content>
+</entry>
+<entry>
+<id>11222cf63926cf319a5af481155caa1e83c9ae72</id>
+<published>2024-11-29T04:39:21Z</published>
+<updated>2024-11-29T04:39:21Z</updated>
+<title type="text">Initial commit</title>
+<link rel="alternate" type="text/html" href="commit/11222cf63926cf319a5af481155caa1e83c9ae72.html" />
+<author>
+<name>mirefly</name>
+<email></email>
+</author>
+<content type="text">commit 11222cf63926cf319a5af481155caa1e83c9ae72
+Author: mirefly &lt;&gt;
+Date:   Fri, 29 Nov 2024 11:39:21 +0700
+
+Initial commit
+
+</content>
+</entry>
+</feed>

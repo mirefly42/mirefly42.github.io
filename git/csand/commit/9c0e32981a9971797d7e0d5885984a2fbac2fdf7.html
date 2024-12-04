@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Make the buttons react on release - csand - Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</title>
+<link rel="icon" type="image/png" href="../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed" href="../atom.xml" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed (tags)" href="../tags.xml" />
+<link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../"><img src="../logo.png" alt="" width="32" height="32" /></a></td><td><h1>csand</h1><span class="desc">Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</span></td></tr><tr><td></td><td>
+<a href="../log.html">Log</a> | <a href="../files.html">Files</a> | <a href="../refs.html">Refs</a> | <a href="../file/LICENSE.html">LICENSE</a></td></tr></table>
+<hr/>
+<div id="content">
+<pre><b>commit</b> <a href="../commit/9c0e32981a9971797d7e0d5885984a2fbac2fdf7.html">9c0e32981a9971797d7e0d5885984a2fbac2fdf7</a>
+<b>parent</b> <a href="../commit/1f3282e87e0c4d9f40f2950d26437d20561186eb.html">1f3282e87e0c4d9f40f2950d26437d20561186eb</a>
+<b>Author:</b> mirefly &lt;<a href="mailto:"></a>&gt;
+<b>Date:</b>   Fri, 14 Feb 2025 18:03:10 +0700
+
+Make the buttons react on release
+
+<b>Diffstat:</b>
+<table><tr><td class="M">M</td><td><a href="#h0">index.js</a></td><td> | </td><td class="num">2</td><td><span class="i">+</span><span class="d">-</span></td></tr>
+</table></pre><pre>1 file changed, 1 insertion(+), 1 deletion(-)
+<hr/><b>diff --git a/<a id="h0" href="../file/index.js.html">index.js</a> b/<a href="../file/index.js.html">index.js</a></b>
+<a href="#h0-0" id="h0-0" class="h">@@ -27,7 +27,7 @@ async function main() {
+</a>             csandPlatformSetInputCallback: (callback_index) =&gt; {
+                 input_callback = function_table.get(callback_index);
+                 function setButtonInput(id, input) {
+<a href="#h0-0-3" id="h0-0-3" class="d">-                    document.getElementById(id).addEventListener(&quot;pointerdown&quot;, () =&gt; {input_callback(input);});
+</a><a href="#h0-0-4" id="h0-0-4" class="i">+                    document.getElementById(id).addEventListener(&quot;click&quot;, () =&gt; {input_callback(input);});
+</a>                 }
+                 document.getElementById(&quot;button_fullscreen&quot;).addEventListener(&quot;click&quot;, () =&gt; {
+                     toggleFullscreen();
+</pre>
+</div>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Move random functions into a separate file - csand - Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</title>
+<link rel="icon" type="image/png" href="../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed" href="../atom.xml" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed (tags)" href="../tags.xml" />
+<link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../"><img src="../logo.png" alt="" width="32" height="32" /></a></td><td><h1>csand</h1><span class="desc">Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</span></td></tr><tr><td></td><td>
+<a href="../log.html">Log</a> | <a href="../files.html">Files</a> | <a href="../refs.html">Refs</a> | <a href="../file/LICENSE.html">LICENSE</a></td></tr></table>
+<hr/>
+<div id="content">
+<pre><b>commit</b> <a href="../commit/9f75b7ed855e9b0345074d9ee1596fb5c713e302.html">9f75b7ed855e9b0345074d9ee1596fb5c713e302</a>
+<b>parent</b> <a href="../commit/8889009e208f444c7eb0d92b58b4cc713508bf19.html">8889009e208f444c7eb0d92b58b4cc713508bf19</a>
+<b>Author:</b> mirefly &lt;<a href="mailto:"></a>&gt;
+<b>Date:</b>   Thu, 13 Feb 2025 11:08:12 +0700
+
+Move random functions into a separate file
+
+<b>Diffstat:</b>
+<table><tr><td class="M">M</td><td><a href="#h0">Makefile</a></td><td> | </td><td class="num">2</td><td><span class="i">+</span><span class="d">-</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h1">csand.c</a></td><td> | </td><td class="num">21</td><td><span class="i">+</span><span class="d">--------------------</span></td></tr>
+<tr><td class="A">A</td><td><a href="#h2">random.h</a></td><td> | </td><td class="num">26</td><td><span class="i">++++++++++++++++++++++++++</span><span class="d"></span></td></tr>
+</table></pre><pre>3 files changed, 28 insertions(+), 21 deletions(-)
+<hr/><b>diff --git a/<a id="h0" href="../file/Makefile.html">Makefile</a> b/<a href="../file/Makefile.html">Makefile</a></b>
+<a href="#h0-0" id="h0-0" class="h">@@ -2,7 +2,7 @@
+</a> 
+ SRC = csand.c platform_glfw.c renderer.c
+ EMBED_HDR = shader.vert.embed.h shader.frag.embed.h
+<a href="#h0-0-3" id="h0-0-3" class="d">-HDR = math.h platform.h renderer.h rgba.h vec2.h ${EMBED_HDR}
+</a><a href="#h0-0-4" id="h0-0-4" class="i">+HDR = math.h platform.h random.h renderer.h rgba.h vec2.h ${EMBED_HDR}
+</a> OBJ = ${SRC:.c=.o}
+ LIBS = -lglfw -lGLESv2
+ 
+<b>diff --git a/<a id="h1" href="../file/csand.c.html">csand.c</a> b/<a href="../file/csand.c.html">csand.c</a></b>
+<a href="#h1-0" id="h1-0" class="h">@@ -1,5 +1,6 @@
+</a> #include &quot;math.h&quot;
+ #include &quot;platform.h&quot;
+<a href="#h1-0-2" id="h1-0-2" class="i">+#include &quot;random.h&quot;
+</a> #include &quot;renderer.h&quot;
+ #include &quot;rgba.h&quot;
+ #include &lt;stdbool.h&gt;
+<a href="#h1-1" id="h1-1" class="h">@@ -57,9 +58,6 @@ typedef struct CsandMaterialProperties {
+</a>     unsigned char decay_mat;
+ } CsandMaterialProperties;
+ 
+<a href="#h1-1-3" id="h1-1-3" class="d">-/* Maps probability from 0-1 float to 0-65535 uint16_t */
+</a><a href="#h1-1-4" id="h1-1-4" class="d">-#define NPROB(x) ((uint16_t)((x) * 0xFFFF))
+</a><a href="#h1-1-5" id="h1-1-5" class="d">-
+</a> static const CsandMaterialProperties materials[MATERIALS_COUNT] = {
+     [MAT_AIR]             = {&quot;air&quot;,             1000,    MAT_KIND_FLUID,  NPROB(0),     NPROB(0),    MAT_AIR},
+     [MAT_WALL]            = {&quot;wall&quot;,            2500000, MAT_KIND_SOLID,  NPROB(0),     NPROB(0),    MAT_AIR},
+<a href="#h1-2" id="h1-2" class="h">@@ -96,9 +94,7 @@ static void csandInputCallback(CsandInput input);
+</a> static void csandRenderCallback(void);
+ static void csandSimulate(CsandRenderBuffer buf);
+ static inline unsigned char *csandGetMat(CsandRenderBuffer buf, unsigned int x, unsigned int y);
+<a href="#h1-2-3" id="h1-2-3" class="d">-static uint32_t csandRand(void);
+</a> static bool csandInBounds(CsandRenderBuffer buf, int x, int y);
+<a href="#h1-2-5" id="h1-2-5" class="d">-static inline bool csandChance(uint16_t prob);
+</a> static inline bool csandMatIsFire(unsigned char mat);
+ static void tryIgnite(CsandRenderBuffer buf, unsigned int x, unsigned int y);
+ 
+<a href="#h1-3" id="h1-3" class="h">@@ -246,26 +242,11 @@ static inline unsigned char *csandGetMat(CsandRenderBuffer buf, unsigned int x, 
+</a>     return buf.data + buf.width * y + x;
+ }
+ 
+<a href="#h1-3-3" id="h1-3-3" class="d">-static uint32_t csandRand(void)
+</a><a href="#h1-3-4" id="h1-3-4" class="d">-{
+</a><a href="#h1-3-5" id="h1-3-5" class="d">-    static uint64_t seed = 1;
+</a><a href="#h1-3-6" id="h1-3-6" class="d">-    seed = 6364136223846793005*seed + 1;
+</a><a href="#h1-3-7" id="h1-3-7" class="d">-    return seed &gt;&gt; 32;
+</a><a href="#h1-3-8" id="h1-3-8" class="d">-}
+</a> 
+ static bool csandInBounds(CsandRenderBuffer buf, int x, int y) {
+     return x &gt;= 0 &amp;&amp; x &lt; buf.width &amp;&amp; y &gt;= 0 &amp;&amp; y &lt; buf.height;
+ }
+ 
+<a href="#h1-3-14" id="h1-3-14" class="d">-static inline bool csandChance(uint16_t prob) {
+</a><a href="#h1-3-15" id="h1-3-15" class="d">-    for (;;) {
+</a><a href="#h1-3-16" id="h1-3-16" class="d">-        uint16_t x = csandRand();
+</a><a href="#h1-3-17" id="h1-3-17" class="d">-        if (x &lt; 0xFFFF) {
+</a><a href="#h1-3-18" id="h1-3-18" class="d">-            return x &lt; prob;
+</a><a href="#h1-3-19" id="h1-3-19" class="d">-        }
+</a><a href="#h1-3-20" id="h1-3-20" class="d">-    }
+</a><a href="#h1-3-21" id="h1-3-21" class="d">-}
+</a><a href="#h1-3-22" id="h1-3-22" class="d">-
+</a> static inline bool csandMatIsFire(unsigned char mat) {
+     return mat == MAT_FIRE_GAS || mat == MAT_FIRE_POWDER || mat == MAT_FIRE_LIQUID;
+ }
+<b>diff --git a/<a id="h2" href="../file/random.h.html">random.h</a> b/<a href="../file/random.h.html">random.h</a></b>
+<a href="#h2-0" id="h2-0" class="h">@@ -0,0 +1,26 @@
+</a><a href="#h2-0-0" id="h2-0-0" class="i">+#ifndef CSAND_RANDOM_H
+</a><a href="#h2-0-1" id="h2-0-1" class="i">+#define CSAND_RANDOM_H
+</a><a href="#h2-0-2" id="h2-0-2" class="i">+
+</a><a href="#h2-0-3" id="h2-0-3" class="i">+#include &lt;stdbool.h&gt;
+</a><a href="#h2-0-4" id="h2-0-4" class="i">+#include &lt;stdint.h&gt;
+</a><a href="#h2-0-5" id="h2-0-5" class="i">+
+</a><a href="#h2-0-6" id="h2-0-6" class="i">+/* Maps probability from 0-1 float to 0-65535 uint16_t */
+</a><a href="#h2-0-7" id="h2-0-7" class="i">+#define NPROB(x) ((uint16_t)((x) * 0xFFFF))
+</a><a href="#h2-0-8" id="h2-0-8" class="i">+
+</a><a href="#h2-0-9" id="h2-0-9" class="i">+static inline uint32_t csandRand(void)
+</a><a href="#h2-0-10" id="h2-0-10" class="i">+{
+</a><a href="#h2-0-11" id="h2-0-11" class="i">+    static uint64_t seed = 1;
+</a><a href="#h2-0-12" id="h2-0-12" class="i">+    seed = 6364136223846793005*seed + 1;
+</a><a href="#h2-0-13" id="h2-0-13" class="i">+    return seed &gt;&gt; 32;
+</a><a href="#h2-0-14" id="h2-0-14" class="i">+}
+</a><a href="#h2-0-15" id="h2-0-15" class="i">+
+</a><a href="#h2-0-16" id="h2-0-16" class="i">+static inline bool csandChance(uint16_t prob) {
+</a><a href="#h2-0-17" id="h2-0-17" class="i">+    for (;;) {
+</a><a href="#h2-0-18" id="h2-0-18" class="i">+        uint16_t x = csandRand();
+</a><a href="#h2-0-19" id="h2-0-19" class="i">+        if (x &lt; 0xFFFF) {
+</a><a href="#h2-0-20" id="h2-0-20" class="i">+            return x &lt; prob;
+</a><a href="#h2-0-21" id="h2-0-21" class="i">+        }
+</a><a href="#h2-0-22" id="h2-0-22" class="i">+    }
+</a><a href="#h2-0-23" id="h2-0-23" class="i">+}
+</a><a href="#h2-0-24" id="h2-0-24" class="i">+
+</a><a href="#h2-0-25" id="h2-0-25" class="i">+#endif
+</a></pre>
+</div>
+</body>
+</html>

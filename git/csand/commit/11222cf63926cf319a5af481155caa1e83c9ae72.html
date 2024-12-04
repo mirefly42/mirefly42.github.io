@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Initial commit - csand - Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</title>
+<link rel="icon" type="image/png" href="../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed" href="../atom.xml" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed (tags)" href="../tags.xml" />
+<link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../"><img src="../logo.png" alt="" width="32" height="32" /></a></td><td><h1>csand</h1><span class="desc">Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</span></td></tr><tr><td></td><td>
+<a href="../log.html">Log</a> | <a href="../files.html">Files</a> | <a href="../refs.html">Refs</a> | <a href="../file/LICENSE.html">LICENSE</a></td></tr></table>
+<hr/>
+<div id="content">
+<pre><b>commit</b> <a href="../commit/11222cf63926cf319a5af481155caa1e83c9ae72.html">11222cf63926cf319a5af481155caa1e83c9ae72</a>
+<b>Author:</b> mirefly &lt;<a href="mailto:"></a>&gt;
+<b>Date:</b>   Fri, 29 Nov 2024 11:39:21 +0700
+
+Initial commit
+
+<b>Diffstat:</b>
+<table><tr><td class="A">A</td><td><a href="#h0">.gitignore</a></td><td> | </td><td class="num">2</td><td><span class="i">++</span><span class="d"></span></td></tr>
+<tr><td class="A">A</td><td><a href="#h1">Makefile</a></td><td> | </td><td class="num">21</td><td><span class="i">+++++++++++++++++++++</span><span class="d"></span></td></tr>
+<tr><td class="A">A</td><td><a href="#h2">TODO</a></td><td> | </td><td class="num">1</td><td><span class="i">+</span><span class="d"></span></td></tr>
+<tr><td class="A">A</td><td><a href="#h3">csand.c</a></td><td> | </td><td class="num">322</td><td><span class="i">+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span><span class="d"></span></td></tr>
+<tr><td class="A">A</td><td><a href="#h4">shader.frag</a></td><td> | </td><td class="num">20</td><td><span class="i">++++++++++++++++++++</span><span class="d"></span></td></tr>
+<tr><td class="A">A</td><td><a href="#h5">shader.vert</a></td><td> | </td><td class="num">7</td><td><span class="i">+++++++</span><span class="d"></span></td></tr>
+</table></pre><pre>6 files changed, 373 insertions(+), 0 deletions(-)
+<hr/><b>diff --git a/<a id="h0" href="../file/.gitignore.html">.gitignore</a> b/<a href="../file/.gitignore.html">.gitignore</a></b>
+<a href="#h0-0" id="h0-0" class="h">@@ -0,0 +1,2 @@
+</a><a href="#h0-0-0" id="h0-0-0" class="i">+/csand
+</a><a href="#h0-0-1" id="h0-0-1" class="i">+/*.o
+</a><b>diff --git a/<a id="h1" href="../file/Makefile.html">Makefile</a> b/<a href="../file/Makefile.html">Makefile</a></b>
+<a href="#h1-0" id="h1-0" class="h">@@ -0,0 +1,21 @@
+</a><a href="#h1-0-0" id="h1-0-0" class="i">+.POSIX:
+</a><a href="#h1-0-1" id="h1-0-1" class="i">+
+</a><a href="#h1-0-2" id="h1-0-2" class="i">+SRC = csand.c
+</a><a href="#h1-0-3" id="h1-0-3" class="i">+OBJ = ${SRC:.c=.o}
+</a><a href="#h1-0-4" id="h1-0-4" class="i">+LIBS = -lglfw -lepoxy
+</a><a href="#h1-0-5" id="h1-0-5" class="i">+
+</a><a href="#h1-0-6" id="h1-0-6" class="i">+all: csand
+</a><a href="#h1-0-7" id="h1-0-7" class="i">+
+</a><a href="#h1-0-8" id="h1-0-8" class="i">+csand: ${OBJ}
+</a><a href="#h1-0-9" id="h1-0-9" class="i">+	${CC} -o $@ ${OBJ} ${LIBS} ${LDFLAGS}
+</a><a href="#h1-0-10" id="h1-0-10" class="i">+
+</a><a href="#h1-0-11" id="h1-0-11" class="i">+.c.o:
+</a><a href="#h1-0-12" id="h1-0-12" class="i">+	${CC} -c -o $@ $&lt; ${CFLAGS}
+</a><a href="#h1-0-13" id="h1-0-13" class="i">+
+</a><a href="#h1-0-14" id="h1-0-14" class="i">+validate:
+</a><a href="#h1-0-15" id="h1-0-15" class="i">+	glslangValidator shader.vert shader.frag
+</a><a href="#h1-0-16" id="h1-0-16" class="i">+
+</a><a href="#h1-0-17" id="h1-0-17" class="i">+clean:
+</a><a href="#h1-0-18" id="h1-0-18" class="i">+	rm -f csand ${OBJ}
+</a><a href="#h1-0-19" id="h1-0-19" class="i">+
+</a><a href="#h1-0-20" id="h1-0-20" class="i">+.PHONY: all validate clean
+</a><b>diff --git a/<a id="h2" href="../file/TODO.html">TODO</a> b/<a href="../file/TODO.html">TODO</a></b>
+<a href="#h2-0" id="h2-0" class="h">@@ -0,0 +1 @@
+</a><a href="#h2-0-0" id="h2-0-0" class="i">+Port to webassembly
+</a><b>diff --git a/<a id="h3" href="../file/csand.c.html">csand.c</a> b/<a href="../file/csand.c.html">csand.c</a></b>
+<a href="#h3-0" id="h3-0" class="h">@@ -0,0 +1,322 @@
+</a><a href="#h3-0-0" id="h3-0-0" class="i">+#define GLFW_INCLUDE_NONE
+</a><a href="#h3-0-1" id="h3-0-1" class="i">+#include &lt;GLFW/glfw3.h&gt;
+</a><a href="#h3-0-2" id="h3-0-2" class="i">+#include &lt;epoxy/gl.h&gt;
+</a><a href="#h3-0-3" id="h3-0-3" class="i">+#include &lt;errno.h&gt;
+</a><a href="#h3-0-4" id="h3-0-4" class="i">+#include &lt;stdbool.h&gt;
+</a><a href="#h3-0-5" id="h3-0-5" class="i">+#include &lt;stdint.h&gt;
+</a><a href="#h3-0-6" id="h3-0-6" class="i">+#include &lt;stdio.h&gt;
+</a><a href="#h3-0-7" id="h3-0-7" class="i">+#include &lt;stdlib.h&gt;
+</a><a href="#h3-0-8" id="h3-0-8" class="i">+#include &lt;string.h&gt;
+</a><a href="#h3-0-9" id="h3-0-9" class="i">+#include &lt;time.h&gt;
+</a><a href="#h3-0-10" id="h3-0-10" class="i">+
+</a><a href="#h3-0-11" id="h3-0-11" class="i">+#define WINDOW_WIDTH 1024
+</a><a href="#h3-0-12" id="h3-0-12" class="i">+#define WINDOW_HEIGHT 512
+</a><a href="#h3-0-13" id="h3-0-13" class="i">+#define WIDTH 128
+</a><a href="#h3-0-14" id="h3-0-14" class="i">+#define HEIGHT 64
+</a><a href="#h3-0-15" id="h3-0-15" class="i">+#define SPEED_LIMIT 128
+</a><a href="#h3-0-16" id="h3-0-16" class="i">+
+</a><a href="#h3-0-17" id="h3-0-17" class="i">+enum {
+</a><a href="#h3-0-18" id="h3-0-18" class="i">+    MAT_AIR,
+</a><a href="#h3-0-19" id="h3-0-19" class="i">+    MAT_SOLID,
+</a><a href="#h3-0-20" id="h3-0-20" class="i">+    MAT_SAND,
+</a><a href="#h3-0-21" id="h3-0-21" class="i">+    MAT_LIQUID,
+</a><a href="#h3-0-22" id="h3-0-22" class="i">+    MAT_UPDATED_BIT = 0x80
+</a><a href="#h3-0-23" id="h3-0-23" class="i">+};
+</a><a href="#h3-0-24" id="h3-0-24" class="i">+
+</a><a href="#h3-0-25" id="h3-0-25" class="i">+static GLFWwindow *window = NULL;
+</a><a href="#h3-0-26" id="h3-0-26" class="i">+static GLuint texture = 0;
+</a><a href="#h3-0-27" id="h3-0-27" class="i">+static unsigned char buf[HEIGHT][WIDTH] = {0};
+</a><a href="#h3-0-28" id="h3-0-28" class="i">+static unsigned int pause = 0;
+</a><a href="#h3-0-29" id="h3-0-29" class="i">+static unsigned long speed = 1;
+</a><a href="#h3-0-30" id="h3-0-30" class="i">+static unsigned char draw_mat = MAT_SAND;
+</a><a href="#h3-0-31" id="h3-0-31" class="i">+
+</a><a href="#h3-0-32" id="h3-0-32" class="i">+static void csandInit(void);
+</a><a href="#h3-0-33" id="h3-0-33" class="i">+static void csandGlfwErrorCallback(int code, const char *description);
+</a><a href="#h3-0-34" id="h3-0-34" class="i">+static void csandGlfwKeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
+</a><a href="#h3-0-35" id="h3-0-35" class="i">+static GLuint csandLoadShaderProgram(void);
+</a><a href="#h3-0-36" id="h3-0-36" class="i">+static GLuint csandLoadShader(const char *path, GLenum type);
+</a><a href="#h3-0-37" id="h3-0-37" class="i">+static char *csandReadTextFile(const char *path, long *out_size);
+</a><a href="#h3-0-38" id="h3-0-38" class="i">+static void csandDraw(void);
+</a><a href="#h3-0-39" id="h3-0-39" class="i">+static void csandSimulate(void);
+</a><a href="#h3-0-40" id="h3-0-40" class="i">+static bool csandInBounds(int x, int y);
+</a><a href="#h3-0-41" id="h3-0-41" class="i">+static void csandTerminate(void);
+</a><a href="#h3-0-42" id="h3-0-42" class="i">+
+</a><a href="#h3-0-43" id="h3-0-43" class="i">+int main(void) {
+</a><a href="#h3-0-44" id="h3-0-44" class="i">+    csandInit();
+</a><a href="#h3-0-45" id="h3-0-45" class="i">+    while (!glfwWindowShouldClose(window)) {
+</a><a href="#h3-0-46" id="h3-0-46" class="i">+        glfwPollEvents();
+</a><a href="#h3-0-47" id="h3-0-47" class="i">+
+</a><a href="#h3-0-48" id="h3-0-48" class="i">+        csandDraw();
+</a><a href="#h3-0-49" id="h3-0-49" class="i">+
+</a><a href="#h3-0-50" id="h3-0-50" class="i">+        glfwSwapBuffers(window);
+</a><a href="#h3-0-51" id="h3-0-51" class="i">+    }
+</a><a href="#h3-0-52" id="h3-0-52" class="i">+
+</a><a href="#h3-0-53" id="h3-0-53" class="i">+    csandTerminate();
+</a><a href="#h3-0-54" id="h3-0-54" class="i">+}
+</a><a href="#h3-0-55" id="h3-0-55" class="i">+
+</a><a href="#h3-0-56" id="h3-0-56" class="i">+static void csandInit(void) {
+</a><a href="#h3-0-57" id="h3-0-57" class="i">+    srand(time(0));
+</a><a href="#h3-0-58" id="h3-0-58" class="i">+
+</a><a href="#h3-0-59" id="h3-0-59" class="i">+    glfwSetErrorCallback(csandGlfwErrorCallback);
+</a><a href="#h3-0-60" id="h3-0-60" class="i">+
+</a><a href="#h3-0-61" id="h3-0-61" class="i">+    glfwInit();
+</a><a href="#h3-0-62" id="h3-0-62" class="i">+
+</a><a href="#h3-0-63" id="h3-0-63" class="i">+    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+</a><a href="#h3-0-64" id="h3-0-64" class="i">+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+</a><a href="#h3-0-65" id="h3-0-65" class="i">+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+</a><a href="#h3-0-66" id="h3-0-66" class="i">+
+</a><a href="#h3-0-67" id="h3-0-67" class="i">+    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, &quot;csand&quot;, NULL, NULL);
+</a><a href="#h3-0-68" id="h3-0-68" class="i">+
+</a><a href="#h3-0-69" id="h3-0-69" class="i">+    glfwMakeContextCurrent(window);
+</a><a href="#h3-0-70" id="h3-0-70" class="i">+
+</a><a href="#h3-0-71" id="h3-0-71" class="i">+    glfwSetKeyCallback(window, csandGlfwKeyCallback);
+</a><a href="#h3-0-72" id="h3-0-72" class="i">+
+</a><a href="#h3-0-73" id="h3-0-73" class="i">+    GLuint vbo;
+</a><a href="#h3-0-74" id="h3-0-74" class="i">+    glGenBuffers(1, &amp;vbo);
+</a><a href="#h3-0-75" id="h3-0-75" class="i">+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+</a><a href="#h3-0-76" id="h3-0-76" class="i">+    GLbyte vbo_data[3*2] = {
+</a><a href="#h3-0-77" id="h3-0-77" class="i">+        -3, -1,
+</a><a href="#h3-0-78" id="h3-0-78" class="i">+         1, -1,
+</a><a href="#h3-0-79" id="h3-0-79" class="i">+         1,  3,
+</a><a href="#h3-0-80" id="h3-0-80" class="i">+    };
+</a><a href="#h3-0-81" id="h3-0-81" class="i">+    glBufferData(GL_ARRAY_BUFFER, sizeof(vbo_data), vbo_data, GL_STATIC_DRAW);
+</a><a href="#h3-0-82" id="h3-0-82" class="i">+
+</a><a href="#h3-0-83" id="h3-0-83" class="i">+    GLuint program = csandLoadShaderProgram();
+</a><a href="#h3-0-84" id="h3-0-84" class="i">+    glUseProgram(program);
+</a><a href="#h3-0-85" id="h3-0-85" class="i">+
+</a><a href="#h3-0-86" id="h3-0-86" class="i">+    GLint position_attr_loc = glGetAttribLocation(program, &quot;position&quot;);
+</a><a href="#h3-0-87" id="h3-0-87" class="i">+    glVertexAttribPointer(position_attr_loc, 2, GL_BYTE, GL_FALSE, 0, NULL);
+</a><a href="#h3-0-88" id="h3-0-88" class="i">+    glEnableVertexAttribArray(position_attr_loc);
+</a><a href="#h3-0-89" id="h3-0-89" class="i">+
+</a><a href="#h3-0-90" id="h3-0-90" class="i">+
+</a><a href="#h3-0-91" id="h3-0-91" class="i">+    glGenTextures(1, &amp;texture);
+</a><a href="#h3-0-92" id="h3-0-92" class="i">+    glBindTexture(GL_TEXTURE_2D, texture);
+</a><a href="#h3-0-93" id="h3-0-93" class="i">+
+</a><a href="#h3-0-94" id="h3-0-94" class="i">+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+</a><a href="#h3-0-95" id="h3-0-95" class="i">+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+</a><a href="#h3-0-96" id="h3-0-96" class="i">+
+</a><a href="#h3-0-97" id="h3-0-97" class="i">+    glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, WIDTH, HEIGHT, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, NULL);
+</a><a href="#h3-0-98" id="h3-0-98" class="i">+
+</a><a href="#h3-0-99" id="h3-0-99" class="i">+    glUniform1i(glGetUniformLocation(program, &quot;texture&quot;), 0);
+</a><a href="#h3-0-100" id="h3-0-100" class="i">+}
+</a><a href="#h3-0-101" id="h3-0-101" class="i">+
+</a><a href="#h3-0-102" id="h3-0-102" class="i">+static void csandGlfwErrorCallback(int code, const char *description) {
+</a><a href="#h3-0-103" id="h3-0-103" class="i">+    fprintf(stderr, &quot;glfw error %d: %s\n&quot;, code, description);
+</a><a href="#h3-0-104" id="h3-0-104" class="i">+}
+</a><a href="#h3-0-105" id="h3-0-105" class="i">+
+</a><a href="#h3-0-106" id="h3-0-106" class="i">+static void csandGlfwKeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+</a><a href="#h3-0-107" id="h3-0-107" class="i">+    (void)window;
+</a><a href="#h3-0-108" id="h3-0-108" class="i">+    (void)scancode;
+</a><a href="#h3-0-109" id="h3-0-109" class="i">+    (void)mods;
+</a><a href="#h3-0-110" id="h3-0-110" class="i">+
+</a><a href="#h3-0-111" id="h3-0-111" class="i">+    if (action == GLFW_PRESS) {
+</a><a href="#h3-0-112" id="h3-0-112" class="i">+        switch (key) {
+</a><a href="#h3-0-113" id="h3-0-113" class="i">+            case GLFW_KEY_SPACE:
+</a><a href="#h3-0-114" id="h3-0-114" class="i">+                pause = !pause;
+</a><a href="#h3-0-115" id="h3-0-115" class="i">+                break;
+</a><a href="#h3-0-116" id="h3-0-116" class="i">+            case GLFW_KEY_0:
+</a><a href="#h3-0-117" id="h3-0-117" class="i">+                draw_mat = MAT_AIR;
+</a><a href="#h3-0-118" id="h3-0-118" class="i">+                break;
+</a><a href="#h3-0-119" id="h3-0-119" class="i">+            case GLFW_KEY_1:
+</a><a href="#h3-0-120" id="h3-0-120" class="i">+                draw_mat = MAT_SOLID;
+</a><a href="#h3-0-121" id="h3-0-121" class="i">+                break;
+</a><a href="#h3-0-122" id="h3-0-122" class="i">+            case GLFW_KEY_2:
+</a><a href="#h3-0-123" id="h3-0-123" class="i">+                draw_mat = MAT_SAND;
+</a><a href="#h3-0-124" id="h3-0-124" class="i">+                break;
+</a><a href="#h3-0-125" id="h3-0-125" class="i">+            case GLFW_KEY_3:
+</a><a href="#h3-0-126" id="h3-0-126" class="i">+                draw_mat = MAT_LIQUID;
+</a><a href="#h3-0-127" id="h3-0-127" class="i">+                break;
+</a><a href="#h3-0-128" id="h3-0-128" class="i">+            case GLFW_KEY_EQUAL:
+</a><a href="#h3-0-129" id="h3-0-129" class="i">+                if (speed &lt; SPEED_LIMIT) {
+</a><a href="#h3-0-130" id="h3-0-130" class="i">+                    speed *= 2;
+</a><a href="#h3-0-131" id="h3-0-131" class="i">+                }
+</a><a href="#h3-0-132" id="h3-0-132" class="i">+                printf(&quot;speed: %lu\n&quot;, speed);
+</a><a href="#h3-0-133" id="h3-0-133" class="i">+                break;
+</a><a href="#h3-0-134" id="h3-0-134" class="i">+            case GLFW_KEY_MINUS:
+</a><a href="#h3-0-135" id="h3-0-135" class="i">+                if (speed &gt; 1) {
+</a><a href="#h3-0-136" id="h3-0-136" class="i">+                    speed /= 2;
+</a><a href="#h3-0-137" id="h3-0-137" class="i">+                }
+</a><a href="#h3-0-138" id="h3-0-138" class="i">+                printf(&quot;speed: %lu\n&quot;, speed);
+</a><a href="#h3-0-139" id="h3-0-139" class="i">+                break;
+</a><a href="#h3-0-140" id="h3-0-140" class="i">+            default:
+</a><a href="#h3-0-141" id="h3-0-141" class="i">+                break;
+</a><a href="#h3-0-142" id="h3-0-142" class="i">+        }
+</a><a href="#h3-0-143" id="h3-0-143" class="i">+    }
+</a><a href="#h3-0-144" id="h3-0-144" class="i">+}
+</a><a href="#h3-0-145" id="h3-0-145" class="i">+
+</a><a href="#h3-0-146" id="h3-0-146" class="i">+static GLuint csandLoadShaderProgram(void) {
+</a><a href="#h3-0-147" id="h3-0-147" class="i">+    GLuint vertex_shader = csandLoadShader(&quot;shader.vert&quot;, GL_VERTEX_SHADER);
+</a><a href="#h3-0-148" id="h3-0-148" class="i">+    GLuint fragment_shader = csandLoadShader(&quot;shader.frag&quot;, GL_FRAGMENT_SHADER);
+</a><a href="#h3-0-149" id="h3-0-149" class="i">+    GLuint program = glCreateProgram();
+</a><a href="#h3-0-150" id="h3-0-150" class="i">+    glAttachShader(program, vertex_shader);
+</a><a href="#h3-0-151" id="h3-0-151" class="i">+    glAttachShader(program, fragment_shader);
+</a><a href="#h3-0-152" id="h3-0-152" class="i">+    glLinkProgram(program);
+</a><a href="#h3-0-153" id="h3-0-153" class="i">+
+</a><a href="#h3-0-154" id="h3-0-154" class="i">+    GLint status;
+</a><a href="#h3-0-155" id="h3-0-155" class="i">+    glGetProgramiv(program, GL_LINK_STATUS, &amp;status);
+</a><a href="#h3-0-156" id="h3-0-156" class="i">+
+</a><a href="#h3-0-157" id="h3-0-157" class="i">+    if (status != GL_TRUE) {
+</a><a href="#h3-0-158" id="h3-0-158" class="i">+        char info_log[1024];
+</a><a href="#h3-0-159" id="h3-0-159" class="i">+        glGetProgramInfoLog(program, sizeof(info_log), NULL, info_log);
+</a><a href="#h3-0-160" id="h3-0-160" class="i">+        fprintf(stderr, &quot;failed to link shader program: %s\n&quot;, info_log);
+</a><a href="#h3-0-161" id="h3-0-161" class="i">+        glDeleteProgram(program);
+</a><a href="#h3-0-162" id="h3-0-162" class="i">+        program = 0;
+</a><a href="#h3-0-163" id="h3-0-163" class="i">+    }
+</a><a href="#h3-0-164" id="h3-0-164" class="i">+
+</a><a href="#h3-0-165" id="h3-0-165" class="i">+    glDeleteShader(fragment_shader);
+</a><a href="#h3-0-166" id="h3-0-166" class="i">+    glDeleteShader(vertex_shader);
+</a><a href="#h3-0-167" id="h3-0-167" class="i">+
+</a><a href="#h3-0-168" id="h3-0-168" class="i">+    return program;
+</a><a href="#h3-0-169" id="h3-0-169" class="i">+}
+</a><a href="#h3-0-170" id="h3-0-170" class="i">+
+</a><a href="#h3-0-171" id="h3-0-171" class="i">+static GLuint csandLoadShader(const char *path, GLenum type) {
+</a><a href="#h3-0-172" id="h3-0-172" class="i">+    long size = 0;
+</a><a href="#h3-0-173" id="h3-0-173" class="i">+    char *code = csandReadTextFile(path, &amp;size);
+</a><a href="#h3-0-174" id="h3-0-174" class="i">+    if (!code) {
+</a><a href="#h3-0-175" id="h3-0-175" class="i">+        return 0;
+</a><a href="#h3-0-176" id="h3-0-176" class="i">+    }
+</a><a href="#h3-0-177" id="h3-0-177" class="i">+
+</a><a href="#h3-0-178" id="h3-0-178" class="i">+    GLenum shader = glCreateShader(type);
+</a><a href="#h3-0-179" id="h3-0-179" class="i">+
+</a><a href="#h3-0-180" id="h3-0-180" class="i">+    GLint length[1] = {size};
+</a><a href="#h3-0-181" id="h3-0-181" class="i">+    glShaderSource(shader, 1, (const char **)&amp;code, length);
+</a><a href="#h3-0-182" id="h3-0-182" class="i">+    free(code);
+</a><a href="#h3-0-183" id="h3-0-183" class="i">+
+</a><a href="#h3-0-184" id="h3-0-184" class="i">+    glCompileShader(shader);
+</a><a href="#h3-0-185" id="h3-0-185" class="i">+
+</a><a href="#h3-0-186" id="h3-0-186" class="i">+    GLint status;
+</a><a href="#h3-0-187" id="h3-0-187" class="i">+    glGetShaderiv(shader, GL_COMPILE_STATUS, &amp;status);
+</a><a href="#h3-0-188" id="h3-0-188" class="i">+    if (status != GL_TRUE) {
+</a><a href="#h3-0-189" id="h3-0-189" class="i">+        char info_log[1024];
+</a><a href="#h3-0-190" id="h3-0-190" class="i">+
+</a><a href="#h3-0-191" id="h3-0-191" class="i">+        glGetShaderInfoLog(shader, sizeof(info_log), NULL, info_log);
+</a><a href="#h3-0-192" id="h3-0-192" class="i">+        fprintf(stderr, &quot;failed to compile shader &#39;%s&#39;: %s\n&quot;, path, info_log);
+</a><a href="#h3-0-193" id="h3-0-193" class="i">+
+</a><a href="#h3-0-194" id="h3-0-194" class="i">+        glDeleteShader(shader);
+</a><a href="#h3-0-195" id="h3-0-195" class="i">+        return 0;
+</a><a href="#h3-0-196" id="h3-0-196" class="i">+    }
+</a><a href="#h3-0-197" id="h3-0-197" class="i">+
+</a><a href="#h3-0-198" id="h3-0-198" class="i">+    return shader;
+</a><a href="#h3-0-199" id="h3-0-199" class="i">+}
+</a><a href="#h3-0-200" id="h3-0-200" class="i">+
+</a><a href="#h3-0-201" id="h3-0-201" class="i">+static char *csandReadTextFile(const char *path, long *out_size) {
+</a><a href="#h3-0-202" id="h3-0-202" class="i">+    *out_size = 0;
+</a><a href="#h3-0-203" id="h3-0-203" class="i">+
+</a><a href="#h3-0-204" id="h3-0-204" class="i">+    FILE *file = fopen(path, &quot;r&quot;);
+</a><a href="#h3-0-205" id="h3-0-205" class="i">+    if (!file) {
+</a><a href="#h3-0-206" id="h3-0-206" class="i">+        fprintf(stderr, &quot;failed to open file &#39;%s&#39;: %s\n&quot;, path, strerror(errno));
+</a><a href="#h3-0-207" id="h3-0-207" class="i">+        goto fail0;
+</a><a href="#h3-0-208" id="h3-0-208" class="i">+    }
+</a><a href="#h3-0-209" id="h3-0-209" class="i">+
+</a><a href="#h3-0-210" id="h3-0-210" class="i">+    if (fseek(file, 0, SEEK_END) &lt; 0) {
+</a><a href="#h3-0-211" id="h3-0-211" class="i">+        perror(&quot;fseek&quot;);
+</a><a href="#h3-0-212" id="h3-0-212" class="i">+        goto fail1;
+</a><a href="#h3-0-213" id="h3-0-213" class="i">+    }
+</a><a href="#h3-0-214" id="h3-0-214" class="i">+
+</a><a href="#h3-0-215" id="h3-0-215" class="i">+    long size = ftell(file);
+</a><a href="#h3-0-216" id="h3-0-216" class="i">+    if (size &lt; 0) {
+</a><a href="#h3-0-217" id="h3-0-217" class="i">+        perror(&quot;ftell&quot;);
+</a><a href="#h3-0-218" id="h3-0-218" class="i">+        goto fail1;
+</a><a href="#h3-0-219" id="h3-0-219" class="i">+    }
+</a><a href="#h3-0-220" id="h3-0-220" class="i">+
+</a><a href="#h3-0-221" id="h3-0-221" class="i">+    rewind(file);
+</a><a href="#h3-0-222" id="h3-0-222" class="i">+
+</a><a href="#h3-0-223" id="h3-0-223" class="i">+    char *buf = malloc(size);
+</a><a href="#h3-0-224" id="h3-0-224" class="i">+    if (!buf) {
+</a><a href="#h3-0-225" id="h3-0-225" class="i">+        perror(&quot;malloc&quot;);
+</a><a href="#h3-0-226" id="h3-0-226" class="i">+        goto fail1;
+</a><a href="#h3-0-227" id="h3-0-227" class="i">+    }
+</a><a href="#h3-0-228" id="h3-0-228" class="i">+
+</a><a href="#h3-0-229" id="h3-0-229" class="i">+    if (fread(buf, size, 1, file) != 1) {
+</a><a href="#h3-0-230" id="h3-0-230" class="i">+        perror(&quot;fread&quot;);
+</a><a href="#h3-0-231" id="h3-0-231" class="i">+        goto fail2;
+</a><a href="#h3-0-232" id="h3-0-232" class="i">+    }
+</a><a href="#h3-0-233" id="h3-0-233" class="i">+
+</a><a href="#h3-0-234" id="h3-0-234" class="i">+    fclose(file);
+</a><a href="#h3-0-235" id="h3-0-235" class="i">+    *out_size = size;
+</a><a href="#h3-0-236" id="h3-0-236" class="i">+    return buf;
+</a><a href="#h3-0-237" id="h3-0-237" class="i">+
+</a><a href="#h3-0-238" id="h3-0-238" class="i">+fail2:
+</a><a href="#h3-0-239" id="h3-0-239" class="i">+    free(buf);
+</a><a href="#h3-0-240" id="h3-0-240" class="i">+fail1:
+</a><a href="#h3-0-241" id="h3-0-241" class="i">+    fclose(file);
+</a><a href="#h3-0-242" id="h3-0-242" class="i">+fail0:
+</a><a href="#h3-0-243" id="h3-0-243" class="i">+    return NULL;
+</a><a href="#h3-0-244" id="h3-0-244" class="i">+}
+</a><a href="#h3-0-245" id="h3-0-245" class="i">+
+</a><a href="#h3-0-246" id="h3-0-246" class="i">+static void csandDraw(void) {
+</a><a href="#h3-0-247" id="h3-0-247" class="i">+    if (!pause) {
+</a><a href="#h3-0-248" id="h3-0-248" class="i">+        for (unsigned long i = 0; i &lt; speed; i++) {
+</a><a href="#h3-0-249" id="h3-0-249" class="i">+            csandSimulate();
+</a><a href="#h3-0-250" id="h3-0-250" class="i">+        }
+</a><a href="#h3-0-251" id="h3-0-251" class="i">+    }
+</a><a href="#h3-0-252" id="h3-0-252" class="i">+
+</a><a href="#h3-0-253" id="h3-0-253" class="i">+    glClearColor(0.0, 0.0, 0.0, 1.0);
+</a><a href="#h3-0-254" id="h3-0-254" class="i">+    glClear(GL_COLOR_BUFFER_BIT);
+</a><a href="#h3-0-255" id="h3-0-255" class="i">+
+</a><a href="#h3-0-256" id="h3-0-256" class="i">+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL_LUMINANCE, GL_UNSIGNED_BYTE, buf);
+</a><a href="#h3-0-257" id="h3-0-257" class="i">+
+</a><a href="#h3-0-258" id="h3-0-258" class="i">+    glDrawArrays(GL_TRIANGLES, 0, 3);
+</a><a href="#h3-0-259" id="h3-0-259" class="i">+}
+</a><a href="#h3-0-260" id="h3-0-260" class="i">+
+</a><a href="#h3-0-261" id="h3-0-261" class="i">+static void csandSimulate(void) {
+</a><a href="#h3-0-262" id="h3-0-262" class="i">+    for (unsigned int y = 0; y &lt; HEIGHT; y++) {
+</a><a href="#h3-0-263" id="h3-0-263" class="i">+        for (unsigned int x = 0; x &lt; WIDTH; x++) {
+</a><a href="#h3-0-264" id="h3-0-264" class="i">+            unsigned char mat = buf[y][x];
+</a><a href="#h3-0-265" id="h3-0-265" class="i">+
+</a><a href="#h3-0-266" id="h3-0-266" class="i">+            switch (mat) {
+</a><a href="#h3-0-267" id="h3-0-267" class="i">+                case MAT_SAND:
+</a><a href="#h3-0-268" id="h3-0-268" class="i">+                    if (y &lt;= 0) {
+</a><a href="#h3-0-269" id="h3-0-269" class="i">+                        continue;
+</a><a href="#h3-0-270" id="h3-0-270" class="i">+                    } else {
+</a><a href="#h3-0-271" id="h3-0-271" class="i">+                        int dx = rand() % 3 - 1;
+</a><a href="#h3-0-272" id="h3-0-272" class="i">+                        if (!csandInBounds(x + dx, y - 1)) continue;
+</a><a href="#h3-0-273" id="h3-0-273" class="i">+                        unsigned char swap_mat = buf[y - 1][x + dx];
+</a><a href="#h3-0-274" id="h3-0-274" class="i">+
+</a><a href="#h3-0-275" id="h3-0-275" class="i">+                        if (swap_mat == MAT_AIR || swap_mat == MAT_LIQUID) {
+</a><a href="#h3-0-276" id="h3-0-276" class="i">+                            buf[y][x] = swap_mat;
+</a><a href="#h3-0-277" id="h3-0-277" class="i">+                            buf[y - 1][x + dx] = mat | MAT_UPDATED_BIT;
+</a><a href="#h3-0-278" id="h3-0-278" class="i">+                        }
+</a><a href="#h3-0-279" id="h3-0-279" class="i">+                    }
+</a><a href="#h3-0-280" id="h3-0-280" class="i">+                    break;
+</a><a href="#h3-0-281" id="h3-0-281" class="i">+                case MAT_LIQUID: {
+</a><a href="#h3-0-282" id="h3-0-282" class="i">+                    int dx = rand() % 3 - 1;
+</a><a href="#h3-0-283" id="h3-0-283" class="i">+                    int dy = - (rand() % 2);
+</a><a href="#h3-0-284" id="h3-0-284" class="i">+                    if (!csandInBounds(x + dx, y + dy)) continue;
+</a><a href="#h3-0-285" id="h3-0-285" class="i">+
+</a><a href="#h3-0-286" id="h3-0-286" class="i">+                    if (buf[y + dy][x + dx] == MAT_AIR) {
+</a><a href="#h3-0-287" id="h3-0-287" class="i">+                        buf[y][x] = MAT_AIR;
+</a><a href="#h3-0-288" id="h3-0-288" class="i">+                        buf[y + dy][x + dx] = mat | MAT_UPDATED_BIT;
+</a><a href="#h3-0-289" id="h3-0-289" class="i">+                    }
+</a><a href="#h3-0-290" id="h3-0-290" class="i">+                    break;
+</a><a href="#h3-0-291" id="h3-0-291" class="i">+                }
+</a><a href="#h3-0-292" id="h3-0-292" class="i">+                default:
+</a><a href="#h3-0-293" id="h3-0-293" class="i">+                    break;
+</a><a href="#h3-0-294" id="h3-0-294" class="i">+            }
+</a><a href="#h3-0-295" id="h3-0-295" class="i">+        }
+</a><a href="#h3-0-296" id="h3-0-296" class="i">+    }
+</a><a href="#h3-0-297" id="h3-0-297" class="i">+
+</a><a href="#h3-0-298" id="h3-0-298" class="i">+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+</a><a href="#h3-0-299" id="h3-0-299" class="i">+        double fx, fy;
+</a><a href="#h3-0-300" id="h3-0-300" class="i">+        glfwGetCursorPos(window, &amp;fx, &amp;fy);
+</a><a href="#h3-0-301" id="h3-0-301" class="i">+
+</a><a href="#h3-0-302" id="h3-0-302" class="i">+        int x = (int)fx * WIDTH / WINDOW_WIDTH;
+</a><a href="#h3-0-303" id="h3-0-303" class="i">+        int y = HEIGHT - 1 - (int)fy * HEIGHT / WINDOW_HEIGHT;
+</a><a href="#h3-0-304" id="h3-0-304" class="i">+
+</a><a href="#h3-0-305" id="h3-0-305" class="i">+        if (csandInBounds(x, y)) {
+</a><a href="#h3-0-306" id="h3-0-306" class="i">+            buf[y][x] = draw_mat | MAT_UPDATED_BIT;
+</a><a href="#h3-0-307" id="h3-0-307" class="i">+        }
+</a><a href="#h3-0-308" id="h3-0-308" class="i">+    }
+</a><a href="#h3-0-309" id="h3-0-309" class="i">+
+</a><a href="#h3-0-310" id="h3-0-310" class="i">+    for (unsigned int i = 0; i &lt; WIDTH*HEIGHT; i++) {
+</a><a href="#h3-0-311" id="h3-0-311" class="i">+        ((unsigned char *)buf)[i] &amp;= ~MAT_UPDATED_BIT;
+</a><a href="#h3-0-312" id="h3-0-312" class="i">+    }
+</a><a href="#h3-0-313" id="h3-0-313" class="i">+}
+</a><a href="#h3-0-314" id="h3-0-314" class="i">+
+</a><a href="#h3-0-315" id="h3-0-315" class="i">+static bool csandInBounds(int x, int y) {
+</a><a href="#h3-0-316" id="h3-0-316" class="i">+    return x &gt;= 0 &amp;&amp; x &lt; WIDTH &amp;&amp; y &gt;= 0 &amp;&amp; y &lt; HEIGHT;
+</a><a href="#h3-0-317" id="h3-0-317" class="i">+}
+</a><a href="#h3-0-318" id="h3-0-318" class="i">+
+</a><a href="#h3-0-319" id="h3-0-319" class="i">+static void csandTerminate(void) {
+</a><a href="#h3-0-320" id="h3-0-320" class="i">+    glfwTerminate();
+</a><a href="#h3-0-321" id="h3-0-321" class="i">+}
+</a><b>diff --git a/<a id="h4" href="../file/shader.frag.html">shader.frag</a> b/<a href="../file/shader.frag.html">shader.frag</a></b>
+<a href="#h4-0" id="h4-0" class="h">@@ -0,0 +1,20 @@
+</a><a href="#h4-0-0" id="h4-0-0" class="i">+#version 100
+</a><a href="#h4-0-1" id="h4-0-1" class="i">+
+</a><a href="#h4-0-2" id="h4-0-2" class="i">+uniform sampler2D texture;
+</a><a href="#h4-0-3" id="h4-0-3" class="i">+precision lowp float;
+</a><a href="#h4-0-4" id="h4-0-4" class="i">+
+</a><a href="#h4-0-5" id="h4-0-5" class="i">+vec3 color_map[4];
+</a><a href="#h4-0-6" id="h4-0-6" class="i">+
+</a><a href="#h4-0-7" id="h4-0-7" class="i">+void main(void) {
+</a><a href="#h4-0-8" id="h4-0-8" class="i">+    color_map[0] = vec3(0.0);
+</a><a href="#h4-0-9" id="h4-0-9" class="i">+    color_map[1] = vec3(1.0, 0.0, 1.0);
+</a><a href="#h4-0-10" id="h4-0-10" class="i">+    color_map[2] = vec3(1.0, 1.0, 0.0);
+</a><a href="#h4-0-11" id="h4-0-11" class="i">+    color_map[3] = vec3(0.0, 0.0, 1.0);
+</a><a href="#h4-0-12" id="h4-0-12" class="i">+
+</a><a href="#h4-0-13" id="h4-0-13" class="i">+    vec2 uv = gl_FragCoord.xy/vec2(1024.0, 512.0);
+</a><a href="#h4-0-14" id="h4-0-14" class="i">+
+</a><a href="#h4-0-15" id="h4-0-15" class="i">+    int mat = int(texture2D(texture, uv).r * 255.0 + 0.5);
+</a><a href="#h4-0-16" id="h4-0-16" class="i">+    vec3 color = color_map[mat];
+</a><a href="#h4-0-17" id="h4-0-17" class="i">+
+</a><a href="#h4-0-18" id="h4-0-18" class="i">+    gl_FragColor = vec4(color, 1.0);
+</a><a href="#h4-0-19" id="h4-0-19" class="i">+}
+</a><b>diff --git a/<a id="h5" href="../file/shader.vert.html">shader.vert</a> b/<a href="../file/shader.vert.html">shader.vert</a></b>
+<a href="#h5-0" id="h5-0" class="h">@@ -0,0 +1,7 @@
+</a><a href="#h5-0-0" id="h5-0-0" class="i">+#version 100
+</a><a href="#h5-0-1" id="h5-0-1" class="i">+
+</a><a href="#h5-0-2" id="h5-0-2" class="i">+attribute vec2 position;
+</a><a href="#h5-0-3" id="h5-0-3" class="i">+
+</a><a href="#h5-0-4" id="h5-0-4" class="i">+void main(void) {
+</a><a href="#h5-0-5" id="h5-0-5" class="i">+    gl_Position = vec4(position, 0.0, 1.0);
+</a><a href="#h5-0-6" id="h5-0-6" class="i">+}
+</a></pre>
+</div>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fix: textures with non-power-of-two dimensions must use GL_CLAMP_TO_EDGE - csand - Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</title>
+<link rel="icon" type="image/png" href="../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed" href="../atom.xml" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed (tags)" href="../tags.xml" />
+<link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../"><img src="../logo.png" alt="" width="32" height="32" /></a></td><td><h1>csand</h1><span class="desc">Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</span></td></tr><tr><td></td><td>
+<a href="../log.html">Log</a> | <a href="../files.html">Files</a> | <a href="../refs.html">Refs</a> | <a href="../file/LICENSE.html">LICENSE</a></td></tr></table>
+<hr/>
+<div id="content">
+<pre><b>commit</b> <a href="../commit/d4df6af57f3077a66c9464152e049f28e7d1b5fd.html">d4df6af57f3077a66c9464152e049f28e7d1b5fd</a>
+<b>parent</b> <a href="../commit/615654f3650e028c9f0b001ea60edcd5039e08de.html">615654f3650e028c9f0b001ea60edcd5039e08de</a>
+<b>Author:</b> mirefly &lt;<a href="mailto:"></a>&gt;
+<b>Date:</b>   Wed,  4 Dec 2024 23:01:17 +0700
+
+Fix: textures with non-power-of-two dimensions must use GL_CLAMP_TO_EDGE
+
+<b>Diffstat:</b>
+<table><tr><td class="M">M</td><td><a href="#h0">index.js</a></td><td> | </td><td class="num">4</td><td><span class="i">++++</span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h1">platform_glfw.c</a></td><td> | </td><td class="num">4</td><td><span class="i">++++</span><span class="d"></span></td></tr>
+</table></pre><pre>2 files changed, 8 insertions(+), 0 deletions(-)
+<hr/><b>diff --git a/<a id="h0" href="../file/index.js.html">index.js</a> b/<a href="../file/index.js.html">index.js</a></b>
+<a href="#h0-0" id="h0-0" class="h">@@ -89,6 +89,8 @@ function csandPlatformInit() {
+</a>     gl.activeTexture(gl.TEXTURE0);
+     gl.bindTexture(gl.TEXTURE_2D, texture);
+ 
+<a href="#h0-0-3" id="h0-0-3" class="i">+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+</a><a href="#h0-0-4" id="h0-0-4" class="i">+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+</a>     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+ 
+<a href="#h0-1" id="h0-1" class="h">@@ -150,6 +152,8 @@ function csandPlatformSetPalette(colors_ptr, colors_count) {
+</a>     gl.activeTexture(gl.TEXTURE1);
+     gl.bindTexture(gl.TEXTURE_2D, palette);
+ 
+<a href="#h0-1-3" id="h0-1-3" class="i">+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+</a><a href="#h0-1-4" id="h0-1-4" class="i">+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+</a>     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+ 
+<b>diff --git a/<a id="h1" href="../file/platform_glfw.c.html">platform_glfw.c</a> b/<a href="../file/platform_glfw.c.html">platform_glfw.c</a></b>
+<a href="#h1-0" id="h1-0" class="h">@@ -62,6 +62,8 @@ void csandPlatformInit(void) {
+</a>     glActiveTexture(GL_TEXTURE0);
+     glBindTexture(GL_TEXTURE_2D, texture);
+ 
+<a href="#h1-0-3" id="h1-0-3" class="i">+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+</a><a href="#h1-0-4" id="h1-0-4" class="i">+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+</a>     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+ 
+<a href="#h1-1" id="h1-1" class="h">@@ -219,6 +221,8 @@ void csandPlatformSetPalette(const CsandRgba *colors, uint8_t colors_count) {
+</a>     glActiveTexture(GL_TEXTURE1);
+     glBindTexture(GL_TEXTURE_2D, palette);
+ 
+<a href="#h1-1-3" id="h1-1-3" class="i">+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+</a><a href="#h1-1-4" id="h1-1-4" class="i">+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+</a>     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, colors_count, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, colors);
+</pre>
+</div>
+</body>
+</html>

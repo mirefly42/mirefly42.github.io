@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Add ability to simulate a single frame on pause - csand - Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</title>
+<link rel="icon" type="image/png" href="../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed" href="../atom.xml" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed (tags)" href="../tags.xml" />
+<link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../"><img src="../logo.png" alt="" width="32" height="32" /></a></td><td><h1>csand</h1><span class="desc">Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</span></td></tr><tr><td></td><td>
+<a href="../log.html">Log</a> | <a href="../files.html">Files</a> | <a href="../refs.html">Refs</a> | <a href="../file/LICENSE.html">LICENSE</a></td></tr></table>
+<hr/>
+<div id="content">
+<pre><b>commit</b> <a href="../commit/e5eec6e33c6dab93c90db66d4ac6026fe1f11724.html">e5eec6e33c6dab93c90db66d4ac6026fe1f11724</a>
+<b>parent</b> <a href="../commit/72aa2285c02872e38ca7f97ba154d4f3a90c3b91.html">72aa2285c02872e38ca7f97ba154d4f3a90c3b91</a>
+<b>Author:</b> mirefly &lt;<a href="mailto:"></a>&gt;
+<b>Date:</b>   Thu,  5 Dec 2024 23:52:53 +0700
+
+Add ability to simulate a single frame on pause
+
+<b>Diffstat:</b>
+<table><tr><td class="M">M</td><td><a href="#h0">csand.c</a></td><td> | </td><td class="num">8</td><td><span class="i">+++++++</span><span class="d">-</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h1">index.html</a></td><td> | </td><td class="num">1</td><td><span class="i">+</span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h2">index.js</a></td><td> | </td><td class="num">2</td><td><span class="i">++</span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h3">platform.h</a></td><td> | </td><td class="num">1</td><td><span class="i">+</span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h4">platform_glfw.c</a></td><td> | </td><td class="num">3</td><td><span class="i">+++</span><span class="d"></span></td></tr>
+</table></pre><pre>5 files changed, 14 insertions(+), 1 deletion(-)
+<hr/><b>diff --git a/<a id="h0" href="../file/csand.c.html">csand.c</a> b/<a href="../file/csand.c.html">csand.c</a></b>
+<a href="#h0-0" id="h0-0" class="h">@@ -26,6 +26,7 @@ enum {
+</a> static unsigned int pause = 0;
+ static unsigned long speed = 1;
+ static unsigned char draw_mat = MAT_SAND;
+<a href="#h0-0-3" id="h0-0-3" class="i">+static bool input_next_frame = false;
+</a> 
+ typedef enum {
+     MAT_KIND_SOLID,
+<a href="#h0-1" id="h0-1" class="h">@@ -146,6 +147,10 @@ static void csandInputCallback(CsandInput input) {
+</a>                 speed /= 2;
+             }
+             break;
+<a href="#h0-1-3" id="h0-1-3" class="i">+        case CSAND_INPUT_NEXT_FRAME:
+</a><a href="#h0-1-4" id="h0-1-4" class="i">+            input_next_frame = true;
+</a><a href="#h0-1-5" id="h0-1-5" class="i">+            pause = true;
+</a><a href="#h0-1-6" id="h0-1-6" class="i">+            break;
+</a>     }
+ }
+ 
+<a href="#h0-2" id="h0-2" class="h">@@ -156,7 +161,8 @@ static void csandRenderCallback(unsigned char *data, unsigned short width, unsig
+</a>     unsigned short x, y;
+     csandPlatformGetCursorPos(&amp;x, &amp;y);
+ 
+<a href="#h0-2-3" id="h0-2-3" class="d">-    if (!pause) {
+</a><a href="#h0-2-4" id="h0-2-4" class="i">+    if (!pause || input_next_frame) {
+</a><a href="#h0-2-5" id="h0-2-5" class="i">+        input_next_frame = false;
+</a>         for (unsigned long i = 0; i &lt; speed; i++) {
+             csandSimulate(render_buf);
+             if (draw) {
+<b>diff --git a/<a id="h1" href="../file/index.html.html">index.html</a> b/<a href="../file/index.html.html">index.html</a></b>
+<a href="#h1-0" id="h1-0" class="h">@@ -18,6 +18,7 @@ LMB   - Spawn particles
+</a> Space - Toggle pause
+ Minus - Decrease simulation speed
+ Plus  - Increase simulation speed
+<a href="#h1-0-3" id="h1-0-3" class="i">+&amp;gt;     - Simulate a single frame (speed dependent)
+</a> &lt;/pre&gt;
+ &lt;script src=&quot;index.js&quot;&gt;&lt;/script&gt;
+ &lt;/body&gt;
+<b>diff --git a/<a id="h2" href="../file/index.js.html">index.js</a> b/<a href="../file/index.js.html">index.js</a></b>
+<a href="#h2-0" id="h2-0" class="h">@@ -53,6 +53,8 @@ async function main() {
+</a>                         input_callback(11);
+                     } else if (c === &quot;Minus&quot;) {
+                         input_callback(12);
+<a href="#h2-0-3" id="h2-0-3" class="i">+                    } else if (c === &quot;Period&quot;) {
+</a><a href="#h2-0-4" id="h2-0-4" class="i">+                        input_callback(13);
+</a>                     }
+                 });
+             },
+<b>diff --git a/<a id="h3" href="../file/platform.h.html">platform.h</a> b/<a href="../file/platform.h.html">platform.h</a></b>
+<a href="#h3-0" id="h3-0" class="h">@@ -19,6 +19,7 @@ typedef enum {
+</a>     CSAND_INPUT_PAUSE_TOGGLE,
+     CSAND_INPUT_SPEED_INCREASE,
+     CSAND_INPUT_SPEED_DECREASE,
+<a href="#h3-0-3" id="h3-0-3" class="i">+    CSAND_INPUT_NEXT_FRAME,
+</a> } CsandInput;
+ 
+ typedef enum {
+<b>diff --git a/<a id="h4" href="../file/platform_glfw.c.html">platform_glfw.c</a> b/<a href="../file/platform_glfw.c.html">platform_glfw.c</a></b>
+<a href="#h4-0" id="h4-0" class="h">@@ -96,6 +96,9 @@ static void csandGlfwKeyCallback(GLFWwindow *window, int key, int scancode, int 
+</a>             case GLFW_KEY_MINUS:
+                 input_callback(CSAND_INPUT_SPEED_DECREASE);
+                 break;
+<a href="#h4-0-3" id="h4-0-3" class="i">+            case GLFW_KEY_PERIOD:
+</a><a href="#h4-0-4" id="h4-0-4" class="i">+                input_callback(CSAND_INPUT_NEXT_FRAME);
+</a><a href="#h4-0-5" id="h4-0-5" class="i">+                break;
+</a>             default:
+                 if (key &gt;= GLFW_KEY_0 &amp;&amp; key &lt;= GLFW_KEY_9) {
+                     input_callback(key - GLFW_KEY_0 + CSAND_INPUT_SELECT_MAT0);
+</pre>
+</div>
+</body>
+</html>

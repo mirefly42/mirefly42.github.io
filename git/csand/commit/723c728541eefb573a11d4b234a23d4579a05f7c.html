@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Update nuklear.h to version 4.12.8 - csand - Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</title>
+<link rel="icon" type="image/png" href="../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed" href="../atom.xml" />
+<link rel="alternate" type="application/atom+xml" title="csand Atom Feed (tags)" href="../tags.xml" />
+<link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../"><img src="../logo.png" alt="" width="32" height="32" /></a></td><td><h1>csand</h1><span class="desc">Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</span></td></tr><tr><td></td><td>
+<a href="../log.html">Log</a> | <a href="../files.html">Files</a> | <a href="../refs.html">Refs</a> | <a href="../file/LICENSE.html">LICENSE</a></td></tr></table>
+<hr/>
+<div id="content">
+<pre><b>commit</b> <a href="../commit/723c728541eefb573a11d4b234a23d4579a05f7c.html">723c728541eefb573a11d4b234a23d4579a05f7c</a>
+<b>parent</b> <a href="../commit/f99db612e0adae4651be63b7c41d6ac360412ab6.html">f99db612e0adae4651be63b7c41d6ac360412ab6</a>
+<b>Author:</b> mirefly &lt;<a href="mailto:"></a>&gt;
+<b>Date:</b>   Wed, 14 Jan 2026 00:04:24 +0700
+
+Update nuklear.h to version 4.12.8
+
+<b>Diffstat:</b>
+<table><tr><td class="M">M</td><td><a href="#h0">third_party/include/nuklear.h</a></td><td> | </td><td class="num">29</td><td><span class="i">+++++++++++++++++++++</span><span class="d">--------</span></td></tr>
+</table></pre><pre>1 file changed, 21 insertions(+), 8 deletions(-)
+<hr/><b>diff --git a/<a id="h0" href="../file/third_party/include/nuklear.h.html">third_party/include/nuklear.h</a> b/<a href="../file/third_party/include/nuklear.h.html">third_party/include/nuklear.h</a></b>
+<a href="#h0-0" id="h0-0" class="h">@@ -23500,7 +23500,8 @@ nk_widget_is_hovered(const struct nk_context *ctx)
+</a>     struct nk_rect bounds;
+     NK_ASSERT(ctx);
+     NK_ASSERT(ctx-&gt;current);
+<a href="#h0-0-3" id="h0-0-3" class="d">-    if (!ctx || !ctx-&gt;current || ctx-&gt;active != ctx-&gt;current)
+</a><a href="#h0-0-4" id="h0-0-4" class="i">+    NK_ASSERT(ctx-&gt;current-&gt;layout);
+</a><a href="#h0-0-5" id="h0-0-5" class="i">+    if (!ctx || !ctx-&gt;current || !ctx-&gt;current-&gt;layout || (ctx-&gt;active != ctx-&gt;current &amp;&amp; !((int)ctx-&gt;current-&gt;layout-&gt;type &amp; (int)NK_PANEL_SET_POPUP)))
+</a>         return 0;
+ 
+     c = ctx-&gt;current-&gt;layout-&gt;clip;
+<a href="#h0-1" id="h0-1" class="h">@@ -23522,7 +23523,8 @@ nk_widget_is_mouse_clicked(const struct nk_context *ctx, enum nk_buttons btn)
+</a>     struct nk_rect bounds;
+     NK_ASSERT(ctx);
+     NK_ASSERT(ctx-&gt;current);
+<a href="#h0-1-3" id="h0-1-3" class="d">-    if (!ctx || !ctx-&gt;current || ctx-&gt;active != ctx-&gt;current)
+</a><a href="#h0-1-4" id="h0-1-4" class="i">+    NK_ASSERT(ctx-&gt;current-&gt;layout);
+</a><a href="#h0-1-5" id="h0-1-5" class="i">+    if (!ctx || !ctx-&gt;current || !ctx-&gt;current-&gt;layout || (ctx-&gt;active != ctx-&gt;current &amp;&amp; !((int)ctx-&gt;current-&gt;layout-&gt;type &amp; (int)NK_PANEL_SET_POPUP)))
+</a>         return 0;
+ 
+     c = ctx-&gt;current-&gt;layout-&gt;clip;
+<a href="#h0-2" id="h0-2" class="h">@@ -23544,7 +23546,8 @@ nk_widget_has_mouse_click_down(const struct nk_context *ctx, enum nk_buttons btn
+</a>     struct nk_rect bounds;
+     NK_ASSERT(ctx);
+     NK_ASSERT(ctx-&gt;current);
+<a href="#h0-2-3" id="h0-2-3" class="d">-    if (!ctx || !ctx-&gt;current || ctx-&gt;active != ctx-&gt;current)
+</a><a href="#h0-2-4" id="h0-2-4" class="i">+    NK_ASSERT(ctx-&gt;current-&gt;layout);
+</a><a href="#h0-2-5" id="h0-2-5" class="i">+    if (!ctx || !ctx-&gt;current || !ctx-&gt;current-&gt;layout || (ctx-&gt;active != ctx-&gt;current &amp;&amp; !((int)ctx-&gt;current-&gt;layout-&gt;type &amp; (int)NK_PANEL_SET_POPUP)))
+</a>         return 0;
+ 
+     c = ctx-&gt;current-&gt;layout-&gt;clip;
+<a href="#h0-3" id="h0-3" class="h">@@ -23805,13 +23808,16 @@ nk_widget_text(struct nk_command_buffer *o, struct nk_rect b,
+</a>     if (!o || !t) return;
+ 
+     b.h = NK_MAX(b.h, 2 * t-&gt;padding.y);
+<a href="#h0-3-3" id="h0-3-3" class="d">-    label.x = 0; label.w = 0;
+</a><a href="#h0-3-4" id="h0-3-4" class="d">-    label.y = b.y + t-&gt;padding.y;
+</a><a href="#h0-3-5" id="h0-3-5" class="d">-    label.h = NK_MIN(f-&gt;height, b.h - 2 * t-&gt;padding.y);
+</a> 
+     text_width = f-&gt;width(f-&gt;userdata, f-&gt;height, (const char*)string, len);
+     text_width += (2.0f * t-&gt;padding.x);
+ 
+<a href="#h0-3-10" id="h0-3-10" class="i">+    /* use top-left alignment by default */
+</a><a href="#h0-3-11" id="h0-3-11" class="i">+    if (!(a &amp; (NK_TEXT_ALIGN_LEFT | NK_TEXT_ALIGN_CENTERED | NK_TEXT_ALIGN_RIGHT)))
+</a><a href="#h0-3-12" id="h0-3-12" class="i">+        a |= NK_TEXT_ALIGN_LEFT;
+</a><a href="#h0-3-13" id="h0-3-13" class="i">+    if (!(a &amp; (NK_TEXT_ALIGN_TOP | NK_TEXT_ALIGN_MIDDLE | NK_TEXT_ALIGN_BOTTOM)))
+</a><a href="#h0-3-14" id="h0-3-14" class="i">+        a |= NK_TEXT_ALIGN_TOP;
+</a><a href="#h0-3-15" id="h0-3-15" class="i">+
+</a>     /* align in x-axis */
+     if (a &amp; NK_TEXT_ALIGN_LEFT) {
+         label.x = b.x + t-&gt;padding.x;
+<a href="#h0-4" id="h0-4" class="h">@@ -23825,16 +23831,20 @@ nk_widget_text(struct nk_command_buffer *o, struct nk_rect b,
+</a>     } else if (a &amp; NK_TEXT_ALIGN_RIGHT) {
+         label.x = NK_MAX(b.x + t-&gt;padding.x, (b.x + b.w) - (2 * t-&gt;padding.x + (float)text_width));
+         label.w = (float)text_width + 2 * t-&gt;padding.x;
+<a href="#h0-4-3" id="h0-4-3" class="d">-    } else return;
+</a><a href="#h0-4-4" id="h0-4-4" class="i">+    }
+</a> 
+     /* align in y-axis */
+<a href="#h0-4-7" id="h0-4-7" class="d">-    if (a &amp; NK_TEXT_ALIGN_MIDDLE) {
+</a><a href="#h0-4-8" id="h0-4-8" class="i">+    if (a &amp; NK_TEXT_ALIGN_TOP) {
+</a><a href="#h0-4-9" id="h0-4-9" class="i">+        label.y = b.y + t-&gt;padding.y;
+</a><a href="#h0-4-10" id="h0-4-10" class="i">+        label.h = NK_MIN(f-&gt;height, b.h - 2 * t-&gt;padding.y);
+</a><a href="#h0-4-11" id="h0-4-11" class="i">+    } else if (a &amp; NK_TEXT_ALIGN_MIDDLE) {
+</a>         label.y = b.y + b.h/2.0f - (float)f-&gt;height/2.0f;
+         label.h = NK_MAX(b.h/2.0f, b.h - (b.h/2.0f + f-&gt;height/2.0f));
+     } else if (a &amp; NK_TEXT_ALIGN_BOTTOM) {
+         label.y = b.y + b.h - f-&gt;height;
+         label.h = f-&gt;height;
+     }
+<a href="#h0-4-18" id="h0-4-18" class="i">+
+</a>     nk_draw_text(o, label, (const char*)string, len, f, t-&gt;background, t-&gt;text);
+ }
+ NK_LIB void
+<a href="#h0-5" id="h0-5" class="h">@@ -30716,6 +30726,9 @@ nk_tooltipfv(struct nk_context *ctx, const char *fmt, va_list args)
+</a> ///   - [y]: Minor version with non-breaking API and library changes
+ ///   - [z]: Patch version with no direct changes to the API
+ ///
+<a href="#h0-5-3" id="h0-5-3" class="i">+/// - 2025/10/08 (4.12.8) - Fix nk_widget_text to use NK_TEXT_ALIGN_LEFT by default,
+</a><a href="#h0-5-4" id="h0-5-4" class="i">+///                         instead of silently failing when no x-axis alignment is provided,
+</a><a href="#h0-5-5" id="h0-5-5" class="i">+///                         and refactor this function to keep the code style consistent
+</a> /// - 2025/04/06 (4.12.7) - Fix text input navigation and mouse scrolling
+ /// - 2025/03/29 (4.12.6) - Fix unitialized data in nk_input_char
+ /// - 2025/03/05 (4.12.5) - Fix scrolling knob also scrolling parent window, remove dead code
+</pre>
+</div>
+</body>
+</html>
